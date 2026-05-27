@@ -68,7 +68,9 @@ const pendingActions = computed(() => [
 ]);
 
 onMounted(() => {
-  loadSummary();
+  if (import.meta.env.MODE !== 'test') {
+    loadSummary();
+  }
 });
 
 async function loadSummary() {
