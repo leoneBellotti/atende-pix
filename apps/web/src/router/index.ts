@@ -5,6 +5,7 @@ import CustomersPage from '../pages/CustomersPage.vue';
 import DashboardPage from '../pages/DashboardPage.vue';
 import LoginPage from '../pages/LoginPage.vue';
 import OrdersPage from '../pages/OrdersPage.vue';
+import PaymentsPage from '../pages/PaymentsPage.vue';
 import PublicQuotePage from '../pages/PublicQuotePage.vue';
 import QuotesPage from '../pages/QuotesPage.vue';
 import RegisterPage from '../pages/RegisterPage.vue';
@@ -20,6 +21,11 @@ export const router = createRouter({
     {
       path: '/orders',
       component: OrdersPage,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/payments',
+      component: PaymentsPage,
       meta: { requiresAuth: true }
     },
     {

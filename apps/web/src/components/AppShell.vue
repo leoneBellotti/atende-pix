@@ -11,7 +11,8 @@ const navigation = [
   { label: 'Clientes', href: '/customers' },
   { label: 'Catalogo', href: '/catalog' },
   { label: 'Orcamentos', href: '/quotes' },
-  { label: 'Pedidos', href: '/orders' }
+  { label: 'Pedidos', href: '/orders' },
+  { label: 'Pagamentos', href: '/payments' }
 ];
 
 function logout() {
