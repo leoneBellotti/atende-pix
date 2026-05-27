@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 import { AuthenticatedRequest, JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateQuoteDto } from './dto/create-quote.dto';
+import { QuotePdfService } from './quote-pdf.service';
 import { UpdateQuoteStatusDto } from './dto/update-quote-status.dto';
 import { QuotesService } from './quotes.service';
 
@@ -10,7 +12,10 @@ import { QuotesService } from './quotes.service';
 @UseGuards(JwtAuthGuard)
 @Controller('quotes')
 export class QuotesController {
-  constructor(private readonly quotesService: QuotesService) {}
+  constructor(
+    private readonly quotesService: QuotesService,
+    private readonly quotePdfService: QuotePdfService
+  ) {}
 
   @Get()
   @ApiOkResponse({ description: 'Lista orcamentos do tenant autenticado.' })
@@ -30,6 +35,21 @@ export class QuotesController {
     return this.quotesService.getById(request.user.tenantId, id);
   }
 
+  @Get(':id/pdf')
+  @ApiOkResponse({ description: 'PDF do orcamento.' })
+  async getPdf(
+    @Req() request: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Res() response: Response
+  ) {
+    const quote = await this.quotesService.getById(request.user.tenantId, id);
+    const pdf = await this.quotePdfService.generate(quote);
+
+    response.setHeader('Content-Type', 'application/pdf');
+    response.setHeader('Content-Disposition', `inline; filename="orcamento-${quote.number}.pdf"`);
+    response.send(pdf);
+  }
+
   @Patch(':id/status')
   @ApiOkResponse({ description: 'Status do orcamento atualizado.' })
   updateStatus(
@@ -44,11 +64,25 @@ export class QuotesController {
 @ApiTags('public')
 @Controller('public/quotes')
 export class PublicQuotesController {
-  constructor(private readonly quotesService: QuotesService) {}
+  constructor(
+    private readonly quotesService: QuotesService,
+    private readonly quotePdfService: QuotePdfService
+  ) {}
 
   @Get(':token')
   @ApiOkResponse({ description: 'Visualizacao publica do orcamento.' })
   getPublicByToken(@Param('token') token: string) {
     return this.quotesService.getPublicByToken(token);
+  }
+
+  @Get(':token/pdf')
+  @ApiOkResponse({ description: 'PDF publico do orcamento.' })
+  async getPublicPdf(@Param('token') token: string, @Res() response: Response) {
+    const quote = await this.quotesService.getPublicByToken(token);
+    const pdf = await this.quotePdfService.generate(quote);
+
+    response.setHeader('Content-Type', 'application/pdf');
+    response.setHeader('Content-Disposition', `inline; filename="orcamento-${quote.number}.pdf"`);
+    response.send(pdf);
   }
 }

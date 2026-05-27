@@ -13,6 +13,7 @@ export class QuotesService {
       where: { tenantId },
       include: {
         customer: true,
+        tenant: true,
         attendance: true,
         items: true
       },
@@ -62,6 +63,7 @@ export class QuotesService {
       },
       include: {
         customer: true,
+        tenant: true,
         attendance: true,
         items: true
       }
@@ -76,6 +78,7 @@ export class QuotesService {
       },
       include: {
         customer: true,
+        tenant: true,
         attendance: true,
         items: true
       }
@@ -96,6 +99,7 @@ export class QuotesService {
       data: { status },
       include: {
         customer: true,
+        tenant: true,
         attendance: true,
         items: true
       }
