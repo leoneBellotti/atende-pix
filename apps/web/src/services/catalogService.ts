@@ -26,3 +26,8 @@ export async function disableCatalogItem(id: string) {
   const { data } = await apiClient.delete<{ deleted: boolean }>(`/catalog/items/${id}`);
   return data;
 }
+
+export async function setCatalogItemActive(id: string, active: boolean) {
+  const { data } = await apiClient.patch<CatalogItem>(`/catalog/items/${id}`, { active });
+  return data;
+}

@@ -3,7 +3,8 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import {
   createCatalogItem,
   disableCatalogItem,
-  listCatalogItems
+  listCatalogItems,
+  setCatalogItemActive
 } from '../services/catalogService';
 import type { CatalogItem, CatalogItemType } from '../types/catalog';
 
@@ -72,6 +73,17 @@ async function disableItem(item: CatalogItem) {
     await loadItems();
   } catch {
     errorMessage.value = 'Nao foi possivel desativar o item.';
+  }
+}
+
+async function activateItem(item: CatalogItem) {
+  errorMessage.value = '';
+
+  try {
+    await setCatalogItemActive(item.id, true);
+    await loadItems();
+  } catch {
+    errorMessage.value = 'Nao foi possivel ativar o item.';
   }
 }
 
@@ -252,6 +264,14 @@ function typeLabel(type: CatalogItemType) {
                     @click="disableItem(item)"
                   >
                     Desativar
+                  </button>
+                  <button
+                    v-else
+                    class="rounded-md bg-mint px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#176d58]"
+                    type="button"
+                    @click="activateItem(item)"
+                  >
+                    Ativar
                   </button>
                 </td>
               </tr>
