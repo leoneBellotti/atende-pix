@@ -20,6 +20,7 @@ Atualizado em: 2026-05-27
 - Registro manual de pagamento e dashboard refletindo pedido pago.
 - Tela de pagamentos com resumo, historico e filtros basicos por status e provedor.
 - Relatorios mensais basicos com exportacao CSV de pedidos e pagamentos.
+- Configuracoes da empresa com nome, documento, telefone e logo para painel e documentos.
 
 ### Em andamento
 
@@ -27,7 +28,6 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Configuracoes da empresa/onboarding minimo para dados aparecerem melhor no PDF.
 - Preparacao para Fase 2: Pix automatico em sandbox.
 
 ## 1. Visao do produto
