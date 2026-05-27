@@ -7,6 +7,7 @@ import { CatalogModule } from './catalog/catalog.module';
 import { CustomersModule } from './customers/customers.module';
 import { HealthModule } from './health/health.module';
 import { OrdersModule } from './orders/orders.module';
+import { PaymentsModule } from './payments/payments.module';
 import { QuotesModule } from './quotes/quotes.module';
 
 @Module({
@@ -21,6 +22,7 @@ import { QuotesModule } from './quotes/quotes.module';
     CustomersModule,
     HealthModule,
     OrdersModule,
+    PaymentsModule,
     QuotesModule
   ]
 })
