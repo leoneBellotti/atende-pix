@@ -13,6 +13,7 @@ describe('App', () => {
       history: createWebHistory(),
       routes: [
         { path: '/login', component: LoginPage },
+        { path: '/public/payments/:token', component: PlaceholderPage },
         { path: '/', component: DashboardPage, meta: { requiresAuth: true } },
         { path: '/attendances', component: PlaceholderPage, meta: { requiresAuth: true } },
         { path: '/customers', component: PlaceholderPage, meta: { requiresAuth: true } },

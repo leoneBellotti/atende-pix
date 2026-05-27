@@ -79,6 +79,14 @@ function providerLabel(value: PaymentProvider) {
   return providerOptions.find((option) => option.value === value)?.label ?? value;
 }
 
+function publicPaymentUrl(payment: PaymentRecord) {
+  if (!payment.publicToken) {
+    return '';
+  }
+
+  return `${window.location.origin}/public/payments/${payment.publicToken}`;
+}
+
 async function copyPix(payment: PaymentRecord) {
   if (!payment.qrCodeText) {
     return;
@@ -203,6 +211,14 @@ async function copyPix(payment: PaymentRecord) {
                 target="_blank"
               >
                 Abrir link
+              </a>
+              <a
+                v-if="payment.publicToken"
+                class="text-xs font-semibold text-[#11644f]"
+                :href="publicPaymentUrl(payment)"
+                target="_blank"
+              >
+                Link publico
               </a>
             </div>
           </div>

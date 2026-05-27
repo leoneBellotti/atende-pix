@@ -8,6 +8,7 @@ import LoginPage from '../pages/LoginPage.vue';
 import OrdersPage from '../pages/OrdersPage.vue';
 import PaymentsPage from '../pages/PaymentsPage.vue';
 import PublicQuotePage from '../pages/PublicQuotePage.vue';
+import PublicPaymentPage from '../pages/PublicPaymentPage.vue';
 import QuotesPage from '../pages/QuotesPage.vue';
 import RegisterPage from '../pages/RegisterPage.vue';
 import ReportsPage from '../pages/ReportsPage.vue';
@@ -20,6 +21,7 @@ export const router = createRouter({
     { path: '/login', component: LoginPage },
     { path: '/register', component: RegisterPage },
     { path: '/public/quotes/:token', component: PublicQuotePage },
+    { path: '/public/payments/:token', component: PublicPaymentPage },
     { path: '/', component: DashboardPage, meta: { requiresAuth: true } },
     {
       path: '/orders',

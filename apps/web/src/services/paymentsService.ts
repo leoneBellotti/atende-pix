@@ -1,5 +1,5 @@
 import { apiClient } from './apiClient';
-import type { PaymentRecord } from '../types/payment';
+import type { PaymentRecord, PublicPayment } from '../types/payment';
 
 export async function listPayments() {
   const { data } = await apiClient.get<PaymentRecord[]>('/payments');
@@ -8,5 +8,10 @@ export async function listPayments() {
 
 export async function createPixPayment(orderId: string) {
   const { data } = await apiClient.post<PaymentRecord>(`/orders/${orderId}/payments/pix`);
+  return data;
+}
+
+export async function getPublicPayment(token: string) {
+  const { data } = await apiClient.get<PublicPayment>(`/public/payments/${token}`);
   return data;
 }

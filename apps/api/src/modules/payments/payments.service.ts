@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { randomUUID } from 'crypto';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { ManualConfirmPaymentDto } from './dto/manual-confirm-payment.dto';
 
@@ -21,6 +22,33 @@ export class PaymentsService {
         createdAt: 'desc'
       }
     });
+  }
+
+  async getPublicByToken(token: string) {
+    const payment = await this.prisma.payment.findUnique({
+      where: { publicToken: token },
+      include: {
+        tenant: {
+          select: {
+            name: true,
+            document: true,
+            phone: true,
+            logoUrl: true
+          }
+        },
+        order: {
+          include: {
+            customer: true
+          }
+        }
+      }
+    });
+
+    if (!payment) {
+      throw new NotFoundException('Pagamento nao encontrado.');
+    }
+
+    return payment;
   }
 
   async manualConfirm(tenantId: string, orderId: string, input: ManualConfirmPaymentDto) {
@@ -140,6 +168,7 @@ export class PaymentsService {
           orderId: order.id,
           provider: 'MERCADO_PAGO',
           providerPaymentId: String(mercadoPagoPayment.id),
+          publicToken: randomUUID(),
           status: 'PENDING',
           amount: order.total,
           qrCode: mercadoPagoPayment.qrCodeBase64,

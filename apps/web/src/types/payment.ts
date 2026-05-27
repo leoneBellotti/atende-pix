@@ -15,6 +15,7 @@ export type PaymentOrder = {
 export type PaymentRecord = {
   id: string;
   orderId: string;
+  publicToken?: string | null;
   provider: PaymentProvider;
   status: PaymentStatus;
   amount: string;
@@ -25,4 +26,13 @@ export type PaymentRecord = {
   createdAt: string;
   updatedAt: string;
   order: PaymentOrder;
+};
+
+export type PublicPayment = PaymentRecord & {
+  tenant: {
+    name: string;
+    document?: string | null;
+    phone?: string | null;
+    logoUrl?: string | null;
+  };
 };

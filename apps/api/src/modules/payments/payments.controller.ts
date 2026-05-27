@@ -33,3 +33,15 @@ export class PaymentsController {
     return this.paymentsService.createPix(request.user.tenantId, orderId);
   }
 }
+
+@ApiTags('public')
+@Controller('public/payments')
+export class PublicPaymentsController {
+  constructor(private readonly paymentsService: PaymentsService) {}
+
+  @Get(':token')
+  @ApiOkResponse({ description: 'Visualizacao publica do pagamento.' })
+  getPublicByToken(@Param('token') token: string) {
+    return this.paymentsService.getPublicByToken(token);
+  }
+}
