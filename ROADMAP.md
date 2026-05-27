@@ -22,6 +22,7 @@ Atualizado em: 2026-05-27
 - Relatorios mensais basicos com exportacao CSV de pedidos e pagamentos.
 - Configuracoes da empresa com nome, documento, telefone e logo para painel e documentos.
 - Detalhe do cliente com cadastro, totais e timeline de atendimentos, orcamentos e pedidos.
+- Configuracao de provedor Pix/Mercado Pago por empresa, com credenciais em sandbox.
 
 ### Em andamento
 
@@ -29,7 +30,6 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Configuracao do provedor Pix por empresa.
 - Geracao de cobranca Pix em sandbox.
 
 ## 1. Visao do produto
@@ -809,7 +809,7 @@ Adicionar cobranca Pix real ou sandbox para transformar o MVP em produto vendave
 
 Entregas:
 
-- Conta/configuracao de provedor Pix por empresa.
+- [x] Conta/configuracao de provedor Pix por empresa.
 - Integracao Mercado Pago em sandbox.
 - Geracao de cobranca Pix.
 - QR Code e copia-e-cola.
