@@ -21,14 +21,16 @@ Atualizado em: 2026-05-27
 - Tela de pagamentos com resumo, historico e filtros basicos por status e provedor.
 - Relatorios mensais basicos com exportacao CSV de pedidos e pagamentos.
 - Configuracoes da empresa com nome, documento, telefone e logo para painel e documentos.
+- Detalhe do cliente com cadastro, totais e timeline de atendimentos, orcamentos e pedidos.
 
 ### Em andamento
 
-- Completar detalhes de cliente, historico/timeline e acabamento dos fluxos principais.
+- Preparacao para Fase 2: Pix automatico em sandbox.
 
 ### Proximo
 
-- Preparacao para Fase 2: Pix automatico em sandbox.
+- Configuracao do provedor Pix por empresa.
+- Geracao de cobranca Pix em sandbox.
 
 ## 1. Visao do produto
 
@@ -763,7 +765,7 @@ Criterios de pronto:
 
 ### Fase 1 - MVP sem integracoes externas
 
-Status: em andamento.
+Status: concluida.
 
 Objetivo:
 
