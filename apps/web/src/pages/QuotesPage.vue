@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue';
 import { listAttendances } from '../services/attendancesService';
+import { listCatalogItems } from '../services/catalogService';
 import { listCustomers } from '../services/customersService';
 import { convertQuoteToOrder, createQuote, listQuotes } from '../services/quotesService';
 import type { Attendance } from '../types/attendance';
+import type { CatalogItem } from '../types/catalog';
 import type { Customer } from '../types/customer';
 import type { Quote } from '../types/quote';
 
 const quotes = ref<Quote[]>([]);
 const customers = ref<Customer[]>([]);
 const attendances = ref<Attendance[]>([]);
+const catalogItems = ref<CatalogItem[]>([]);
+const selectedCatalogItemId = ref('');
 const errorMessage = ref('');
 const isLoading = ref(false);
 const isSaving = ref(false);
@@ -34,7 +38,7 @@ const availableAttendances = computed(() =>
 );
 
 onMounted(async () => {
-  await Promise.all([loadCustomers(), loadAttendances(), loadQuotes()]);
+  await Promise.all([loadCustomers(), loadAttendances(), loadCatalogItems(), loadQuotes()]);
 });
 
 async function loadCustomers() {
@@ -47,6 +51,10 @@ async function loadCustomers() {
 
 async function loadAttendances() {
   attendances.value = await listAttendances({});
+}
+
+async function loadCatalogItems() {
+  catalogItems.value = await listCatalogItems({ active: 'true' });
 }
 
 async function loadQuotes() {
@@ -107,6 +115,32 @@ function addItem() {
   });
 }
 
+function addCatalogItemToQuote() {
+  const catalogItem = catalogItems.value.find((item) => item.id === selectedCatalogItemId.value);
+
+  if (!catalogItem) {
+    return;
+  }
+
+  const emptyItemIndex = form.items.findIndex(
+    (item) => !item.description && Number(item.unitPrice) === 0
+  );
+  const nextItem = {
+    description: catalogItem.name,
+    quantity: 1,
+    unitPrice: Number(catalogItem.price),
+    discount: 0
+  };
+
+  if (emptyItemIndex >= 0) {
+    form.items.splice(emptyItemIndex, 1, nextItem);
+  } else {
+    form.items.push(nextItem);
+  }
+
+  selectedCatalogItemId.value = '';
+}
+
 function removeItem(index: number) {
   if (form.items.length > 1) {
     form.items.splice(index, 1);
@@ -125,6 +159,7 @@ function resetForm() {
       discount: 0
     }
   ];
+  selectedCatalogItemId.value = '';
 }
 
 function formatCurrency(value: string | number) {
@@ -203,10 +238,37 @@ function quotePdfUrl(quote: Quote) {
         </label>
 
         <div class="mt-5 space-y-3">
-          <div class="flex items-center justify-between">
+          <div class="flex flex-col gap-3">
             <h3 class="text-sm font-semibold">Itens</h3>
-            <button class="text-sm font-semibold text-[#11644f]" type="button" @click="addItem">
-              Adicionar
+            <div class="grid gap-2 sm:grid-cols-[1fr_auto]">
+              <select
+                v-model="selectedCatalogItemId"
+                class="rounded-md border border-[#cfd7ce] bg-white px-3 py-2 text-sm outline-none focus:border-mint"
+              >
+                <option value="">Adicionar produto/servico do catalogo</option>
+                <option
+                  v-for="catalogItem in catalogItems"
+                  :key="catalogItem.id"
+                  :value="catalogItem.id"
+                >
+                  {{ catalogItem.name }} - {{ formatCurrency(catalogItem.price) }}
+                </option>
+              </select>
+              <button
+                class="rounded-md border border-[#dfe4da] px-3 py-2 text-sm font-semibold text-[#11644f] hover:bg-[#edf3ee] disabled:opacity-50"
+                type="button"
+                :disabled="!selectedCatalogItemId"
+                @click="addCatalogItemToQuote"
+              >
+                Adicionar
+              </button>
+            </div>
+            <button
+              class="self-start text-sm font-semibold text-[#11644f]"
+              type="button"
+              @click="addItem"
+            >
+              Adicionar item livre
             </button>
           </div>
           <div
