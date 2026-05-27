@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import CustomersPage from '../pages/CustomersPage.vue';
 import DashboardPage from '../pages/DashboardPage.vue';
 import LoginPage from '../pages/LoginPage.vue';
 import PlaceholderPage from '../pages/PlaceholderPage.vue';
@@ -19,8 +20,7 @@ export const router = createRouter({
     },
     {
       path: '/customers',
-      component: PlaceholderPage,
-      props: { title: 'Clientes' },
+      component: CustomersPage,
       meta: { requiresAuth: true }
     },
     {
