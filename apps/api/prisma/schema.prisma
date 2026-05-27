@@ -13,6 +13,13 @@ enum UserStatus {
   DISABLED
 }
 
+enum MembershipRole {
+  OWNER
+  MANAGER
+  ATTENDANT
+  FINANCE
+}
+
 enum ProductServiceType {
   PRODUCT
   SERVICE
@@ -38,6 +45,7 @@ model Tenant {
   updatedAt DateTime @updatedAt
 
   customers       Customer[]
+  memberships     Membership[]
   productServices ProductService[]
   quotes          Quote[]
 }
@@ -50,6 +58,24 @@ model User {
   status       UserStatus @default(ACTIVE)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+
+  memberships Membership[]
+}
+
+model Membership {
+  id        String         @id @default(cuid())
+  tenantId  String
+  userId    String
+  role      MembershipRole @default(OWNER)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, userId])
+  @@index([tenantId])
+  @@index([userId])
 }
 
 model Customer {
