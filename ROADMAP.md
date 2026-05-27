@@ -25,6 +25,7 @@ Atualizado em: 2026-05-27
 - Configuracao de provedor Pix/Mercado Pago por empresa, com credenciais em sandbox.
 - Geracao de cobranca Pix via Mercado Pago, com copia-e-cola e link salvos no pagamento.
 - Link publico de pagamento Pix com QR Code, copia-e-cola e atalho Mercado Pago.
+- Webhook Mercado Pago com idempotencia, logs e atualizacao automatica de pedido pago.
 
 ### Em andamento
 
@@ -32,7 +33,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Webhook de pagamento aprovado.
+- Exibir logs de pagamento no painel.
 
 ## 1. Visao do produto
 
@@ -816,18 +817,18 @@ Entregas:
 - [x] Geracao de cobranca Pix.
 - [x] QR Code e copia-e-cola.
 - [x] Link publico de pagamento.
-- Webhook de pagamento.
-- Idempotencia de webhooks.
+- [x] Webhook de pagamento.
+- [x] Idempotencia de webhooks.
 - Tela de pagamentos.
-- Logs de pagamento.
+- [~] Logs de pagamento.
 
 Criterios de pronto:
 
 - Pedido gera Pix.
 - Cliente acessa pagina publica com QR Code.
-- Webhook confirma pagamento.
-- Pedido muda para pago automaticamente.
-- Falhas ficam registradas.
+- [x] Webhook confirma pagamento.
+- [x] Pedido muda para pago automaticamente.
+- [~] Falhas ficam registradas.
 
 Demo publica:
 
