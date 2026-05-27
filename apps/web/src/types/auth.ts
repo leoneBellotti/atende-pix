@@ -8,6 +8,9 @@ export type AuthTenant = {
   id: string;
   name: string;
   slug: string;
+  document?: string | null;
+  phone?: string | null;
+  logoUrl?: string | null;
 };
 
 export type AuthResponse = {

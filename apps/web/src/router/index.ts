@@ -10,6 +10,7 @@ import PublicQuotePage from '../pages/PublicQuotePage.vue';
 import QuotesPage from '../pages/QuotesPage.vue';
 import RegisterPage from '../pages/RegisterPage.vue';
 import ReportsPage from '../pages/ReportsPage.vue';
+import SettingsPage from '../pages/SettingsPage.vue';
 import { useSessionStore } from '../stores/session.store';
 
 export const router = createRouter({
@@ -32,6 +33,11 @@ export const router = createRouter({
     {
       path: '/reports',
       component: ReportsPage,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/settings',
+      component: SettingsPage,
       meta: { requiresAuth: true }
     },
     {

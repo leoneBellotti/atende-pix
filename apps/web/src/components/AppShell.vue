@@ -13,7 +13,8 @@ const navigation = [
   { label: 'Orcamentos', href: '/quotes' },
   { label: 'Pedidos', href: '/orders' },
   { label: 'Pagamentos', href: '/payments' },
-  { label: 'Relatorios', href: '/reports' }
+  { label: 'Relatorios', href: '/reports' },
+  { label: 'Configuracoes', href: '/settings' }
 ];
 
 function logout() {

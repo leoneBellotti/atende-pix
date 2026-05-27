@@ -20,6 +20,7 @@ describe('App', () => {
         { path: '/orders', component: PlaceholderPage, meta: { requiresAuth: true } },
         { path: '/payments', component: PlaceholderPage, meta: { requiresAuth: true } },
         { path: '/reports', component: PlaceholderPage, meta: { requiresAuth: true } },
+        { path: '/settings', component: PlaceholderPage, meta: { requiresAuth: true } },
         { path: '/quotes', component: PlaceholderPage, meta: { requiresAuth: true } }
       ]
     });

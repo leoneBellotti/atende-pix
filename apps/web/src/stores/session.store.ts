@@ -36,6 +36,10 @@ export const useSessionStore = defineStore('session', {
       localStorage.removeItem('atende-pix:user');
       localStorage.removeItem('atende-pix:tenant');
     },
+    updateTenant(tenant: AuthTenant) {
+      this.tenant = tenant;
+      localStorage.setItem('atende-pix:tenant', JSON.stringify(tenant));
+    },
     setSession(auth: AuthResponse) {
       this.accessToken = auth.accessToken;
       this.user = auth.user;
