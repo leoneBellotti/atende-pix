@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { getAccessTokenTtlSeconds } from './jwt-config';
 
 @Module({
   imports: [
@@ -11,7 +12,7 @@ import { AuthService } from './auth.service';
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_ACCESS_SECRET', 'dev-access-secret'),
         signOptions: {
-          expiresIn: configService.get<number>('JWT_ACCESS_EXPIRES_IN_SECONDS', 28800)
+          expiresIn: getAccessTokenTtlSeconds(configService)
         }
       })
     })
