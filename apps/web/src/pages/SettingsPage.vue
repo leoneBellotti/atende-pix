@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
-import { getTenantSettings, updateTenantSettings } from '../services/settingsService';
+import {
+  getPaymentProviderConfig,
+  getTenantSettings,
+  updatePaymentProviderConfig,
+  updateTenantSettings
+} from '../services/settingsService';
 import { useSessionStore } from '../stores/session.store';
 
 const sessionStore = useSessionStore();
@@ -10,10 +15,21 @@ const form = reactive({
   phone: '',
   logoUrl: ''
 });
+const pixForm = reactive({
+  active: false,
+  sandbox: true,
+  accessToken: '',
+  publicKey: '',
+  webhookSecret: '',
+  hasAccessToken: false,
+  hasPublicKey: false,
+  hasWebhookSecret: false
+});
 const errorMessage = ref('');
 const successMessage = ref('');
 const isLoading = ref(false);
 const isSaving = ref(false);
+const isSavingPix = ref(false);
 
 onMounted(() => {
   loadSettings();
@@ -24,16 +40,54 @@ async function loadSettings() {
   isLoading.value = true;
 
   try {
-    const settings = await getTenantSettings();
+    const [settings, pixConfig] = await Promise.all([
+      getTenantSettings(),
+      getPaymentProviderConfig()
+    ]);
     form.name = settings.name;
     form.document = settings.document ?? '';
     form.phone = settings.phone ?? '';
     form.logoUrl = settings.logoUrl ?? '';
+    pixForm.active = pixConfig.active;
+    pixForm.sandbox = pixConfig.sandbox;
+    pixForm.hasAccessToken = pixConfig.hasAccessToken;
+    pixForm.hasPublicKey = pixConfig.hasPublicKey;
+    pixForm.hasWebhookSecret = pixConfig.hasWebhookSecret;
     sessionStore.updateTenant(settings);
   } catch {
     errorMessage.value = 'Nao foi possivel carregar as configuracoes.';
   } finally {
     isLoading.value = false;
+  }
+}
+
+async function submitPix() {
+  errorMessage.value = '';
+  successMessage.value = '';
+  isSavingPix.value = true;
+
+  try {
+    const config = await updatePaymentProviderConfig({
+      provider: 'MERCADO_PAGO',
+      active: pixForm.active,
+      sandbox: pixForm.sandbox,
+      accessToken: pixForm.accessToken || undefined,
+      publicKey: pixForm.publicKey || undefined,
+      webhookSecret: pixForm.webhookSecret || undefined
+    });
+    pixForm.active = config.active;
+    pixForm.sandbox = config.sandbox;
+    pixForm.hasAccessToken = config.hasAccessToken;
+    pixForm.hasPublicKey = config.hasPublicKey;
+    pixForm.hasWebhookSecret = config.hasWebhookSecret;
+    pixForm.accessToken = '';
+    pixForm.publicKey = '';
+    pixForm.webhookSecret = '';
+    successMessage.value = 'Configuracao Pix salva.';
+  } catch {
+    errorMessage.value = 'Nao foi possivel salvar a configuracao Pix.';
+  } finally {
+    isSavingPix.value = false;
   }
 }
 
@@ -126,6 +180,71 @@ async function submit() {
           :disabled="isLoading || isSaving"
         >
           {{ isSaving ? 'Salvando...' : 'Salvar configuracoes' }}
+        </button>
+      </div>
+    </form>
+
+    <form class="rounded-md border border-[#dfe4da] bg-white p-5" @submit.prevent="submitPix">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 class="text-base font-semibold">Pix via Mercado Pago</h2>
+          <p class="mt-1 text-sm text-[#667067]">
+            Credenciais usadas para gerar cobrancas Pix em sandbox ou producao.
+          </p>
+        </div>
+        <label class="flex items-center gap-2 text-sm font-medium">
+          <input v-model="pixForm.active" class="h-4 w-4 accent-[#11644f]" type="checkbox" />
+          Ativo
+        </label>
+      </div>
+
+      <div v-if="isLoading" class="mt-4 text-sm text-[#667067]">Carregando Pix...</div>
+      <div v-else class="mt-4 grid gap-4 lg:grid-cols-2">
+        <label class="flex items-center gap-2 text-sm font-medium">
+          <input v-model="pixForm.sandbox" class="h-4 w-4 accent-[#11644f]" type="checkbox" />
+          Usar sandbox
+        </label>
+        <div class="text-sm text-[#667067]">
+          Status:
+          <span class="font-semibold text-ink">
+            {{ pixForm.active ? 'habilitado' : 'desabilitado' }}
+          </span>
+        </div>
+        <label class="block text-sm font-medium">
+          Access token
+          <input
+            v-model="pixForm.accessToken"
+            class="mt-2 w-full rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
+            :placeholder="pixForm.hasAccessToken ? 'Token ja cadastrado' : 'TEST-...'"
+            type="password"
+          />
+        </label>
+        <label class="block text-sm font-medium">
+          Public key
+          <input
+            v-model="pixForm.publicKey"
+            class="mt-2 w-full rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
+            :placeholder="pixForm.hasPublicKey ? 'Chave ja cadastrada' : 'TEST-...'"
+          />
+        </label>
+        <label class="block text-sm font-medium lg:col-span-2">
+          Webhook secret
+          <input
+            v-model="pixForm.webhookSecret"
+            class="mt-2 w-full rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
+            :placeholder="pixForm.hasWebhookSecret ? 'Segredo ja cadastrado' : 'Segredo do webhook'"
+            type="password"
+          />
+        </label>
+      </div>
+
+      <div class="mt-5 flex justify-end">
+        <button
+          class="rounded-md bg-mint px-4 py-2 text-sm font-semibold text-white hover:bg-[#176d58] disabled:opacity-60"
+          type="submit"
+          :disabled="isLoading || isSavingPix"
+        >
+          {{ isSavingPix ? 'Salvando...' : 'Salvar Pix' }}
         </button>
       </div>
     </form>

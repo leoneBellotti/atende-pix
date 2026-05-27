@@ -35,4 +35,50 @@ describe('SettingsService', () => {
       })
     );
   });
+
+  it('stores payment provider credentials without returning secrets', async () => {
+    const prisma = {
+      paymentProviderConfig: {
+        upsert: vi.fn().mockResolvedValue({
+          provider: 'MERCADO_PAGO',
+          active: true,
+          sandbox: true,
+          accessToken: 'secret-token',
+          publicKey: 'public-key',
+          webhookSecret: 'webhook-secret'
+        })
+      }
+    };
+    const service = new SettingsService(prisma as never);
+
+    const config = await service.updatePaymentProviderConfig('tenant-1', {
+      active: true,
+      sandbox: true,
+      accessToken: 'secret-token',
+      publicKey: 'public-key',
+      webhookSecret: 'webhook-secret'
+    });
+
+    expect(prisma.paymentProviderConfig.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          tenantId_provider: {
+            tenantId: 'tenant-1',
+            provider: 'MERCADO_PAGO'
+          }
+        }
+      })
+    );
+    expect(config).toEqual(
+      expect.objectContaining({
+        provider: 'MERCADO_PAGO',
+        active: true,
+        sandbox: true,
+        hasAccessToken: true,
+        hasPublicKey: true,
+        hasWebhookSecret: true
+      })
+    );
+    expect(config).not.toHaveProperty('accessToken');
+  });
 });

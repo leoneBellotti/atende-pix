@@ -90,6 +90,7 @@ model Tenant {
   quotes          Quote[]
   orders          Order[]
   payments        Payment[]
+  paymentProviderConfigs PaymentProviderConfig[]
 }
 
 model User {
@@ -269,6 +270,25 @@ model Payment {
   @@index([tenantId])
   @@index([orderId])
   @@index([tenantId, status])
+}
+
+model PaymentProviderConfig {
+  id            String          @id @default(cuid())
+  tenantId      String
+  provider      PaymentProvider
+  active        Boolean         @default(false)
+  sandbox       Boolean         @default(true)
+  accessToken   String?
+  publicKey     String?
+  webhookSecret String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, provider])
+  @@index([tenantId])
+  @@index([tenantId, active])
 }
 
 model QuoteItem {
