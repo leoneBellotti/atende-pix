@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthenticatedRequest, JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ManualConfirmPaymentDto } from './dto/manual-confirm-payment.dto';
@@ -43,5 +43,27 @@ export class PublicPaymentsController {
   @ApiOkResponse({ description: 'Visualizacao publica do pagamento.' })
   getPublicByToken(@Param('token') token: string) {
     return this.paymentsService.getPublicByToken(token);
+  }
+}
+
+@ApiTags('webhooks')
+@Controller('webhooks/mercado-pago')
+export class MercadoPagoWebhookController {
+  constructor(private readonly paymentsService: PaymentsService) {}
+
+  @Post()
+  @ApiOkResponse({ description: 'Webhook do Mercado Pago recebido.' })
+  handle(
+    @Body() body: Record<string, unknown>,
+    @Query() query: Record<string, string>,
+    @Headers('x-request-id') requestId?: string,
+    @Headers('x-signature') signature?: string
+  ) {
+    return this.paymentsService.handleMercadoPagoWebhook({
+      body,
+      query,
+      requestId,
+      signature
+    });
   }
 }

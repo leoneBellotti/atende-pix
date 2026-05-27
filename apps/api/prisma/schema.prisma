@@ -91,6 +91,7 @@ model Tenant {
   orders          Order[]
   payments        Payment[]
   paymentProviderConfigs PaymentProviderConfig[]
+  paymentWebhookEvents PaymentWebhookEvent[]
 }
 
 model User {
@@ -267,10 +268,33 @@ model Payment {
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  webhookEvents PaymentWebhookEvent[]
 
   @@index([tenantId])
   @@index([orderId])
   @@index([tenantId, status])
+}
+
+model PaymentWebhookEvent {
+  id                String          @id @default(cuid())
+  tenantId          String?
+  paymentId         String?
+  provider          PaymentProvider
+  providerPaymentId String?
+  eventType         String?
+  requestId         String?
+  status            String
+  payload           Json
+  errorMessage      String?
+  createdAt         DateTime        @default(now())
+
+  tenant  Tenant?  @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  payment Payment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+
+  @@unique([provider, requestId])
+  @@index([tenantId])
+  @@index([paymentId])
+  @@index([providerPaymentId])
 }
 
 model PaymentProviderConfig {
