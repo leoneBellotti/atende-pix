@@ -9,8 +9,8 @@
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev -w @atende-pix/api\" \"npm run dev -w @atende-pix/web\"",
-    "build": "npm run build -ws --if-present",
-    "test": "npm run test -ws --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
     "lint": "eslint . --ext .ts,.vue --max-warnings=0",
     "format": "prettier --check .",
     "format:write": "prettier --write .",
