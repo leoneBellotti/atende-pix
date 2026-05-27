@@ -2,7 +2,7 @@
 import { computed, onMounted, reactive, ref } from 'vue';
 import { listAttendances } from '../services/attendancesService';
 import { listCustomers } from '../services/customersService';
-import { createQuote, listQuotes } from '../services/quotesService';
+import { convertQuoteToOrder, createQuote, listQuotes } from '../services/quotesService';
 import type { Attendance } from '../types/attendance';
 import type { Customer } from '../types/customer';
 import type { Quote } from '../types/quote';
@@ -84,6 +84,17 @@ async function submit() {
     errorMessage.value = 'Nao foi possivel criar o orcamento.';
   } finally {
     isSaving.value = false;
+  }
+}
+
+async function convertToOrder(quote: Quote) {
+  errorMessage.value = '';
+
+  try {
+    await convertQuoteToOrder(quote.id);
+    await loadQuotes();
+  } catch {
+    errorMessage.value = 'Nao foi possivel converter o orcamento em pedido.';
   }
 }
 
@@ -278,6 +289,14 @@ function publicQuoteUrl(quote: Quote) {
               >
                 Link publico
               </a>
+              <button
+                v-if="quote.status !== 'CONVERTED'"
+                class="rounded-md bg-mint px-3 py-2 text-sm font-semibold text-white hover:bg-[#176d58]"
+                type="button"
+                @click="convertToOrder(quote)"
+              >
+                Virar pedido
+              </button>
             </div>
           </article>
         </div>

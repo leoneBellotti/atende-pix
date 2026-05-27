@@ -10,7 +10,8 @@ const navigation = [
   { label: 'Atendimentos', href: '/attendances' },
   { label: 'Clientes', href: '/customers' },
   { label: 'Catalogo', href: '/catalog' },
-  { label: 'Orcamentos', href: '/quotes' }
+  { label: 'Orcamentos', href: '/quotes' },
+  { label: 'Pedidos', href: '/orders' }
 ];
 
 function logout() {

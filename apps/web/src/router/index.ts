@@ -4,6 +4,7 @@ import CatalogPage from '../pages/CatalogPage.vue';
 import CustomersPage from '../pages/CustomersPage.vue';
 import DashboardPage from '../pages/DashboardPage.vue';
 import LoginPage from '../pages/LoginPage.vue';
+import OrdersPage from '../pages/OrdersPage.vue';
 import QuotesPage from '../pages/QuotesPage.vue';
 import RegisterPage from '../pages/RegisterPage.vue';
 import { useSessionStore } from '../stores/session.store';
@@ -14,6 +15,11 @@ export const router = createRouter({
     { path: '/login', component: LoginPage },
     { path: '/register', component: RegisterPage },
     { path: '/', component: DashboardPage, meta: { requiresAuth: true } },
+    {
+      path: '/orders',
+      component: OrdersPage,
+      meta: { requiresAuth: true }
+    },
     {
       path: '/attendances',
       component: AttendancesPage,

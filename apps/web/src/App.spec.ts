@@ -17,6 +17,7 @@ describe('App', () => {
         { path: '/attendances', component: PlaceholderPage, meta: { requiresAuth: true } },
         { path: '/customers', component: PlaceholderPage, meta: { requiresAuth: true } },
         { path: '/catalog', component: PlaceholderPage, meta: { requiresAuth: true } },
+        { path: '/orders', component: PlaceholderPage, meta: { requiresAuth: true } },
         { path: '/quotes', component: PlaceholderPage, meta: { requiresAuth: true } }
       ]
     });
