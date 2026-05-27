@@ -130,6 +130,7 @@ model Attendance {
 
   tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   customer Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  quotes   Quote[]
 
   @@index([tenantId])
   @@index([customerId])
@@ -171,6 +172,7 @@ model Quote {
 
   tenant   Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   customer Customer    @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  attendance Attendance? @relation(fields: [attendanceId], references: [id], onDelete: SetNull)
   items    QuoteItem[]
 
   @@unique([tenantId, number])
