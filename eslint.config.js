@@ -4,7 +4,7 @@ import vue from 'eslint-plugin-vue';
 
 export default [
   {
-    ignores: ['dist/**', 'coverage/**', 'node_modules/**']
+    ignores: ['**/dist/**', '**/coverage/**', '**/node_modules/**']
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
