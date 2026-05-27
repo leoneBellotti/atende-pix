@@ -23,6 +23,7 @@ Atualizado em: 2026-05-27
 - Configuracoes da empresa com nome, documento, telefone e logo para painel e documentos.
 - Detalhe do cliente com cadastro, totais e timeline de atendimentos, orcamentos e pedidos.
 - Configuracao de provedor Pix/Mercado Pago por empresa, com credenciais em sandbox.
+- Geracao de cobranca Pix via Mercado Pago, com copia-e-cola e link salvos no pagamento.
 
 ### Em andamento
 
@@ -30,7 +31,8 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Geracao de cobranca Pix em sandbox.
+- Link publico de pagamento com Pix.
+- Webhook de pagamento aprovado.
 
 ## 1. Visao do produto
 
@@ -810,9 +812,9 @@ Adicionar cobranca Pix real ou sandbox para transformar o MVP em produto vendave
 Entregas:
 
 - [x] Conta/configuracao de provedor Pix por empresa.
-- Integracao Mercado Pago em sandbox.
-- Geracao de cobranca Pix.
-- QR Code e copia-e-cola.
+- [x] Integracao Mercado Pago em sandbox.
+- [x] Geracao de cobranca Pix.
+- [x] QR Code e copia-e-cola.
 - Link publico de pagamento.
 - Webhook de pagamento.
 - Idempotencia de webhooks.
