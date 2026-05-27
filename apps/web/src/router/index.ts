@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import CatalogPage from '../pages/CatalogPage.vue';
 import CustomersPage from '../pages/CustomersPage.vue';
 import DashboardPage from '../pages/DashboardPage.vue';
 import LoginPage from '../pages/LoginPage.vue';
@@ -25,8 +26,7 @@ export const router = createRouter({
     },
     {
       path: '/catalog',
-      component: PlaceholderPage,
-      props: { title: 'Catalogo' },
+      component: CatalogPage,
       meta: { requiresAuth: true }
     },
     {
