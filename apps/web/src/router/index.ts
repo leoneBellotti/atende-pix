@@ -4,7 +4,7 @@ import CatalogPage from '../pages/CatalogPage.vue';
 import CustomersPage from '../pages/CustomersPage.vue';
 import DashboardPage from '../pages/DashboardPage.vue';
 import LoginPage from '../pages/LoginPage.vue';
-import PlaceholderPage from '../pages/PlaceholderPage.vue';
+import QuotesPage from '../pages/QuotesPage.vue';
 import RegisterPage from '../pages/RegisterPage.vue';
 import { useSessionStore } from '../stores/session.store';
 
@@ -31,8 +31,7 @@ export const router = createRouter({
     },
     {
       path: '/quotes',
-      component: PlaceholderPage,
-      props: { title: 'Orcamentos' },
+      component: QuotesPage,
       meta: { requiresAuth: true }
     }
   ]
