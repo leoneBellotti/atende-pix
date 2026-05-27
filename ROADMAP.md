@@ -14,14 +14,13 @@ Atualizado em: 2026-05-27
 - CRUD de clientes com isolamento por tenant.
 - CRUD de catalogo com ativar/desativar itens.
 - Criacao manual de atendimentos.
-- Criacao de orcamentos com itens livres, numeracao por empresa, link publico e PDF.
+- Criacao de orcamentos com itens livres, itens ativos do catalogo, numeracao por empresa, link publico e PDF.
 - Conversao de orcamento em pedido.
 - Pedidos com troca de status.
 - Registro manual de pagamento e dashboard refletindo pedido pago.
 
 ### Em andamento
 
-- Melhorar criacao de orcamento usando itens do catalogo alem de itens livres.
 - Completar detalhes de cliente, historico/timeline e acabamento dos fluxos principais.
 
 ### Proximo
@@ -788,7 +787,7 @@ Criterios de pronto:
 - [x] Usuario cadastra cliente.
 - [x] Usuario cria atendimento.
 - [x] Usuario cria orcamento com itens livres.
-- [~] Usuario cria orcamento usando itens do catalogo.
+- [x] Usuario cria orcamento usando itens do catalogo.
 - [x] Usuario gera PDF.
 - [x] Usuario converte orcamento em pedido.
 - [x] Usuario marca pedido como pago manualmente.
