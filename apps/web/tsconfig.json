@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "allowImportingTsExtensions": true,
+    "types": ["vite/client", "vitest"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.vue"]
+}
