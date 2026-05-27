@@ -3,8 +3,10 @@ import { onMounted, reactive, ref } from 'vue';
 import {
   getPaymentProviderConfig,
   getTenantSettings,
+  getWhatsAppConfig,
   updatePaymentProviderConfig,
-  updateTenantSettings
+  updateTenantSettings,
+  updateWhatsAppConfig
 } from '../services/settingsService';
 import { useSessionStore } from '../stores/session.store';
 
@@ -25,11 +27,23 @@ const pixForm = reactive({
   hasPublicKey: false,
   hasWebhookSecret: false
 });
+const whatsappForm = reactive({
+  active: false,
+  phoneNumberId: '',
+  businessAccountId: '',
+  accessToken: '',
+  verifyToken: '',
+  appSecret: '',
+  hasAccessToken: false,
+  hasVerifyToken: false,
+  hasAppSecret: false
+});
 const errorMessage = ref('');
 const successMessage = ref('');
 const isLoading = ref(false);
 const isSaving = ref(false);
 const isSavingPix = ref(false);
+const isSavingWhatsApp = ref(false);
 
 onMounted(() => {
   loadSettings();
@@ -40,9 +54,10 @@ async function loadSettings() {
   isLoading.value = true;
 
   try {
-    const [settings, pixConfig] = await Promise.all([
+    const [settings, pixConfig, whatsappConfig] = await Promise.all([
       getTenantSettings(),
-      getPaymentProviderConfig()
+      getPaymentProviderConfig(),
+      getWhatsAppConfig()
     ]);
     form.name = settings.name;
     form.document = settings.document ?? '';
@@ -53,11 +68,48 @@ async function loadSettings() {
     pixForm.hasAccessToken = pixConfig.hasAccessToken;
     pixForm.hasPublicKey = pixConfig.hasPublicKey;
     pixForm.hasWebhookSecret = pixConfig.hasWebhookSecret;
+    whatsappForm.active = whatsappConfig.active;
+    whatsappForm.phoneNumberId = whatsappConfig.phoneNumberId ?? '';
+    whatsappForm.businessAccountId = whatsappConfig.businessAccountId ?? '';
+    whatsappForm.hasAccessToken = whatsappConfig.hasAccessToken;
+    whatsappForm.hasVerifyToken = whatsappConfig.hasVerifyToken;
+    whatsappForm.hasAppSecret = whatsappConfig.hasAppSecret;
     sessionStore.updateTenant(settings);
   } catch {
     errorMessage.value = 'Nao foi possivel carregar as configuracoes.';
   } finally {
     isLoading.value = false;
+  }
+}
+
+async function submitWhatsApp() {
+  errorMessage.value = '';
+  successMessage.value = '';
+  isSavingWhatsApp.value = true;
+
+  try {
+    const config = await updateWhatsAppConfig({
+      active: whatsappForm.active,
+      phoneNumberId: whatsappForm.phoneNumberId,
+      businessAccountId: whatsappForm.businessAccountId,
+      accessToken: whatsappForm.accessToken || undefined,
+      verifyToken: whatsappForm.verifyToken || undefined,
+      appSecret: whatsappForm.appSecret || undefined
+    });
+    whatsappForm.active = config.active;
+    whatsappForm.phoneNumberId = config.phoneNumberId ?? '';
+    whatsappForm.businessAccountId = config.businessAccountId ?? '';
+    whatsappForm.hasAccessToken = config.hasAccessToken;
+    whatsappForm.hasVerifyToken = config.hasVerifyToken;
+    whatsappForm.hasAppSecret = config.hasAppSecret;
+    whatsappForm.accessToken = '';
+    whatsappForm.verifyToken = '';
+    whatsappForm.appSecret = '';
+    successMessage.value = 'Configuracao WhatsApp salva.';
+  } catch {
+    errorMessage.value = 'Nao foi possivel salvar a configuracao WhatsApp.';
+  } finally {
+    isSavingWhatsApp.value = false;
   }
 }
 
@@ -245,6 +297,78 @@ async function submit() {
           :disabled="isLoading || isSavingPix"
         >
           {{ isSavingPix ? 'Salvando...' : 'Salvar Pix' }}
+        </button>
+      </div>
+    </form>
+
+    <form class="rounded-md border border-[#dfe4da] bg-white p-5" @submit.prevent="submitWhatsApp">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 class="text-base font-semibold">WhatsApp Cloud API</h2>
+          <p class="mt-1 text-sm text-[#667067]">
+            Dados para receber e enviar mensagens quando o inbox for ativado.
+          </p>
+        </div>
+        <label class="flex items-center gap-2 text-sm font-medium">
+          <input v-model="whatsappForm.active" class="h-4 w-4 accent-[#11644f]" type="checkbox" />
+          Ativo
+        </label>
+      </div>
+
+      <div v-if="isLoading" class="mt-4 text-sm text-[#667067]">Carregando WhatsApp...</div>
+      <div v-else class="mt-4 grid gap-4 lg:grid-cols-2">
+        <label class="block text-sm font-medium">
+          Phone number ID
+          <input
+            v-model="whatsappForm.phoneNumberId"
+            class="mt-2 w-full rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
+          />
+        </label>
+        <label class="block text-sm font-medium">
+          Business account ID
+          <input
+            v-model="whatsappForm.businessAccountId"
+            class="mt-2 w-full rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
+          />
+        </label>
+        <label class="block text-sm font-medium">
+          Access token
+          <input
+            v-model="whatsappForm.accessToken"
+            class="mt-2 w-full rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
+            :placeholder="whatsappForm.hasAccessToken ? 'Token ja cadastrado' : 'EAAB...'"
+            type="password"
+          />
+        </label>
+        <label class="block text-sm font-medium">
+          Verify token
+          <input
+            v-model="whatsappForm.verifyToken"
+            class="mt-2 w-full rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
+            :placeholder="
+              whatsappForm.hasVerifyToken ? 'Token ja cadastrado' : 'Token de verificacao'
+            "
+            type="password"
+          />
+        </label>
+        <label class="block text-sm font-medium lg:col-span-2">
+          App secret
+          <input
+            v-model="whatsappForm.appSecret"
+            class="mt-2 w-full rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
+            :placeholder="whatsappForm.hasAppSecret ? 'Segredo ja cadastrado' : 'App secret'"
+            type="password"
+          />
+        </label>
+      </div>
+
+      <div class="mt-5 flex justify-end">
+        <button
+          class="rounded-md bg-mint px-4 py-2 text-sm font-semibold text-white hover:bg-[#176d58] disabled:opacity-60"
+          type="submit"
+          :disabled="isLoading || isSavingWhatsApp"
+        >
+          {{ isSavingWhatsApp ? 'Salvando...' : 'Salvar WhatsApp' }}
         </button>
       </div>
     </form>

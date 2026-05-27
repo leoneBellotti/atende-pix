@@ -3,6 +3,7 @@ import { PaymentProvider } from '@prisma/client';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { UpdatePaymentProviderConfigDto } from './dto/update-payment-provider-config.dto';
 import { UpdateTenantSettingsDto } from './dto/update-tenant-settings.dto';
+import { UpdateWhatsAppConfigDto } from './dto/update-whatsapp-config.dto';
 
 @Injectable()
 export class SettingsService {
@@ -89,6 +90,48 @@ export class SettingsService {
     return this.toProviderConfigResponse(config);
   }
 
+  async getWhatsAppConfig(tenantId: string) {
+    const config = await this.prisma.whatsAppConfig.findUnique({
+      where: { tenantId }
+    });
+
+    if (!config) {
+      return {
+        active: false,
+        hasAccessToken: false,
+        hasVerifyToken: false,
+        hasAppSecret: false
+      };
+    }
+
+    return this.toWhatsAppConfigResponse(config);
+  }
+
+  async updateWhatsAppConfig(tenantId: string, input: UpdateWhatsAppConfigDto) {
+    const config = await this.prisma.whatsAppConfig.upsert({
+      where: { tenantId },
+      create: {
+        tenantId,
+        active: input.active ?? false,
+        phoneNumberId: this.nullable(input.phoneNumberId),
+        businessAccountId: this.nullable(input.businessAccountId),
+        accessToken: this.nullable(input.accessToken),
+        verifyToken: this.nullable(input.verifyToken),
+        appSecret: this.nullable(input.appSecret)
+      },
+      update: {
+        active: input.active,
+        phoneNumberId: this.nullable(input.phoneNumberId),
+        businessAccountId: this.nullable(input.businessAccountId),
+        accessToken: this.nullable(input.accessToken),
+        verifyToken: this.nullable(input.verifyToken),
+        appSecret: this.nullable(input.appSecret)
+      }
+    });
+
+    return this.toWhatsAppConfigResponse(config);
+  }
+
   private nullable(value?: string) {
     if (value === undefined) {
       return undefined;
@@ -126,6 +169,26 @@ export class SettingsService {
       hasAccessToken: Boolean(config.accessToken),
       hasPublicKey: Boolean(config.publicKey),
       hasWebhookSecret: Boolean(config.webhookSecret),
+      updatedAt: config.updatedAt
+    };
+  }
+
+  private toWhatsAppConfigResponse(config: {
+    active: boolean;
+    phoneNumberId: string | null;
+    businessAccountId: string | null;
+    accessToken: string | null;
+    verifyToken: string | null;
+    appSecret: string | null;
+    updatedAt?: Date;
+  }) {
+    return {
+      active: config.active,
+      phoneNumberId: config.phoneNumberId,
+      businessAccountId: config.businessAccountId,
+      hasAccessToken: Boolean(config.accessToken),
+      hasVerifyToken: Boolean(config.verifyToken),
+      hasAppSecret: Boolean(config.appSecret),
       updatedAt: config.updatedAt
     };
   }

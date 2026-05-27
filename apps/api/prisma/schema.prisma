@@ -92,6 +92,7 @@ model Tenant {
   payments        Payment[]
   paymentProviderConfigs PaymentProviderConfig[]
   paymentWebhookEvents PaymentWebhookEvent[]
+  whatsappConfigs WhatsAppConfig[]
 }
 
 model User {
@@ -295,6 +296,24 @@ model PaymentWebhookEvent {
   @@index([tenantId])
   @@index([paymentId])
   @@index([providerPaymentId])
+}
+
+model WhatsAppConfig {
+  id                String   @id @default(cuid())
+  tenantId          String   @unique
+  active            Boolean  @default(false)
+  phoneNumberId     String?
+  businessAccountId String?
+  accessToken       String?
+  verifyToken       String?
+  appSecret         String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, active])
 }
 
 model PaymentProviderConfig {

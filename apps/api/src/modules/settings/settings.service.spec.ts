@@ -81,4 +81,46 @@ describe('SettingsService', () => {
     );
     expect(config).not.toHaveProperty('accessToken');
   });
+
+  it('stores whatsapp credentials without returning secrets', async () => {
+    const prisma = {
+      whatsAppConfig: {
+        upsert: vi.fn().mockResolvedValue({
+          active: true,
+          phoneNumberId: 'phone-number',
+          businessAccountId: 'business-account',
+          accessToken: 'access-token',
+          verifyToken: 'verify-token',
+          appSecret: 'app-secret'
+        })
+      }
+    };
+    const service = new SettingsService(prisma as never);
+
+    const config = await service.updateWhatsAppConfig('tenant-1', {
+      active: true,
+      phoneNumberId: 'phone-number',
+      businessAccountId: 'business-account',
+      accessToken: 'access-token',
+      verifyToken: 'verify-token',
+      appSecret: 'app-secret'
+    });
+
+    expect(prisma.whatsAppConfig.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { tenantId: 'tenant-1' }
+      })
+    );
+    expect(config).toEqual(
+      expect.objectContaining({
+        active: true,
+        phoneNumberId: 'phone-number',
+        businessAccountId: 'business-account',
+        hasAccessToken: true,
+        hasVerifyToken: true,
+        hasAppSecret: true
+      })
+    );
+    expect(config).not.toHaveProperty('accessToken');
+  });
 });

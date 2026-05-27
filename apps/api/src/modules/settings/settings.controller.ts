@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthenticatedRequest, JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UpdatePaymentProviderConfigDto } from './dto/update-payment-provider-config.dto';
 import { UpdateTenantSettingsDto } from './dto/update-tenant-settings.dto';
+import { UpdateWhatsAppConfigDto } from './dto/update-whatsapp-config.dto';
 import { SettingsService } from './settings.service';
 
 @ApiTags('settings')
@@ -40,5 +41,20 @@ export class SettingsController {
     @Body() input: UpdatePaymentProviderConfigDto
   ) {
     return this.settingsService.updatePaymentProviderConfig(request.user.tenantId, input);
+  }
+
+  @Get('whatsapp')
+  @ApiOkResponse({ description: 'Configuracao do WhatsApp Cloud API da empresa.' })
+  getWhatsAppConfig(@Req() request: AuthenticatedRequest) {
+    return this.settingsService.getWhatsAppConfig(request.user.tenantId);
+  }
+
+  @Patch('whatsapp')
+  @ApiOkResponse({ description: 'Configuracao do WhatsApp Cloud API atualizada.' })
+  updateWhatsAppConfig(
+    @Req() request: AuthenticatedRequest,
+    @Body() input: UpdateWhatsAppConfigDto
+  ) {
+    return this.settingsService.updateWhatsAppConfig(request.user.tenantId, input);
   }
 }
