@@ -18,6 +18,7 @@ Atualizado em: 2026-05-27
 - Conversao de orcamento em pedido.
 - Pedidos com troca de status.
 - Registro manual de pagamento e dashboard refletindo pedido pago.
+- Tela de pagamentos com resumo, historico e filtros basicos por status e provedor.
 
 ### Em andamento
 
@@ -25,7 +26,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Tela de pagamentos e relatorios/exportacoes basicas do MVP.
+- Relatorios/exportacoes basicas do MVP.
 - Configuracoes da empresa/onboarding minimo para dados aparecerem melhor no PDF.
 - Preparacao para Fase 2: Pix automatico em sandbox.
 
@@ -780,6 +781,7 @@ Entregas:
 - [x] PDF de orcamento.
 - [x] Pedido gerado a partir de orcamento.
 - [x] Registro manual de pagamento.
+- [x] Tela de pagamentos.
 - [~] Filtros e busca basicos.
 
 Criterios de pronto:
