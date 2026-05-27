@@ -1,5 +1,5 @@
 import { apiClient } from './apiClient';
-import type { CreateQuoteInput, Quote } from '../types/quote';
+import type { CreateQuoteInput, PublicQuote, Quote } from '../types/quote';
 import type { Order } from '../types/order';
 
 export async function listQuotes() {
@@ -14,5 +14,10 @@ export async function createQuote(input: CreateQuoteInput) {
 
 export async function convertQuoteToOrder(quoteId: string) {
   const { data } = await apiClient.post<Order>(`/orders/from-quote/${quoteId}`);
+  return data;
+}
+
+export async function getPublicQuote(token: string) {
+  const { data } = await apiClient.get<PublicQuote>(`/public/quotes/${token}`);
   return data;
 }

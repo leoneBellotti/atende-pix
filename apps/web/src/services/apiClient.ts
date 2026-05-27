@@ -27,7 +27,7 @@ apiClient.interceptors.response.use(
     if (status === 401 && !isAuthRequest) {
       sessionStorageKeys.forEach((key) => localStorage.removeItem(key));
 
-      if (window.location.pathname !== '/login') {
+      if (import.meta.env.MODE !== 'test' && window.location.pathname !== '/login') {
         window.location.assign('/login');
       }
     }

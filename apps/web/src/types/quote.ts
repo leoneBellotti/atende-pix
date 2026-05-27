@@ -31,6 +31,16 @@ export type Quote = {
   items: QuoteItem[];
 };
 
+export type PublicQuote = Quote & {
+  tenant: {
+    id: string;
+    name: string;
+    document?: string | null;
+    phone?: string | null;
+    logoUrl?: string | null;
+  };
+};
+
 export type CreateQuoteInput = {
   customerId: string;
   attendanceId?: string;

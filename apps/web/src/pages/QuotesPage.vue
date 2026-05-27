@@ -135,8 +135,12 @@ function formatCurrency(value: string | number) {
 }
 
 function publicQuoteUrl(quote: Quote) {
+  return `${window.location.origin}/public/quotes/${quote.publicToken}`;
+}
+
+function quotePdfUrl(quote: Quote) {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
-  return `${apiBaseUrl}/public/quotes/${quote.publicToken}`;
+  return `${apiBaseUrl}/public/quotes/${quote.publicToken}/pdf`;
 }
 </script>
 
@@ -279,24 +283,33 @@ function publicQuoteUrl(quote: Quote) {
                 <p class="text-xs font-semibold text-[#667067]">#{{ quote.number }}</p>
                 <h3 class="mt-1 font-semibold text-ink">{{ quote.customer.name }}</h3>
                 <p class="mt-1 text-sm text-[#465047]">
-                  {{ quote.items.length }} itens · {{ formatCurrency(quote.total) }}
+                  {{ quote.items.length }} itens - {{ formatCurrency(quote.total) }}
                 </p>
               </div>
-              <a
-                class="rounded-md border border-[#dfe4da] px-3 py-2 text-sm font-semibold text-[#11644f] hover:bg-[#edf3ee]"
-                :href="publicQuoteUrl(quote)"
-                target="_blank"
-              >
-                Link publico
-              </a>
-              <button
-                v-if="quote.status !== 'CONVERTED'"
-                class="rounded-md bg-mint px-3 py-2 text-sm font-semibold text-white hover:bg-[#176d58]"
-                type="button"
-                @click="convertToOrder(quote)"
-              >
-                Virar pedido
-              </button>
+              <div class="flex flex-wrap gap-2">
+                <a
+                  class="rounded-md border border-[#dfe4da] px-3 py-2 text-sm font-semibold text-[#11644f] hover:bg-[#edf3ee]"
+                  :href="publicQuoteUrl(quote)"
+                  target="_blank"
+                >
+                  Link publico
+                </a>
+                <a
+                  class="rounded-md border border-[#dfe4da] px-3 py-2 text-sm font-semibold text-[#11644f] hover:bg-[#edf3ee]"
+                  :href="quotePdfUrl(quote)"
+                  target="_blank"
+                >
+                  PDF
+                </a>
+                <button
+                  v-if="quote.status !== 'CONVERTED'"
+                  class="rounded-md bg-mint px-3 py-2 text-sm font-semibold text-white hover:bg-[#176d58]"
+                  type="button"
+                  @click="convertToOrder(quote)"
+                >
+                  Virar pedido
+                </button>
+              </div>
             </div>
           </article>
         </div>
