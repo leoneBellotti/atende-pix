@@ -36,3 +36,15 @@ export type PublicPayment = PaymentRecord & {
     logoUrl?: string | null;
   };
 };
+
+export type PaymentWebhookEvent = {
+  id: string;
+  provider: PaymentProvider;
+  providerPaymentId?: string | null;
+  eventType?: string | null;
+  requestId?: string | null;
+  status: string;
+  errorMessage?: string | null;
+  createdAt: string;
+  payment?: PaymentRecord | null;
+};

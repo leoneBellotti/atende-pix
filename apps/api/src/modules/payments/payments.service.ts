@@ -24,6 +24,27 @@ export class PaymentsService {
     });
   }
 
+  listWebhookEvents(tenantId: string) {
+    return this.prisma.paymentWebhookEvent.findMany({
+      where: { tenantId },
+      include: {
+        payment: {
+          include: {
+            order: {
+              include: {
+                customer: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: 30
+    });
+  }
+
   async getPublicByToken(token: string) {
     const payment = await this.prisma.payment.findUnique({
       where: { publicToken: token },

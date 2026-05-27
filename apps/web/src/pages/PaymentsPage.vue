@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { listPayments } from '../services/paymentsService';
-import type { PaymentProvider, PaymentRecord, PaymentStatus } from '../types/payment';
+import { listPayments, listPaymentWebhookEvents } from '../services/paymentsService';
+import type {
+  PaymentProvider,
+  PaymentRecord,
+  PaymentStatus,
+  PaymentWebhookEvent
+} from '../types/payment';
 
 const payments = ref<PaymentRecord[]>([]);
+const webhookEvents = ref<PaymentWebhookEvent[]>([]);
 const status = ref<PaymentStatus | ''>('');
 const provider = ref<PaymentProvider | ''>('');
 const errorMessage = ref('');
@@ -45,7 +51,12 @@ async function loadPayments() {
   isLoading.value = true;
 
   try {
-    payments.value = await listPayments();
+    const [paymentsData, webhookEventsData] = await Promise.all([
+      listPayments(),
+      listPaymentWebhookEvents()
+    ]);
+    payments.value = paymentsData;
+    webhookEvents.value = webhookEventsData;
   } catch {
     errorMessage.value = 'Nao foi possivel carregar os pagamentos.';
   } finally {
@@ -221,6 +232,37 @@ async function copyPix(payment: PaymentRecord) {
                 Link publico
               </a>
             </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="overflow-hidden rounded-md border border-[#dfe4da] bg-white">
+      <div class="border-b border-[#edf0ea] px-4 py-3">
+        <h2 class="text-base font-semibold">Logs de pagamento</h2>
+        <p class="mt-1 text-xs text-[#667067]">{{ webhookEvents.length }} eventos recentes</p>
+      </div>
+      <div v-if="!webhookEvents.length" class="px-4 py-8 text-sm text-[#667067]">
+        Nenhum webhook recebido ainda.
+      </div>
+      <div v-else class="divide-y divide-[#edf0ea]">
+        <article v-for="event in webhookEvents" :key="event.id" class="px-4 py-3">
+          <div class="grid gap-2 lg:grid-cols-[1fr_160px_180px] lg:items-center">
+            <div>
+              <p class="text-sm font-semibold text-ink">
+                {{ event.eventType || 'payment' }} - {{ event.status }}
+              </p>
+              <p class="mt-1 text-xs text-[#667067]">
+                {{ event.payment?.order.customer.name || 'Pagamento nao vinculado' }}
+              </p>
+              <p v-if="event.errorMessage" class="mt-1 text-xs text-coral">
+                {{ event.errorMessage }}
+              </p>
+            </div>
+            <p class="text-xs text-[#667067]">MP: {{ event.providerPaymentId || '-' }}</p>
+            <p class="text-xs text-[#667067] lg:text-right">
+              {{ formatDate(event.createdAt) }}
+            </p>
           </div>
         </article>
       </div>

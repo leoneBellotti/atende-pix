@@ -43,4 +43,23 @@ describe('PaymentsService', () => {
 
     await expect(service.createPix('tenant-1', 'order-1')).resolves.toBe(existingPayment);
   });
+
+  it('lists webhook events newest first', async () => {
+    const prisma = {
+      paymentWebhookEvent: {
+        findMany: vi.fn().mockResolvedValue([])
+      }
+    };
+    const service = new PaymentsService(prisma as never);
+
+    await service.listWebhookEvents('tenant-1');
+
+    expect(prisma.paymentWebhookEvent.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { tenantId: 'tenant-1' },
+        orderBy: { createdAt: 'desc' },
+        take: 30
+      })
+    );
+  });
 });

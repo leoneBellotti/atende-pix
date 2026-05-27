@@ -17,6 +17,12 @@ export class PaymentsController {
     return this.paymentsService.list(request.user.tenantId);
   }
 
+  @Get('payments/webhook-events')
+  @ApiOkResponse({ description: 'Lista eventos de webhook de pagamento do tenant autenticado.' })
+  listWebhookEvents(@Req() request: AuthenticatedRequest) {
+    return this.paymentsService.listWebhookEvents(request.user.tenantId);
+  }
+
   @Post('orders/:orderId/payments/manual-confirm')
   @ApiCreatedResponse({ description: 'Pagamento manual confirmado.' })
   manualConfirm(

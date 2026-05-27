@@ -1,8 +1,13 @@
 import { apiClient } from './apiClient';
-import type { PaymentRecord, PublicPayment } from '../types/payment';
+import type { PaymentRecord, PaymentWebhookEvent, PublicPayment } from '../types/payment';
 
 export async function listPayments() {
   const { data } = await apiClient.get<PaymentRecord[]>('/payments');
+  return data;
+}
+
+export async function listPaymentWebhookEvents() {
+  const { data } = await apiClient.get<PaymentWebhookEvent[]>('/payments/webhook-events');
   return data;
 }
 
