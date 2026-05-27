@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { CatalogModule } from './catalog/catalog.module';
 import { CustomersModule } from './customers/customers.module';
 import { HealthModule } from './health/health.module';
+import { OrdersModule } from './orders/orders.module';
 import { QuotesModule } from './quotes/quotes.module';
 
 @Module({
@@ -19,6 +20,7 @@ import { QuotesModule } from './quotes/quotes.module';
     CatalogModule,
     CustomersModule,
     HealthModule,
+    OrdersModule,
     QuotesModule
   ]
 })
