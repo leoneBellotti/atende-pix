@@ -164,6 +164,7 @@ function resetForm() {
                 <th class="px-4 py-3 font-semibold">Telefone</th>
                 <th class="px-4 py-3 font-semibold">E-mail</th>
                 <th class="px-4 py-3 font-semibold">Documento</th>
+                <th class="px-4 py-3 font-semibold">Acoes</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-[#edf0ea]">
@@ -172,6 +173,14 @@ function resetForm() {
                 <td class="px-4 py-3 text-[#465047]">{{ customer.phone || '-' }}</td>
                 <td class="px-4 py-3 text-[#465047]">{{ customer.email || '-' }}</td>
                 <td class="px-4 py-3 text-[#465047]">{{ customer.document || '-' }}</td>
+                <td class="px-4 py-3">
+                  <RouterLink
+                    class="font-semibold text-[#11644f]"
+                    :to="`/customers/${customer.id}`"
+                  >
+                    Ver
+                  </RouterLink>
+                </td>
               </tr>
             </tbody>
           </table>

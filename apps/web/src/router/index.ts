@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import AttendancesPage from '../pages/AttendancesPage.vue';
 import CatalogPage from '../pages/CatalogPage.vue';
 import CustomersPage from '../pages/CustomersPage.vue';
+import CustomerDetailPage from '../pages/CustomerDetailPage.vue';
 import DashboardPage from '../pages/DashboardPage.vue';
 import LoginPage from '../pages/LoginPage.vue';
 import OrdersPage from '../pages/OrdersPage.vue';
@@ -48,6 +49,11 @@ export const router = createRouter({
     {
       path: '/customers',
       component: CustomersPage,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/customers/:id',
+      component: CustomerDetailPage,
       meta: { requiresAuth: true }
     },
     {

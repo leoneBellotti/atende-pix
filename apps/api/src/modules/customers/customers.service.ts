@@ -50,6 +50,24 @@ export class CustomersService {
       where: {
         id,
         tenantId
+      },
+      include: {
+        attendances: {
+          orderBy: { createdAt: 'desc' }
+        },
+        quotes: {
+          include: {
+            items: true
+          },
+          orderBy: { createdAt: 'desc' }
+        },
+        orders: {
+          include: {
+            items: true,
+            payments: true
+          },
+          orderBy: { createdAt: 'desc' }
+        }
       }
     });
 
