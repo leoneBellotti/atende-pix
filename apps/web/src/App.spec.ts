@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { describe, expect, it } from 'vitest';
 import App from './App.vue';
 import DashboardPage from './pages/DashboardPage.vue';
+import LoginPage from './pages/LoginPage.vue';
 import PlaceholderPage from './pages/PlaceholderPage.vue';
 
 describe('App', () => {
@@ -11,13 +12,15 @@ describe('App', () => {
     const router = createRouter({
       history: createWebHistory(),
       routes: [
-        { path: '/', component: DashboardPage },
-        { path: '/attendances', component: PlaceholderPage },
-        { path: '/customers', component: PlaceholderPage },
-        { path: '/catalog', component: PlaceholderPage },
-        { path: '/quotes', component: PlaceholderPage }
+        { path: '/login', component: LoginPage },
+        { path: '/', component: DashboardPage, meta: { requiresAuth: true } },
+        { path: '/attendances', component: PlaceholderPage, meta: { requiresAuth: true } },
+        { path: '/customers', component: PlaceholderPage, meta: { requiresAuth: true } },
+        { path: '/catalog', component: PlaceholderPage, meta: { requiresAuth: true } },
+        { path: '/quotes', component: PlaceholderPage, meta: { requiresAuth: true } }
       ]
     });
+    localStorage.setItem('atende-pix:access-token', 'test-token');
     router.push('/');
     await router.isReady();
 
