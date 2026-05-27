@@ -24,6 +24,7 @@ Atualizado em: 2026-05-27
 - Detalhe do cliente com cadastro, totais e timeline de atendimentos, orcamentos e pedidos.
 - Configuracao de provedor Pix/Mercado Pago por empresa, com credenciais em sandbox.
 - Geracao de cobranca Pix via Mercado Pago, com copia-e-cola e link salvos no pagamento.
+- Link publico de pagamento Pix com QR Code, copia-e-cola e atalho Mercado Pago.
 
 ### Em andamento
 
@@ -31,7 +32,6 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Link publico de pagamento com Pix.
 - Webhook de pagamento aprovado.
 
 ## 1. Visao do produto
@@ -815,7 +815,7 @@ Entregas:
 - [x] Integracao Mercado Pago em sandbox.
 - [x] Geracao de cobranca Pix.
 - [x] QR Code e copia-e-cola.
-- Link publico de pagamento.
+- [x] Link publico de pagamento.
 - Webhook de pagamento.
 - Idempotencia de webhooks.
 - Tela de pagamentos.
