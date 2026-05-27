@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import AttendancesPage from '../pages/AttendancesPage.vue';
 import CatalogPage from '../pages/CatalogPage.vue';
 import CustomersPage from '../pages/CustomersPage.vue';
 import DashboardPage from '../pages/DashboardPage.vue';
@@ -15,8 +16,7 @@ export const router = createRouter({
     { path: '/', component: DashboardPage, meta: { requiresAuth: true } },
     {
       path: '/attendances',
-      component: PlaceholderPage,
-      props: { title: 'Atendimentos' },
+      component: AttendancesPage,
       meta: { requiresAuth: true }
     },
     {
