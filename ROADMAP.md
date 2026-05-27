@@ -1,5 +1,35 @@
 # AtendePix - Roadmap do Produto
 
+## 0. Status de desenvolvimento
+
+Atualizado em: 2026-05-27
+
+### Concluido
+
+- Fundacao do monorepo com API NestJS, web Vue, pacote compartilhado e scripts de qualidade.
+- Docker Compose com PostgreSQL e Redis.
+- Prisma com migrations versionadas.
+- Autenticacao inicial com cadastro de empresa, login, JWT e rotas protegidas.
+- Dashboard real com resumo operacional.
+- CRUD de clientes com isolamento por tenant.
+- CRUD de catalogo com ativar/desativar itens.
+- Criacao manual de atendimentos.
+- Criacao de orcamentos com itens livres, numeracao por empresa, link publico e PDF.
+- Conversao de orcamento em pedido.
+- Pedidos com troca de status.
+- Registro manual de pagamento e dashboard refletindo pedido pago.
+
+### Em andamento
+
+- Melhorar criacao de orcamento usando itens do catalogo alem de itens livres.
+- Completar detalhes de cliente, historico/timeline e acabamento dos fluxos principais.
+
+### Proximo
+
+- Tela de pagamentos e relatorios/exportacoes basicas do MVP.
+- Configuracoes da empresa/onboarding minimo para dados aparecerem melhor no PDF.
+- Preparacao para Fase 2: Pix automatico em sandbox.
+
 ## 1. Visao do produto
 
 O AtendePix sera um mini SaaS para pequenos negocios transformarem atendimentos recebidos por WhatsApp, Instagram ou telefone em clientes organizados, orcamentos, cobrancas Pix, pedidos e acompanhamento financeiro simples.
@@ -704,32 +734,36 @@ atende-pix/
 
 ### Fase 0 - Fundacao e planejamento tecnico
 
+Status: concluida.
+
 Objetivo:
 
 Preparar a base para desenvolver rapido sem criar divida tecnica logo no inicio.
 
 Entregas:
 
-- README inicial.
-- Monorepo com apps/web e apps/api.
-- Configuracao TypeScript.
-- Docker Compose com PostgreSQL e Redis.
-- API NestJS inicial.
-- Front Vue inicial.
-- Prisma configurado.
-- Padrao de lint e formatacao.
-- Variaveis de ambiente documentadas.
-- Swagger inicial.
+- [x] README inicial.
+- [x] Monorepo com apps/web e apps/api.
+- [x] Configuracao TypeScript.
+- [x] Docker Compose com PostgreSQL e Redis.
+- [x] API NestJS inicial.
+- [x] Front Vue inicial.
+- [x] Prisma configurado.
+- [x] Padrao de lint e formatacao.
+- [x] Variaveis de ambiente documentadas.
+- [x] Swagger inicial.
 
 Criterios de pronto:
 
-- `npm install` funciona na raiz.
-- `docker compose up` sobe banco e Redis.
-- API responde healthcheck.
-- Front abre tela inicial.
-- Documentacao explica como rodar localmente.
+- [x] `npm install` funciona na raiz.
+- [x] `docker compose up` sobe banco e Redis.
+- [x] API responde healthcheck.
+- [x] Front abre tela inicial.
+- [x] Documentacao explica como rodar localmente.
 
 ### Fase 1 - MVP sem integracoes externas
+
+Status: em andamento.
 
 Objetivo:
 
@@ -737,27 +771,28 @@ Validar a experiencia principal sem depender de WhatsApp oficial ou Pix automati
 
 Entregas:
 
-- Cadastro de empresa.
-- Login.
-- Dashboard basico.
-- CRUD de clientes.
-- CRUD de produtos/servicos.
-- Criacao manual de atendimento.
-- Criacao de orcamento.
-- PDF de orcamento.
-- Pedido gerado a partir de orcamento.
-- Registro manual de pagamento.
-- Filtros e busca basicos.
+- [x] Cadastro de empresa.
+- [x] Login.
+- [x] Dashboard basico.
+- [x] CRUD de clientes.
+- [x] CRUD de produtos/servicos.
+- [x] Criacao manual de atendimento.
+- [x] Criacao de orcamento.
+- [x] PDF de orcamento.
+- [x] Pedido gerado a partir de orcamento.
+- [x] Registro manual de pagamento.
+- [~] Filtros e busca basicos.
 
 Criterios de pronto:
 
-- Usuario cadastra cliente.
-- Usuario cria atendimento.
-- Usuario cria orcamento com itens.
-- Usuario gera PDF.
-- Usuario converte orcamento em pedido.
-- Usuario marca pedido como pago manualmente.
-- Dashboard reflete o pedido pago.
+- [x] Usuario cadastra cliente.
+- [x] Usuario cria atendimento.
+- [x] Usuario cria orcamento com itens livres.
+- [~] Usuario cria orcamento usando itens do catalogo.
+- [x] Usuario gera PDF.
+- [x] Usuario converte orcamento em pedido.
+- [x] Usuario marca pedido como pago manualmente.
+- [x] Dashboard reflete o pedido pago.
 
 Demo publica:
 
@@ -940,18 +975,18 @@ Ter uma base rodando e uma primeira tela apresentavel.
 
 Tarefas:
 
-1. Criar monorepo.
-2. Criar API NestJS.
-3. Criar frontend Vue.
-4. Configurar Docker Compose com PostgreSQL.
-5. Configurar Prisma.
-6. Criar entidades Tenant, User, Customer, ProductService, Quote e QuoteItem.
-7. Criar login simples.
-8. Criar layout interno com sidebar.
-9. Criar tela de clientes.
-10. Criar tela de catalogo.
-11. Criar primeira versao de orcamento.
-12. Criar dashboard mockado ou parcialmente real.
+1. [x] Criar monorepo.
+2. [x] Criar API NestJS.
+3. [x] Criar frontend Vue.
+4. [x] Configurar Docker Compose com PostgreSQL.
+5. [x] Configurar Prisma.
+6. [x] Criar entidades Tenant, User, Customer, ProductService, Quote e QuoteItem.
+7. [x] Criar login simples.
+8. [x] Criar layout interno com sidebar.
+9. [x] Criar tela de clientes.
+10. [x] Criar tela de catalogo.
+11. [x] Criar primeira versao de orcamento.
+12. [x] Criar dashboard mockado ou parcialmente real.
 
 Resultado esperado:
 
