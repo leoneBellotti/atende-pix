@@ -1,0 +1,36 @@
+{
+  "name": "atende-pix",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w @atende-pix/api\" \"npm run dev -w @atende-pix/web\"",
+    "build": "npm run build -ws --if-present",
+    "test": "npm run test -ws --if-present",
+    "lint": "eslint . --ext .ts,.vue --max-warnings=0",
+    "format": "prettier --check .",
+    "format:write": "prettier --write .",
+    "db:generate": "npm run db:generate -w @atende-pix/api",
+    "db:migrate": "npm run db:migrate -w @atende-pix/api"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "@types/node": "^22.9.0",
+    "@typescript-eslint/eslint-plugin": "^8.14.0",
+    "@typescript-eslint/parser": "^8.14.0",
+    "concurrently": "^9.1.0",
+    "eslint": "^9.15.0",
+    "eslint-plugin-vue": "^9.31.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.14.0",
+    "vue-eslint-parser": "^9.4.3"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
