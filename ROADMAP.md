@@ -27,6 +27,7 @@ Atualizado em: 2026-05-27
 - Link publico de pagamento Pix com QR Code, copia-e-cola e atalho Mercado Pago.
 - Webhook Mercado Pago com idempotencia, logs e atualizacao automatica de pedido pago.
 - Logs de pagamento exibidos no painel financeiro.
+- Configuracao de WhatsApp Cloud API por empresa.
 
 ### Em andamento
 
@@ -34,7 +35,6 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Configuracao de WhatsApp Cloud API.
 - Webhook de mensagens recebidas.
 
 ## 1. Visao do produto
@@ -846,7 +846,7 @@ Trazer atendimento conversacional para dentro do produto.
 
 Entregas:
 
-- Configuracao de WhatsApp Cloud API.
+- [x] Configuracao de WhatsApp Cloud API.
 - Webhook de mensagens recebidas.
 - Lista de conversas.
 - Conversa vinculada ao cliente.
