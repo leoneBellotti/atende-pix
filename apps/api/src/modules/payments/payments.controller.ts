@@ -26,4 +26,10 @@ export class PaymentsController {
   ) {
     return this.paymentsService.manualConfirm(request.user.tenantId, orderId, input);
   }
+
+  @Post('orders/:orderId/payments/pix')
+  @ApiCreatedResponse({ description: 'Cobranca Pix gerada.' })
+  createPix(@Req() request: AuthenticatedRequest, @Param('orderId') orderId: string) {
+    return this.paymentsService.createPix(request.user.tenantId, orderId);
+  }
 }

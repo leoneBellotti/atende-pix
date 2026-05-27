@@ -5,3 +5,8 @@ export async function listPayments() {
   const { data } = await apiClient.get<PaymentRecord[]>('/payments');
   return data;
 }
+
+export async function createPixPayment(orderId: string) {
+  const { data } = await apiClient.post<PaymentRecord>(`/orders/${orderId}/payments/pix`);
+  return data;
+}

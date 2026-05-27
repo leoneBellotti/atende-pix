@@ -18,4 +18,29 @@ describe('PaymentsService', () => {
       })
     );
   });
+
+  it('returns an existing pending pix payment for an order', async () => {
+    const existingPayment = { id: 'payment-1' };
+    const prisma = {
+      order: {
+        findFirst: vi.fn().mockResolvedValue({
+          id: 'order-1',
+          tenantId: 'tenant-1',
+          customerId: 'customer-1',
+          status: 'OPEN',
+          total: '10',
+          customer: {
+            name: 'Cliente',
+            email: 'cliente@example.com'
+          }
+        })
+      },
+      payment: {
+        findFirst: vi.fn().mockResolvedValue(existingPayment)
+      }
+    };
+    const service = new PaymentsService(prisma as never);
+
+    await expect(service.createPix('tenant-1', 'order-1')).resolves.toBe(existingPayment);
+  });
 });

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { listOrders, manualConfirmPayment, updateOrderStatus } from '../services/ordersService';
+import { createPixPayment } from '../services/paymentsService';
 import type { Order, OrderStatus } from '../types/order';
 
 const orders = ref<Order[]>([]);
@@ -54,6 +55,17 @@ async function confirmPayment(order: Order) {
     await loadOrders();
   } catch {
     errorMessage.value = 'Nao foi possivel confirmar o pagamento.';
+  }
+}
+
+async function generatePix(order: Order) {
+  errorMessage.value = '';
+
+  try {
+    await createPixPayment(order.id);
+    await loadOrders();
+  } catch {
+    errorMessage.value = 'Nao foi possivel gerar o Pix. Verifique as configuracoes.';
   }
 }
 
@@ -137,6 +149,14 @@ function statusLabel(value: OrderStatus) {
                   {{ option.label }}
                 </option>
               </select>
+              <button
+                v-if="order.status !== 'PAID'"
+                class="rounded-md border border-[#cfd7ce] bg-white px-4 py-2 text-sm font-semibold text-[#465047] hover:bg-[#edf3ee]"
+                type="button"
+                @click="generatePix(order)"
+              >
+                Gerar Pix
+              </button>
               <button
                 v-if="order.status !== 'PAID'"
                 class="rounded-md bg-mint px-4 py-2 text-sm font-semibold text-white hover:bg-[#176d58]"

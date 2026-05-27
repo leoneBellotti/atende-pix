@@ -78,6 +78,14 @@ function statusLabel(value: PaymentStatus) {
 function providerLabel(value: PaymentProvider) {
   return providerOptions.find((option) => option.value === value)?.label ?? value;
 }
+
+async function copyPix(payment: PaymentRecord) {
+  if (!payment.qrCodeText) {
+    return;
+  }
+
+  await navigator.clipboard.writeText(payment.qrCodeText);
+}
 </script>
 
 <template>
@@ -175,9 +183,28 @@ function providerLabel(value: PaymentProvider) {
               <p class="mt-1 text-sm text-[#465047]">{{ statusLabel(payment.status) }}</p>
               <p class="mt-1 text-xs text-[#667067]">Pago em {{ formatDate(payment.paidAt) }}</p>
             </div>
-            <p class="text-lg font-semibold text-ink lg:text-right">
-              {{ formatCurrency(payment.amount) }}
-            </p>
+            <div class="flex flex-col gap-2 lg:items-end">
+              <p class="text-lg font-semibold text-ink lg:text-right">
+                {{ formatCurrency(payment.amount) }}
+              </p>
+              <button
+                v-if="payment.qrCodeText"
+                class="rounded-md border border-[#cfd7ce] px-3 py-1.5 text-xs font-semibold text-[#465047] hover:bg-[#edf3ee]"
+                type="button"
+                @click="copyPix(payment)"
+              >
+                Copiar Pix
+              </button>
+              <a
+                v-if="payment.paymentUrl"
+                class="text-xs font-semibold text-[#11644f]"
+                :href="payment.paymentUrl"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Abrir link
+              </a>
+            </div>
           </div>
         </article>
       </div>

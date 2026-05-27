@@ -18,6 +18,9 @@ export type PaymentRecord = {
   provider: PaymentProvider;
   status: PaymentStatus;
   amount: string;
+  qrCode?: string | null;
+  qrCodeText?: string | null;
+  paymentUrl?: string | null;
   paidAt?: string | null;
   createdAt: string;
   updatedAt: string;
