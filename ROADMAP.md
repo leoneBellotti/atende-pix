@@ -26,14 +26,16 @@ Atualizado em: 2026-05-27
 - Geracao de cobranca Pix via Mercado Pago, com copia-e-cola e link salvos no pagamento.
 - Link publico de pagamento Pix com QR Code, copia-e-cola e atalho Mercado Pago.
 - Webhook Mercado Pago com idempotencia, logs e atualizacao automatica de pedido pago.
+- Logs de pagamento exibidos no painel financeiro.
 
 ### Em andamento
 
-- Preparacao para Fase 2: Pix automatico em sandbox.
+- Preparacao para Fase 3: WhatsApp oficial e inbox.
 
 ### Proximo
 
-- Exibir logs de pagamento no painel.
+- Configuracao de WhatsApp Cloud API.
+- Webhook de mensagens recebidas.
 
 ## 1. Visao do produto
 
@@ -806,6 +808,8 @@ Demo publica:
 
 ### Fase 2 - Pix automatico
 
+Status: concluida.
+
 Objetivo:
 
 Adicionar cobranca Pix real ou sandbox para transformar o MVP em produto vendavel.
@@ -820,7 +824,7 @@ Entregas:
 - [x] Webhook de pagamento.
 - [x] Idempotencia de webhooks.
 - Tela de pagamentos.
-- [~] Logs de pagamento.
+- [x] Logs de pagamento.
 
 Criterios de pronto:
 
@@ -828,7 +832,7 @@ Criterios de pronto:
 - Cliente acessa pagina publica com QR Code.
 - [x] Webhook confirma pagamento.
 - [x] Pedido muda para pago automaticamente.
-- [~] Falhas ficam registradas.
+- [x] Falhas ficam registradas.
 
 Demo publica:
 
