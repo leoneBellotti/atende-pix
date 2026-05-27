@@ -12,7 +12,8 @@ const navigation = [
   { label: 'Catalogo', href: '/catalog' },
   { label: 'Orcamentos', href: '/quotes' },
   { label: 'Pedidos', href: '/orders' },
-  { label: 'Pagamentos', href: '/payments' }
+  { label: 'Pagamentos', href: '/payments' },
+  { label: 'Relatorios', href: '/reports' }
 ];
 
 function logout() {
