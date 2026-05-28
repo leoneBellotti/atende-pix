@@ -46,6 +46,7 @@ Atualizado em: 2026-05-27
 - Botao para resumir conversa no inbox com provedor local plugavel.
 - Sugestao editavel de resposta no inbox com provedor local plugavel.
 - Geracao de itens de orcamento a partir de texto livre.
+- Sugestao editavel de follow-up no inbox.
 
 ### Em andamento
 
@@ -53,7 +54,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Sugestao de follow-up.
+- Configuracao para ativar/desativar IA.
 
 ## 1. Visao do produto
 
@@ -927,7 +928,7 @@ Entregas:
 - [x] Botao para resumir conversa.
 - [x] Sugestao de resposta.
 - [x] Geracao de itens de orcamento a partir de texto.
-- Sugestao de follow-up.
+- [x] Sugestao de follow-up.
 - Configuracao para ativar/desativar IA.
 - Logs de uso e limite por plano.
 

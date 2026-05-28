@@ -23,6 +23,12 @@ export class AiController {
     return this.aiService.suggestReply(request.user.tenantId, id);
   }
 
+  @Post('conversations/:id/follow-up-suggestion')
+  @ApiOkResponse({ description: 'Gera sugestao editavel de follow-up.' })
+  suggestFollowUp(@Req() request: AuthenticatedRequest, @Param('id') id: string) {
+    return this.aiService.suggestFollowUp(request.user.tenantId, id);
+  }
+
   @Post('quote-items')
   @ApiOkResponse({ description: 'Gera itens de orcamento a partir de texto livre.' })
   generateQuoteItems(@Body() input: GenerateQuoteItemsDto) {

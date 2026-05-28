@@ -120,6 +120,51 @@ export class AiService {
     };
   }
 
+  async suggestFollowUp(tenantId: string, conversationId: string) {
+    const messages = await this.prisma.message.findMany({
+      where: {
+        tenantId,
+        channel: 'WHATSAPP',
+        OR: [
+          { customerId: conversationId },
+          { fromPhone: conversationId },
+          { toPhone: conversationId }
+        ]
+      },
+      include: {
+        customer: {
+          select: {
+            name: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'asc'
+      },
+      take: 30
+    });
+
+    if (!messages.length) {
+      throw new NotFoundException('Conversa nao encontrada para follow-up.');
+    }
+
+    const customerName =
+      messages.find((message) => message.customer?.name)?.customer?.name ??
+      messages.find((message) => message.contactName)?.contactName ??
+      '';
+    const greeting = customerName ? `Ola, ${customerName}!` : 'Ola!';
+
+    return {
+      conversationId,
+      provider: 'LOCAL',
+      suggestion: [
+        greeting,
+        'Passando para saber se voce conseguiu avaliar minha ultima mensagem.',
+        'Ficou alguma duvida ou posso te ajudar com o proximo passo?'
+      ].join(' ')
+    };
+  }
+
   private parseQuoteItemLine(line: string) {
     const priceMatch = line.match(/(?:R\$\s*)?(\d+(?:[.,]\d{1,2})?)\s*$/);
     const quantityMatch = line.match(/\b(\d+(?:[.,]\d+)?)\s*(?:x|un|und|unid|unidade|unidades)\b/i);

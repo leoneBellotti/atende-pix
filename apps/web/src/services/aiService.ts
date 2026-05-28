@@ -35,6 +35,14 @@ export async function suggestConversationReply(conversationId: string) {
   return data;
 }
 
+export async function suggestConversationFollowUp(conversationId: string) {
+  const { data } = await apiClient.post<ReplySuggestionResult>(
+    `/ai/conversations/${conversationId}/follow-up-suggestion`
+  );
+
+  return data;
+}
+
 export async function generateQuoteItemsFromText(text: string) {
   const { data } = await apiClient.post<{ provider: string; items: GeneratedQuoteItem[] }>(
     '/ai/quote-items',

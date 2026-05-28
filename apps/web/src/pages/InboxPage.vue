@@ -2,7 +2,11 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { createAttendance } from '../services/attendancesService';
-import { suggestConversationReply, summarizeConversation } from '../services/aiService';
+import {
+  suggestConversationFollowUp,
+  suggestConversationReply,
+  summarizeConversation
+} from '../services/aiService';
 import { createCustomer, listCustomers } from '../services/customersService';
 import {
   linkConversationToCustomer,
@@ -28,6 +32,7 @@ const creatingAttendanceConversationId = ref('');
 const sendingConversationId = ref('');
 const summarizingConversationId = ref('');
 const suggestingConversationId = ref('');
+const suggestingFollowUpConversationId = ref('');
 const router = useRouter();
 
 const filteredConversations = computed(() => {
@@ -227,6 +232,20 @@ async function suggestReply(conversation: ConversationSummary) {
   }
 }
 
+async function suggestFollowUp(conversation: ConversationSummary) {
+  errorMessage.value = '';
+  suggestingFollowUpConversationId.value = conversation.id;
+
+  try {
+    const result = await suggestConversationFollowUp(conversation.id);
+    replyDrafts.value[conversation.id] = result.suggestion;
+  } catch {
+    errorMessage.value = 'Nao foi possivel sugerir um follow-up.';
+  } finally {
+    suggestingFollowUpConversationId.value = '';
+  }
+}
+
 function applyTemplate(conversation: ConversationSummary, templateBody: string) {
   if (!templateBody) {
     return;
@@ -387,6 +406,14 @@ function applySelectedTemplate(conversation: ConversationSummary, event: Event) 
                   @click="suggestReply(conversation)"
                 >
                   Sugerir resposta
+                </button>
+                <button
+                  class="rounded-md border border-[#cfd7ce] px-3 py-2 text-sm font-semibold text-[#465047] hover:bg-[#edf3ee] disabled:cursor-not-allowed disabled:opacity-60"
+                  type="button"
+                  :disabled="suggestingFollowUpConversationId === conversation.id"
+                  @click="suggestFollowUp(conversation)"
+                >
+                  Sugerir follow-up
                 </button>
                 <button
                   class="rounded-md border border-[#cfd7ce] px-3 py-2 text-sm font-semibold text-[#465047] hover:bg-[#edf3ee] disabled:cursor-not-allowed disabled:opacity-60"

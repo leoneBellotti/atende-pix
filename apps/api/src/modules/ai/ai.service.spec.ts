@@ -92,4 +92,28 @@ describe('AiService', () => {
       suggestion: expect.stringContaining('Ola, Ana Cliente')
     });
   });
+
+  it('suggests an editable follow-up message', async () => {
+    const prisma = {
+      message: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            direction: 'OUTBOUND',
+            body: 'Enviei o orcamento.',
+            contactName: null,
+            customer: {
+              name: 'Bruno Cliente'
+            }
+          }
+        ])
+      }
+    };
+    const service = new AiService(prisma as never);
+
+    await expect(service.suggestFollowUp('tenant-1', 'customer-1')).resolves.toEqual({
+      conversationId: 'customer-1',
+      provider: 'LOCAL',
+      suggestion: expect.stringContaining('Passando para saber')
+    });
+  });
 });
