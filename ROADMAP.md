@@ -50,14 +50,26 @@ Atualizado em: 2026-05-27
 - Configuracao para ativar/desativar IA por empresa.
 - Logs de uso de IA e limite mensal por empresa.
 - Planos comerciais selecionaveis por empresa.
+- Limites por plano com bloqueio de orcamentos mensais, protecao contra downgrade incompativel e resumo de uso.
+- Assinatura com checkout local separado dos pagamentos de clientes, confirmacao simulada, renovacao e cancelamento ao fim do periodo.
+- Trial de 14 dias para novas empresas, exibicao de dias restantes e bloqueio com mensagem clara apos expiracao.
+- Pagina simples de apresentacao comercial com hero visual, proposta de valor, fluxo do produto, planos e CTAs publicos.
+- Painel admin interno com acesso restrito por ADMIN_EMAILS, resumo SaaS e lista de empresas com plano, status e uso.
+- Termos de uso e politica de privacidade publicados com links na pagina comercial e no cadastro.
+- Fluxo de cancelamento com confirmacao, motivo opcional, agendamento ao fim do periodo e reativacao.
+- Controle de inadimplencia com status PAST_DUE/SUSPENDED, periodo de tolerancia, bloqueio de uso suspenso e acoes admin de teste.
+- Backups automaticos do Postgres com script versionado, retencao configuravel e validacao de restore em banco temporario.
+- Monitoramento de erros da API com filtro global, registro JSON Lines configuravel e contexto de rota/usuario quando disponivel.
+- Tela admin de erros em /admin/errors, lendo ERROR_LOG_PATH e visivel apenas para emails configurados em ADMIN_EMAILS.
+- Logs estruturados JSON na API com requestId, metodo, rota, status, duracao e contexto de usuario/empresa quando disponivel.
 
 ### Em andamento
 
-- Preparacao para Fase 6: SaaS comercial.
+- Preparacao de rate limiting para Fase 7.
 
 ### Proximo
 
-- Limites por plano.
+- Rate limiting.
 
 ## 1. Visao do produto
 
@@ -956,14 +968,14 @@ Preparar cobranca recorrente e operacao com clientes reais.
 Entregas:
 
 - [x] Planos.
-- Limites por plano.
-- Assinatura.
-- Trial.
-- Pagina simples de apresentacao comercial.
-- Painel admin interno.
-- Termos de uso e politica de privacidade.
-- Fluxo de cancelamento.
-- Controle de inadimplencia.
+- [x] Limites por plano.
+- [x] Assinatura.
+- [x] Trial.
+- [x] Pagina simples de apresentacao comercial.
+- [x] Painel admin interno.
+- [x] Termos de uso e politica de privacidade.
+- [x] Fluxo de cancelamento.
+- [x] Controle de inadimplencia.
 
 Criterios de pronto:
 
@@ -984,9 +996,9 @@ Deixar o produto confiavel para clientes pagantes.
 
 Entregas:
 
-- Backups automaticos.
-- Monitoramento de erros.
-- Logs estruturados.
+- [x] Backups automaticos.
+- [x] Monitoramento de erros.
+- [x] Logs estruturados.
 - Rate limiting.
 - Auditoria de acoes sensiveis.
 - Testes end-to-end dos fluxos principais.

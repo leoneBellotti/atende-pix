@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { LoggingModule } from '../common/logging/logging.module';
+import { MonitoringModule } from '../common/monitoring/monitoring.module';
 import { PrismaModule } from '../common/prisma/prisma.module';
+import { AdminModule } from './admin/admin.module';
 import { AiModule } from './ai/ai.module';
 import { AttendancesModule } from './attendances/attendances.module';
 import { AutomationsModule } from './automations/automations.module';
@@ -19,9 +22,13 @@ import { WhatsAppModule } from './whatsapp/whatsapp.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true
+      isGlobal: true,
+      envFilePath: ['.env', '../../.env']
     }),
+    LoggingModule,
+    MonitoringModule,
     PrismaModule,
+    AdminModule,
     AiModule,
     AttendancesModule,
     AutomationsModule,

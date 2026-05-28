@@ -2,11 +2,15 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { JsonLoggerService } from './common/logging/json-logger.service';
+import { ErrorMonitoringFilter } from './common/monitoring/error-monitoring.filter';
+import { ErrorMonitoringService } from './common/monitoring/error-monitoring.service';
 import { AppModule } from './modules/app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
   const configService = app.get(ConfigService);
+  app.useLogger(app.get(JsonLoggerService));
   const port = configService.get<number>('API_PORT', 3000);
 
   app.enableCors({
@@ -20,6 +24,7 @@ async function bootstrap() {
       transform: true
     })
   );
+  app.useGlobalFilters(new ErrorMonitoringFilter(app.get(ErrorMonitoringService)));
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('AtendePix API')

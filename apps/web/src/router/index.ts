@@ -1,8 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import AdminPage from '../pages/AdminPage.vue';
+import AdminErrorLogsPage from '../pages/AdminErrorLogsPage.vue';
 import AttendancesPage from '../pages/AttendancesPage.vue';
 import AutomationsPage from '../pages/AutomationsPage.vue';
 import BillingPage from '../pages/BillingPage.vue';
 import CatalogPage from '../pages/CatalogPage.vue';
+import CommercialPage from '../pages/CommercialPage.vue';
 import CustomersPage from '../pages/CustomersPage.vue';
 import CustomerDetailPage from '../pages/CustomerDetailPage.vue';
 import DashboardPage from '../pages/DashboardPage.vue';
@@ -10,17 +13,22 @@ import InboxPage from '../pages/InboxPage.vue';
 import LoginPage from '../pages/LoginPage.vue';
 import OrdersPage from '../pages/OrdersPage.vue';
 import PaymentsPage from '../pages/PaymentsPage.vue';
+import PrivacyPage from '../pages/PrivacyPage.vue';
 import PublicQuotePage from '../pages/PublicQuotePage.vue';
 import PublicPaymentPage from '../pages/PublicPaymentPage.vue';
 import QuotesPage from '../pages/QuotesPage.vue';
 import RegisterPage from '../pages/RegisterPage.vue';
 import ReportsPage from '../pages/ReportsPage.vue';
 import SettingsPage from '../pages/SettingsPage.vue';
+import TermsPage from '../pages/TermsPage.vue';
 import { useSessionStore } from '../stores/session.store';
 
 export const router = createRouter({
   history: createWebHistory(),
   routes: [
+    { path: '/site', component: CommercialPage },
+    { path: '/terms', component: TermsPage },
+    { path: '/privacy', component: PrivacyPage },
     { path: '/login', component: LoginPage },
     { path: '/register', component: RegisterPage },
     { path: '/public/quotes/:token', component: PublicQuotePage },
@@ -34,6 +42,16 @@ export const router = createRouter({
     {
       path: '/billing',
       component: BillingPage,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/admin',
+      component: AdminPage,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/admin/errors',
+      component: AdminErrorLogsPage,
       meta: { requiresAuth: true }
     },
     {
@@ -92,11 +110,15 @@ export const router = createRouter({
 router.beforeEach((to) => {
   const sessionStore = useSessionStore();
 
+  if (to.path === '/' && !sessionStore.isAuthenticated) {
+    return '/site';
+  }
+
   if (to.meta.requiresAuth && !sessionStore.isAuthenticated) {
     return '/login';
   }
 
-  if ((to.path === '/login' || to.path === '/register') && sessionStore.isAuthenticated) {
+  if ((to.path === '/site' || to.path === '/login' || to.path === '/register') && sessionStore.isAuthenticated) {
     return '/';
   }
 

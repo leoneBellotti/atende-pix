@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { defaultPlans } from '../billing/billing.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
@@ -33,11 +34,23 @@ export class AuthService {
 
     try {
       const result = await this.prisma.$transaction(async (tx) => {
+        const demoPlanDefaults = defaultPlans.find((plan) => plan.code === 'demo');
+        if (!demoPlanDefaults) {
+          throw new Error('Plano demo nao configurado.');
+        }
+
+        const demoPlan = await tx.subscriptionPlan.upsert({
+          where: { code: demoPlanDefaults.code },
+          create: demoPlanDefaults,
+          update: demoPlanDefaults
+        });
+
         const tenant = await tx.tenant.create({
           data: {
             name: input.tenantName,
             slug,
-            phone: input.tenantPhone
+            phone: input.tenantPhone,
+            aiMonthlyLimit: demoPlan.aiMonthlyLimit
           }
         });
 
@@ -54,6 +67,20 @@ export class AuthService {
             tenantId: tenant.id,
             userId: user.id,
             role: 'OWNER'
+          }
+        });
+
+        const now = new Date();
+        const trialEndsAt = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+
+        await tx.subscription.create({
+          data: {
+            tenantId: tenant.id,
+            planId: demoPlan.id,
+            status: 'TRIAL',
+            currentPeriodStart: now,
+            currentPeriodEnd: trialEndsAt,
+            renewsAt: trialEndsAt
           }
         });
 

@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { getAdminStatus } from '../services/adminService';
 import { useSessionStore } from '../stores/session.store';
 
 const router = useRouter();
 const sessionStore = useSessionStore();
+const isAdmin = ref(false);
 
 const navigation = [
   { label: 'Dashboard', href: '/' },
@@ -16,9 +19,26 @@ const navigation = [
   { label: 'Pagamentos', href: '/payments' },
   { label: 'Automacoes', href: '/automations' },
   { label: 'Plano', href: '/billing' },
+  { label: 'Admin', href: '/admin', adminOnly: true },
+  { label: 'Erros', href: '/admin/errors', adminOnly: true },
   { label: 'Relatorios', href: '/reports' },
   { label: 'Configuracoes', href: '/settings' }
 ];
+
+const visibleNavigation = computed(() => navigation.filter((item) => !item.adminOnly || isAdmin.value));
+
+onMounted(() => {
+  loadAdminStatus();
+});
+
+async function loadAdminStatus() {
+  try {
+    const status = await getAdminStatus();
+    isAdmin.value = status.isAdmin;
+  } catch {
+    isAdmin.value = false;
+  }
+}
 
 function logout() {
   sessionStore.logout();
@@ -35,7 +55,7 @@ function logout() {
       </div>
       <nav class="space-y-1 px-3 py-4">
         <RouterLink
-          v-for="item in navigation"
+          v-for="item in visibleNavigation"
           :key="item.href"
           :to="item.href"
           class="block rounded-md px-3 py-2 text-sm font-medium text-[#465047] hover:bg-[#edf3ee]"

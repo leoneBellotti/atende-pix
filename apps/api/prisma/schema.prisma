@@ -110,6 +110,7 @@ model Tenant {
   automationLogs AutomationLog[]
   aiUsageLogs AiUsageLog[]
   subscription Subscription?
+  subscriptionCheckouts SubscriptionCheckout[]
 }
 
 model User {
@@ -454,6 +455,7 @@ model SubscriptionPlan {
   updatedAt      DateTime @updatedAt
 
   subscriptions Subscription[]
+  subscriptionCheckouts SubscriptionCheckout[]
 
   @@index([active])
 }
@@ -464,13 +466,45 @@ model Subscription {
   planId    String
   status    String   @default("TRIAL")
   startedAt DateTime @default(now())
+  currentPeriodStart DateTime?
+  currentPeriodEnd DateTime?
   renewsAt  DateTime?
+  pastDueAt DateTime?
+  suspendedAt DateTime?
+  canceledAt DateTime?
+  cancellationReason String?
+  cancelAtPeriodEnd Boolean @default(false)
+  paymentProvider String?
+  paymentMethod String?
+  externalSubscriptionId String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   plan   SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Restrict)
 
+  @@index([planId])
+  @@index([status])
+}
+
+model SubscriptionCheckout {
+  id        String   @id @default(cuid())
+  tenantId  String
+  planId    String
+  status    String   @default("PENDING")
+  provider  String   @default("LOCAL")
+  amount    Decimal  @default(0) @db.Decimal(12, 2)
+  publicToken String @unique
+  checkoutUrl String?
+  paidAt    DateTime?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  plan   SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId])
   @@index([planId])
   @@index([status])
 }

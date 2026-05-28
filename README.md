@@ -42,9 +42,38 @@ npm run build
 npm run test
 npm run lint
 npm run format
+npm run db:backup
+npm run db:restore-check -- -BackupPath .backups/postgres/arquivo.sql
 npm run db:generate
 npm run db:migrate
 ```
+
+## Backups locais do banco
+
+O backup usa o `pg_dump` do container `atende-pix-postgres` e grava arquivos `.sql` em `.backups/postgres`, mantendo por padrao 14 dias.
+
+```bash
+npm run db:backup
+npm run db:restore-check -- -BackupPath .backups/postgres/atende_pix_YYYYMMDD_HHMMSS.sql
+```
+
+Para producao, agende `npm run db:backup` no cron, Task Scheduler ou job da plataforma. Configure `BACKUP_DIR`, `BACKUP_RETENTION_DAYS`, `POSTGRES_CONTAINER`, `POSTGRES_DATABASE`, `POSTGRES_USER` e `POSTGRES_PASSWORD` no ambiente.
+
+## Monitoramento de erros
+
+A API registra excecoes HTTP 5xx em JSON Lines no arquivo configurado por `ERROR_LOG_PATH` (`.logs/api-errors.log` por padrao). Use `ERROR_MONITORING_ENABLED=false` para desligar localmente e `ERROR_MONITORING_CAPTURE_4XX=true` se quiser registrar tambem erros 4xx.
+
+Usuarios com e-mail em `ADMIN_EMAILS` veem os menus **Admin** e **Erros** no painel. A tela **Erros** fica em `/admin/errors` e le os eventos recentes do arquivo de monitoramento.
+
+## Logs estruturados
+
+A API escreve logs JSON no stdout/stderr do processo, incluindo inicializacao do Nest e requisicoes HTTP com `requestId`, metodo, rota, status e duracao. Em desenvolvimento esses logs ficam em `.logs/dev.out.log` e `.logs/dev.err.log` porque o `npm run dev` e iniciado com redirecionamento.
+
+Variaveis:
+
+- `STRUCTURED_LOGGING_ENABLED=true`
+- `STRUCTURED_LOGGING_VERBOSE=false`
+- `REQUEST_LOGGING_ENABLED=true`
 
 ## Estrutura
 

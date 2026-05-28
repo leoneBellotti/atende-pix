@@ -2,11 +2,15 @@ import { randomBytes } from 'node:crypto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, QuoteStatus } from '@prisma/client';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { BillingService } from '../billing/billing.service';
 import { CreateQuoteDto } from './dto/create-quote.dto';
 
 @Injectable()
 export class QuotesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly billingService: BillingService
+  ) {}
 
   list(tenantId: string) {
     return this.prisma.quote.findMany({
@@ -24,6 +28,7 @@ export class QuotesService {
   }
 
   async create(tenantId: string, input: CreateQuoteDto) {
+    await this.billingService.ensureQuoteLimit(tenantId);
     await this.ensureCustomerBelongsToTenant(tenantId, input.customerId);
 
     if (input.attendanceId) {

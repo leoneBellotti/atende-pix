@@ -1,0 +1,3 @@
+ALTER TABLE "Subscription"
+ADD COLUMN "pastDueAt" TIMESTAMP(3),
+ADD COLUMN "suspendedAt" TIMESTAMP(3);

@@ -2,7 +2,7 @@ import { QuotesService } from './quotes.service';
 
 describe('QuotesService', () => {
   it('calculates quote totals from items', () => {
-    const service = new QuotesService({} as never);
+    const service = new QuotesService({} as never, {} as never);
 
     const totals = service.calculateTotals([
       { description: 'Servico', quantity: 2, unitPrice: 100, discount: 15 },

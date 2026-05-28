@@ -101,6 +101,12 @@ async function submit() {
         >
           {{ isSubmitting ? 'Criando...' : 'Criar conta' }}
         </button>
+        <p class="mt-3 text-center text-xs leading-5 text-[#667067]">
+          Ao criar a conta, voce concorda com os
+          <RouterLink class="font-semibold text-[#11644f]" to="/terms">Termos</RouterLink>
+          e a
+          <RouterLink class="font-semibold text-[#11644f]" to="/privacy">Politica de privacidade</RouterLink>.
+        </p>
         <p class="mt-4 text-center text-sm text-[#667067]">
           Ja tem conta?
           <RouterLink class="font-semibold text-[#11644f]" to="/login">Entrar</RouterLink>
