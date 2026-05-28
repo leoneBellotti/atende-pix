@@ -5,14 +5,16 @@ import { createAttendance } from '../services/attendancesService';
 import { createCustomer, listCustomers } from '../services/customersService';
 import {
   linkConversationToCustomer,
+  listMessageTemplates,
   listConversations,
   sendWhatsAppMessage
 } from '../services/messagesService';
 import type { Customer } from '../types/customer';
-import type { ConversationSummary } from '../types/message';
+import type { ConversationSummary, MessageTemplate } from '../types/message';
 
 const conversations = ref<ConversationSummary[]>([]);
 const customers = ref<Customer[]>([]);
+const messageTemplates = ref<MessageTemplate[]>([]);
 const selectedCustomers = ref<Record<string, string>>({});
 const replyDrafts = ref<Record<string, string>>({});
 const search = ref('');
@@ -50,9 +52,14 @@ async function loadConversations() {
   isLoading.value = true;
 
   try {
-    const [conversationData, customerData] = await Promise.all([listConversations(), listCustomers()]);
+    const [conversationData, customerData, templateData] = await Promise.all([
+      listConversations(),
+      listCustomers(),
+      listMessageTemplates()
+    ]);
     conversations.value = conversationData;
     customers.value = customerData;
+    messageTemplates.value = templateData;
   } catch {
     errorMessage.value = 'Nao foi possivel carregar as conversas.';
   } finally {
@@ -176,6 +183,19 @@ async function sendReply(conversation: ConversationSummary) {
     sendingConversationId.value = '';
   }
 }
+
+function applyTemplate(conversation: ConversationSummary, templateBody: string) {
+  if (!templateBody) {
+    return;
+  }
+
+  replyDrafts.value[conversation.id] = templateBody;
+}
+
+function applySelectedTemplate(conversation: ConversationSummary, event: Event) {
+  const target = event.target as HTMLSelectElement | null;
+  applyTemplate(conversation, target?.value ?? '');
+}
 </script>
 
 <template>
@@ -285,6 +305,19 @@ async function sendReply(conversation: ConversationSummary) {
                 {{ conversation.customer.phone || 'Cliente sem telefone' }}
               </p>
               <div class="flex flex-col gap-2">
+                <select
+                  class="rounded-md border border-[#cfd7ce] bg-white px-3 py-2 text-sm outline-none focus:border-mint"
+                  @change="applySelectedTemplate(conversation, $event)"
+                >
+                  <option value="">Usar template</option>
+                  <option
+                    v-for="template in messageTemplates"
+                    :key="template.id"
+                    :value="template.body"
+                  >
+                    {{ template.name }}
+                  </option>
+                </select>
                 <textarea
                   v-model="replyDrafts[conversation.id]"
                   class="min-h-20 resize-none rounded-md border border-[#cfd7ce] bg-white px-3 py-2 text-sm outline-none focus:border-mint"

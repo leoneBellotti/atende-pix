@@ -51,9 +51,61 @@ type WhatsAppWebhookBody = {
   }>;
 };
 
+const defaultMessageTemplates = [
+  {
+    name: 'Confirmar orcamento',
+    category: 'UTILITY',
+    body: 'Ola! Seu orcamento esta pronto. Posso te enviar o link para conferir?'
+  },
+  {
+    name: 'Pagamento pendente',
+    category: 'UTILITY',
+    body: 'Ola! Identifiquei que o pagamento ainda esta pendente. Posso reenviar o Pix?'
+  },
+  {
+    name: 'Pedido pronto',
+    category: 'UTILITY',
+    body: 'Ola! Seu pedido esta pronto. Podemos combinar a retirada ou entrega?'
+  }
+];
+
 @Injectable()
 export class WhatsAppService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async listMessageTemplates(tenantId: string) {
+    const existingTemplates = await this.prisma.messageTemplate.findMany({
+      where: {
+        tenantId,
+        active: true
+      },
+      orderBy: {
+        name: 'asc'
+      }
+    });
+
+    if (existingTemplates.length) {
+      return existingTemplates;
+    }
+
+    await this.prisma.messageTemplate.createMany({
+      data: defaultMessageTemplates.map((template) => ({
+        tenantId,
+        ...template
+      })),
+      skipDuplicates: true
+    });
+
+    return this.prisma.messageTemplate.findMany({
+      where: {
+        tenantId,
+        active: true
+      },
+      orderBy: {
+        name: 'asc'
+      }
+    });
+  }
 
   async listConversations(tenantId: string) {
     const messages = await this.prisma.message.findMany({

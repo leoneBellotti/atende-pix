@@ -34,6 +34,7 @@ Atualizado em: 2026-05-27
 - Criacao de cliente a partir de conversa recebida.
 - Criacao de atendimento a partir do inbox.
 - Envio de respostas de texto pela WhatsApp Cloud API dentro da janela de atendimento.
+- Templates de utilidade no inbox.
 
 ### Em andamento
 
@@ -41,7 +42,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Templates de utilidade.
+- Status de mensagem quando disponivel.
 
 ## 1. Visao do produto
 
@@ -859,7 +860,7 @@ Entregas:
 - [x] Criar cliente a partir de mensagem.
 - [x] Criar atendimento a partir de conversa.
 - [x] Envio de mensagens permitidas.
-- Templates de utilidade.
+- [x] Templates de utilidade.
 - Status de mensagem quando disponivel.
 
 Criterios de pronto:

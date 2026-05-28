@@ -1,5 +1,5 @@
 import { apiClient } from './apiClient';
-import type { ConversationSummary } from '../types/message';
+import type { ConversationSummary, MessageTemplate } from '../types/message';
 
 export async function listConversations() {
   const { data } = await apiClient.get<ConversationSummary[]>('/messages');
@@ -21,5 +21,10 @@ export async function sendWhatsAppMessage(conversationId: string, body: string) 
     body
   });
 
+  return data;
+}
+
+export async function listMessageTemplates() {
+  const { data } = await apiClient.get<MessageTemplate[]>('/message-templates');
   return data;
 }

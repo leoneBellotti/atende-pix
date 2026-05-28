@@ -16,3 +16,13 @@ export type ConversationSummary = {
     createdAt: string;
   };
 };
+
+export type MessageTemplate = {
+  id: string;
+  name: string;
+  category: string;
+  body: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+};

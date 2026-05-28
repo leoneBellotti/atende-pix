@@ -2,6 +2,28 @@ import { ForbiddenException } from '@nestjs/common';
 import { WhatsAppService } from './whatsapp.service';
 
 describe('WhatsAppService', () => {
+  it('creates default utility templates when none exist', async () => {
+    const prisma = {
+      messageTemplate: {
+        findMany: vi.fn().mockResolvedValueOnce([]).mockResolvedValueOnce([{ id: 'template-1' }]),
+        createMany: vi.fn().mockResolvedValue({ count: 3 })
+      }
+    };
+    const service = new WhatsAppService(prisma as never);
+
+    await expect(service.listMessageTemplates('tenant-1')).resolves.toEqual([{ id: 'template-1' }]);
+
+    expect(prisma.messageTemplate.createMany).toHaveBeenCalledWith({
+      data: expect.arrayContaining([
+        expect.objectContaining({
+          tenantId: 'tenant-1',
+          category: 'UTILITY'
+        })
+      ]),
+      skipDuplicates: true
+    });
+  });
+
   it('groups recent whatsapp messages as conversations', async () => {
     const prisma = {
       message: {
