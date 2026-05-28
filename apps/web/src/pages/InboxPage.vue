@@ -3,19 +3,25 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { createAttendance } from '../services/attendancesService';
 import { createCustomer, listCustomers } from '../services/customersService';
-import { linkConversationToCustomer, listConversations } from '../services/messagesService';
+import {
+  linkConversationToCustomer,
+  listConversations,
+  sendWhatsAppMessage
+} from '../services/messagesService';
 import type { Customer } from '../types/customer';
 import type { ConversationSummary } from '../types/message';
 
 const conversations = ref<ConversationSummary[]>([]);
 const customers = ref<Customer[]>([]);
 const selectedCustomers = ref<Record<string, string>>({});
+const replyDrafts = ref<Record<string, string>>({});
 const search = ref('');
 const errorMessage = ref('');
 const isLoading = ref(false);
 const linkingConversationId = ref('');
 const creatingCustomerConversationId = ref('');
 const creatingAttendanceConversationId = ref('');
+const sendingConversationId = ref('');
 const router = useRouter();
 
 const filteredConversations = computed(() => {
@@ -148,6 +154,28 @@ async function createAttendanceFromConversation(conversation: ConversationSummar
     creatingAttendanceConversationId.value = '';
   }
 }
+
+async function sendReply(conversation: ConversationSummary) {
+  const body = replyDrafts.value[conversation.id]?.trim();
+
+  if (!body) {
+    return;
+  }
+
+  errorMessage.value = '';
+  sendingConversationId.value = conversation.id;
+
+  try {
+    await sendWhatsAppMessage(conversation.id, body);
+    replyDrafts.value[conversation.id] = '';
+    await loadConversations();
+  } catch {
+    errorMessage.value =
+      'Nao foi possivel enviar a mensagem. Verifique a janela de atendimento do WhatsApp.';
+  } finally {
+    sendingConversationId.value = '';
+  }
+}
 </script>
 
 <template>
@@ -205,7 +233,7 @@ async function createAttendanceFromConversation(conversation: ConversationSummar
           :key="conversation.id"
           class="px-4 py-4 hover:bg-[#fbfcf9]"
         >
-          <div class="grid gap-3 lg:grid-cols-[1fr_280px_180px] lg:items-center">
+          <div class="grid gap-3 lg:grid-cols-[1fr_320px_180px] lg:items-center">
             <div class="min-w-0">
               <div class="flex flex-wrap items-center gap-2">
                 <h3 class="truncate font-semibold text-ink">
@@ -256,6 +284,21 @@ async function createAttendanceFromConversation(conversation: ConversationSummar
               <p class="text-sm text-[#667067]">
                 {{ conversation.customer.phone || 'Cliente sem telefone' }}
               </p>
+              <div class="flex flex-col gap-2">
+                <textarea
+                  v-model="replyDrafts[conversation.id]"
+                  class="min-h-20 resize-none rounded-md border border-[#cfd7ce] bg-white px-3 py-2 text-sm outline-none focus:border-mint"
+                  placeholder="Responder dentro da janela"
+                />
+                <button
+                  class="rounded-md border border-[#cfd7ce] px-3 py-2 text-sm font-semibold text-[#465047] hover:bg-[#edf3ee] disabled:cursor-not-allowed disabled:opacity-60"
+                  type="button"
+                  :disabled="!replyDrafts[conversation.id]?.trim() || sendingConversationId === conversation.id"
+                  @click="sendReply(conversation)"
+                >
+                  Enviar resposta
+                </button>
+              </div>
               <button
                 class="rounded-md bg-mint px-3 py-2 text-sm font-semibold text-white hover:bg-[#176d58] disabled:cursor-not-allowed disabled:opacity-60"
                 type="button"

@@ -1,6 +1,7 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { SendWhatsAppMessageDto } from './dto/send-whatsapp-message.dto';
 
 type WhatsAppWebhookMessage = {
   id?: string;
@@ -139,6 +140,103 @@ export class WhatsAppService {
       linked: true,
       updatedMessages: result.count
     };
+  }
+
+  async sendTextMessage(tenantId: string, input: SendWhatsAppMessageDto) {
+    const body = input.body.trim();
+
+    if (!body) {
+      throw new BadRequestException('Informe a mensagem para envio.');
+    }
+
+    const config = await this.prisma.whatsAppConfig.findUnique({
+      where: { tenantId }
+    });
+
+    if (!config?.active || !config.phoneNumberId || !config.accessToken) {
+      throw new BadRequestException('Configure o WhatsApp Cloud API antes de enviar mensagens.');
+    }
+
+    const conversationMessages = await this.prisma.message.findMany({
+      where: {
+        tenantId,
+        channel: 'WHATSAPP',
+        OR: [
+          { customerId: input.conversationId },
+          { fromPhone: input.conversationId },
+          { toPhone: input.conversationId }
+        ]
+      },
+      include: {
+        customer: {
+          select: {
+            id: true,
+            phone: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: 20
+    });
+
+    if (!conversationMessages.length) {
+      throw new NotFoundException('Conversa nao encontrada para envio.');
+    }
+
+    const lastInboundMessage = conversationMessages.find((message) => message.direction === 'INBOUND');
+
+    if (!lastInboundMessage?.createdAt || !this.isInsideServiceWindow(lastInboundMessage.createdAt)) {
+      throw new BadRequestException('A conversa esta fora da janela de atendimento do WhatsApp.');
+    }
+
+    const lastMessage = conversationMessages[0];
+    const rawRecipientPhone =
+      lastInboundMessage.fromPhone ??
+      lastMessage.fromPhone ??
+      lastMessage.toPhone ??
+      lastMessage.customer?.phone ??
+      undefined;
+    const recipientPhone = this.normalizePhone(rawRecipientPhone);
+
+    if (!recipientPhone) {
+      throw new BadRequestException('A conversa nao possui telefone valido para envio.');
+    }
+
+    const sentMessage = await this.sendCloudApiTextMessage({
+      accessToken: config.accessToken,
+      phoneNumberId: config.phoneNumberId,
+      to: recipientPhone,
+      body
+    });
+
+    return this.prisma.message.create({
+      data: {
+        tenantId,
+        customerId: lastMessage.customerId,
+        attendanceId: lastMessage.attendanceId,
+        channel: 'WHATSAPP',
+        direction: 'OUTBOUND',
+        externalMessageId: sentMessage.id,
+        phoneNumberId: config.phoneNumberId,
+        fromPhone: config.phoneNumberId,
+        toPhone: recipientPhone,
+        type: 'text',
+        body,
+        sentAt: new Date(),
+        rawPayload: sentMessage.rawPayload as Prisma.InputJsonValue
+      },
+      include: {
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            phone: true
+          }
+        }
+      }
+    });
   }
 
   async verifyWebhook(input: { mode?: string; token?: string; challenge?: string }) {
@@ -280,5 +378,56 @@ export class WhatsAppService {
 
     const digits = phone.replace(/\D/g, '');
     return digits || null;
+  }
+
+  private isInsideServiceWindow(date: Date) {
+    const serviceWindowMs = 24 * 60 * 60 * 1000;
+    return Date.now() - date.getTime() <= serviceWindowMs;
+  }
+
+  private async sendCloudApiTextMessage(input: {
+    accessToken: string;
+    phoneNumberId: string;
+    to: string;
+    body: string;
+  }) {
+    const apiVersion = process.env.WHATSAPP_GRAPH_API_VERSION ?? 'v20.0';
+    const response = await fetch(
+      `https://graph.facebook.com/${apiVersion}/${input.phoneNumberId}/messages`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${input.accessToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          recipient_type: 'individual',
+          to: input.to,
+          type: 'text',
+          text: {
+            preview_url: false,
+            body: input.body
+          }
+        })
+      }
+    );
+
+    const data = (await response.json().catch(() => ({}))) as {
+      messages?: Array<{ id?: string }>;
+      error?: {
+        message?: string;
+      };
+    };
+    const messageId = data.messages?.[0]?.id;
+
+    if (!response.ok || !messageId) {
+      throw new BadRequestException(data.error?.message ?? 'WhatsApp recusou o envio da mensagem.');
+    }
+
+    return {
+      id: messageId,
+      rawPayload: data
+    };
   }
 }

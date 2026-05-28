@@ -14,3 +14,12 @@ export async function linkConversationToCustomer(conversationId: string, custome
 
   return data;
 }
+
+export async function sendWhatsAppMessage(conversationId: string, body: string) {
+  const { data } = await apiClient.post('/messages/send', {
+    conversationId,
+    body
+  });
+
+  return data;
+}

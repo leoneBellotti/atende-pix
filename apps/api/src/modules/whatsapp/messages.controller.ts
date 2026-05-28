@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Patch, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthenticatedRequest, JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { LinkConversationCustomerDto } from './dto/link-conversation-customer.dto';
+import { SendWhatsAppMessageDto } from './dto/send-whatsapp-message.dto';
 import { WhatsAppService } from './whatsapp.service';
 
 @ApiTags('messages')
@@ -29,5 +30,11 @@ export class MessagesController {
       id,
       input.customerId
     );
+  }
+
+  @Post('send')
+  @ApiOkResponse({ description: 'Envia mensagem de texto permitida pela janela do WhatsApp.' })
+  sendMessage(@Req() request: AuthenticatedRequest, @Body() input: SendWhatsAppMessageDto) {
+    return this.whatsAppService.sendTextMessage(request.user.tenantId, input);
   }
 }

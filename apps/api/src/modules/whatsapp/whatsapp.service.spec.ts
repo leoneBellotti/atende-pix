@@ -95,6 +95,108 @@ describe('WhatsAppService', () => {
     });
   });
 
+  it('sends text messages inside the whatsapp service window', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({
+        messages: [{ id: 'wamid.outbound-1' }]
+      })
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const prisma = {
+      whatsAppConfig: {
+        findUnique: vi.fn().mockResolvedValue({
+          active: true,
+          phoneNumberId: 'phone-number-1',
+          accessToken: 'access-token'
+        })
+      },
+      message: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: 'message-1',
+            customerId: 'customer-1',
+            attendanceId: null,
+            direction: 'INBOUND',
+            fromPhone: '5511999990000',
+            toPhone: '5511888880000',
+            createdAt: new Date(),
+            customer: {
+              id: 'customer-1',
+              phone: '5511999990000'
+            }
+          }
+        ]),
+        create: vi.fn().mockResolvedValue({
+          id: 'message-outbound-1'
+        })
+      }
+    };
+    const service = new WhatsAppService(prisma as never);
+
+    await expect(
+      service.sendTextMessage('tenant-1', {
+        conversationId: 'customer-1',
+        body: 'Ola, tudo certo?'
+      })
+    ).resolves.toEqual({ id: 'message-outbound-1' });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://graph.facebook.com/v20.0/phone-number-1/messages',
+      expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({
+          Authorization: 'Bearer access-token'
+        })
+      })
+    );
+    expect(prisma.message.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          tenantId: 'tenant-1',
+          customerId: 'customer-1',
+          direction: 'OUTBOUND',
+          externalMessageId: 'wamid.outbound-1',
+          toPhone: '5511999990000',
+          body: 'Ola, tudo certo?'
+        })
+      })
+    );
+
+    vi.unstubAllGlobals();
+  });
+
+  it('blocks text messages outside the whatsapp service window', async () => {
+    const prisma = {
+      whatsAppConfig: {
+        findUnique: vi.fn().mockResolvedValue({
+          active: true,
+          phoneNumberId: 'phone-number-1',
+          accessToken: 'access-token'
+        })
+      },
+      message: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            direction: 'INBOUND',
+            fromPhone: '5511999990000',
+            createdAt: new Date(Date.now() - 25 * 60 * 60 * 1000),
+            customer: null
+          }
+        ])
+      }
+    };
+    const service = new WhatsAppService(prisma as never);
+
+    await expect(
+      service.sendTextMessage('tenant-1', {
+        conversationId: '5511999990000',
+        body: 'Ola'
+      })
+    ).rejects.toThrow('janela de atendimento');
+  });
+
   it('returns the challenge when the verify token matches an active config', async () => {
     const prisma = {
       whatsAppConfig: {

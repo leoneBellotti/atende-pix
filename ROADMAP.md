@@ -33,6 +33,7 @@ Atualizado em: 2026-05-27
 - Vinculo manual de conversa ao cliente.
 - Criacao de cliente a partir de conversa recebida.
 - Criacao de atendimento a partir do inbox.
+- Envio de respostas de texto pela WhatsApp Cloud API dentro da janela de atendimento.
 
 ### Em andamento
 
@@ -40,7 +41,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Envio de mensagens permitidas.
+- Templates de utilidade.
 
 ## 1. Visao do produto
 
@@ -857,7 +858,7 @@ Entregas:
 - [x] Conversa vinculada ao cliente.
 - [x] Criar cliente a partir de mensagem.
 - [x] Criar atendimento a partir de conversa.
-- Envio de mensagens permitidas.
+- [x] Envio de mensagens permitidas.
 - Templates de utilidade.
 - Status de mensagem quando disponivel.
 
