@@ -49,6 +49,7 @@ Atualizado em: 2026-05-27
 - Sugestao editavel de follow-up no inbox.
 - Configuracao para ativar/desativar IA por empresa.
 - Logs de uso de IA e limite mensal por empresa.
+- Planos comerciais selecionaveis por empresa.
 
 ### Em andamento
 
@@ -56,7 +57,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Planos.
+- Limites por plano.
 
 ## 1. Visao do produto
 
@@ -954,7 +955,7 @@ Preparar cobranca recorrente e operacao com clientes reais.
 
 Entregas:
 
-- Planos.
+- [x] Planos.
 - Limites por plano.
 - Assinatura.
 - Trial.

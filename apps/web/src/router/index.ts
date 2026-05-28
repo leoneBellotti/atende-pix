@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import AttendancesPage from '../pages/AttendancesPage.vue';
 import AutomationsPage from '../pages/AutomationsPage.vue';
+import BillingPage from '../pages/BillingPage.vue';
 import CatalogPage from '../pages/CatalogPage.vue';
 import CustomersPage from '../pages/CustomersPage.vue';
 import CustomerDetailPage from '../pages/CustomerDetailPage.vue';
@@ -28,6 +29,11 @@ export const router = createRouter({
     {
       path: '/inbox',
       component: InboxPage,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/billing',
+      component: BillingPage,
       meta: { requiresAuth: true }
     },
     {

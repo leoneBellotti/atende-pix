@@ -109,6 +109,7 @@ model Tenant {
   automationRules AutomationRule[]
   automationLogs AutomationLog[]
   aiUsageLogs AiUsageLog[]
+  subscription Subscription?
 }
 
 model User {
@@ -438,6 +439,40 @@ model AiUsageLog {
   @@index([tenantId])
   @@index([tenantId, createdAt])
   @@index([tenantId, feature])
+}
+
+model SubscriptionPlan {
+  id             String   @id @default(cuid())
+  code           String   @unique
+  name           String
+  monthlyPrice   Decimal  @default(0) @db.Decimal(12, 2)
+  quoteLimit     Int?
+  userLimit      Int?
+  aiMonthlyLimit Int      @default(0)
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  subscriptions Subscription[]
+
+  @@index([active])
+}
+
+model Subscription {
+  id        String   @id @default(cuid())
+  tenantId  String   @unique
+  planId    String
+  status    String   @default("TRIAL")
+  startedAt DateTime @default(now())
+  renewsAt  DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  plan   SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Restrict)
+
+  @@index([planId])
+  @@index([status])
 }
 
 model PaymentProviderConfig {

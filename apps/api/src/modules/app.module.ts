@@ -4,6 +4,7 @@ import { PrismaModule } from '../common/prisma/prisma.module';
 import { AiModule } from './ai/ai.module';
 import { AttendancesModule } from './attendances/attendances.module';
 import { AutomationsModule } from './automations/automations.module';
+import { BillingModule } from './billing/billing.module';
 import { AuthModule } from './auth/auth.module';
 import { CatalogModule } from './catalog/catalog.module';
 import { CustomersModule } from './customers/customers.module';
@@ -24,6 +25,7 @@ import { WhatsAppModule } from './whatsapp/whatsapp.module';
     AiModule,
     AttendancesModule,
     AutomationsModule,
+    BillingModule,
     AuthModule,
     CatalogModule,
     CustomersModule,

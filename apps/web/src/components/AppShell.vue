@@ -15,6 +15,7 @@ const navigation = [
   { label: 'Pedidos', href: '/orders' },
   { label: 'Pagamentos', href: '/payments' },
   { label: 'Automacoes', href: '/automations' },
+  { label: 'Plano', href: '/billing' },
   { label: 'Relatorios', href: '/reports' },
   { label: 'Configuracoes', href: '/settings' }
 ];
