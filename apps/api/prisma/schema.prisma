@@ -90,6 +90,7 @@ model Tenant {
   phone     String?
   logoUrl   String?
   aiEnabled Boolean  @default(true)
+  aiMonthlyLimit Int  @default(100)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -107,6 +108,7 @@ model Tenant {
   messageTemplates MessageTemplate[]
   automationRules AutomationRule[]
   automationLogs AutomationLog[]
+  aiUsageLogs AiUsageLog[]
 }
 
 model User {
@@ -422,6 +424,20 @@ model AutomationLog {
   @@index([tenantId])
   @@index([ruleId])
   @@index([tenantId, status])
+}
+
+model AiUsageLog {
+  id        String   @id @default(cuid())
+  tenantId  String
+  feature   String
+  provider  String
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, createdAt])
+  @@index([tenantId, feature])
 }
 
 model PaymentProviderConfig {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
+import { getAiUsage } from '../services/aiService';
 import {
   getPaymentProviderConfig,
   getTenantSettings,
@@ -16,8 +17,10 @@ const form = reactive({
   document: '',
   phone: '',
   logoUrl: '',
-  aiEnabled: true
+  aiEnabled: true,
+  aiMonthlyLimit: 100
 });
+const aiUsage = ref<{ used: number; limit: number; remaining: number } | null>(null);
 const pixForm = reactive({
   active: false,
   sandbox: true,
@@ -55,16 +58,19 @@ async function loadSettings() {
   isLoading.value = true;
 
   try {
-    const [settings, pixConfig, whatsappConfig] = await Promise.all([
+    const [settings, pixConfig, whatsappConfig, usage] = await Promise.all([
       getTenantSettings(),
       getPaymentProviderConfig(),
-      getWhatsAppConfig()
+      getWhatsAppConfig(),
+      getAiUsage()
     ]);
     form.name = settings.name;
     form.document = settings.document ?? '';
     form.phone = settings.phone ?? '';
     form.logoUrl = settings.logoUrl ?? '';
     form.aiEnabled = settings.aiEnabled ?? true;
+    form.aiMonthlyLimit = settings.aiMonthlyLimit ?? 100;
+    aiUsage.value = usage;
     pixForm.active = pixConfig.active;
     pixForm.sandbox = pixConfig.sandbox;
     pixForm.hasAccessToken = pixConfig.hasAccessToken;
@@ -156,7 +162,8 @@ async function submit() {
       document: form.document,
       phone: form.phone,
       logoUrl: form.logoUrl,
-      aiEnabled: form.aiEnabled
+      aiEnabled: form.aiEnabled,
+      aiMonthlyLimit: Number(form.aiMonthlyLimit)
     });
     sessionStore.updateTenant(settings);
     successMessage.value = 'Configuracoes salvas.';
@@ -230,6 +237,19 @@ async function submit() {
           <input v-model="form.aiEnabled" class="h-4 w-4 accent-[#11644f]" type="checkbox" />
           IA assistente ativa
         </label>
+        <label class="block text-sm font-medium">
+          Limite mensal de IA
+          <input
+            v-model.number="form.aiMonthlyLimit"
+            class="mt-2 w-full rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
+            min="0"
+            type="number"
+          />
+        </label>
+        <div v-if="aiUsage" class="text-sm text-[#667067]">
+          Uso de IA no mes:
+          <span class="font-semibold text-ink">{{ aiUsage.used }} / {{ aiUsage.limit }}</span>
+        </div>
       </div>
 
       <div class="mt-5 flex justify-end">

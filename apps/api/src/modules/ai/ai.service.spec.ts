@@ -5,8 +5,13 @@ describe('AiService', () => {
     const prisma = {
       tenant: {
         findUnique: vi.fn().mockResolvedValue({
-          aiEnabled: true
+          aiEnabled: true,
+          aiMonthlyLimit: 100
         })
+      },
+      aiUsageLog: {
+        count: vi.fn().mockResolvedValue(0),
+        create: vi.fn().mockResolvedValue({})
       }
     };
     const service = new AiService(prisma as never);
@@ -36,8 +41,13 @@ describe('AiService', () => {
     const prisma = {
       tenant: {
         findUnique: vi.fn().mockResolvedValue({
-          aiEnabled: false
+          aiEnabled: false,
+          aiMonthlyLimit: 100
         })
+      },
+      aiUsageLog: {
+        count: vi.fn().mockResolvedValue(0),
+        create: vi.fn().mockResolvedValue({})
       }
     };
     const service = new AiService(prisma as never);
@@ -47,12 +57,61 @@ describe('AiService', () => {
     );
   });
 
+  it('blocks ai actions when the monthly limit is reached', async () => {
+    const prisma = {
+      tenant: {
+        findUnique: vi.fn().mockResolvedValue({
+          aiEnabled: true,
+          aiMonthlyLimit: 1
+        })
+      },
+      aiUsageLog: {
+        count: vi.fn().mockResolvedValue(1),
+        create: vi.fn().mockResolvedValue({})
+      }
+    };
+    const service = new AiService(prisma as never);
+
+    await expect(service.summarizeConversation('tenant-1', 'customer-1')).rejects.toThrow(
+      'Limite mensal'
+    );
+  });
+
+  it('returns monthly ai usage', async () => {
+    const prisma = {
+      tenant: {
+        findUnique: vi.fn().mockResolvedValue({
+          aiEnabled: true,
+          aiMonthlyLimit: 10
+        })
+      },
+      aiUsageLog: {
+        count: vi.fn().mockResolvedValue(3)
+      }
+    };
+    const service = new AiService(prisma as never);
+
+    await expect(service.getUsage('tenant-1')).resolves.toEqual(
+      expect.objectContaining({
+        enabled: true,
+        limit: 10,
+        used: 3,
+        remaining: 7
+      })
+    );
+  });
+
   it('summarizes a whatsapp conversation from recent messages', async () => {
     const prisma = {
       tenant: {
         findUnique: vi.fn().mockResolvedValue({
-          aiEnabled: true
+          aiEnabled: true,
+          aiMonthlyLimit: 100
         })
+      },
+      aiUsageLog: {
+        count: vi.fn().mockResolvedValue(0),
+        create: vi.fn().mockResolvedValue({})
       },
       message: {
         findMany: vi.fn().mockResolvedValue([
@@ -100,8 +159,13 @@ describe('AiService', () => {
     const prisma = {
       tenant: {
         findUnique: vi.fn().mockResolvedValue({
-          aiEnabled: true
+          aiEnabled: true,
+          aiMonthlyLimit: 100
         })
+      },
+      aiUsageLog: {
+        count: vi.fn().mockResolvedValue(0),
+        create: vi.fn().mockResolvedValue({})
       },
       message: {
         findMany: vi.fn().mockResolvedValue([
@@ -129,8 +193,13 @@ describe('AiService', () => {
     const prisma = {
       tenant: {
         findUnique: vi.fn().mockResolvedValue({
-          aiEnabled: true
+          aiEnabled: true,
+          aiMonthlyLimit: 100
         })
+      },
+      aiUsageLog: {
+        count: vi.fn().mockResolvedValue(0),
+        create: vi.fn().mockResolvedValue({})
       },
       message: {
         findMany: vi.fn().mockResolvedValue([

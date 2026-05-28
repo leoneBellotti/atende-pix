@@ -12,6 +12,7 @@ export type AuthTenant = {
   phone?: string | null;
   logoUrl?: string | null;
   aiEnabled?: boolean;
+  aiMonthlyLimit?: number;
 };
 
 export type AuthResponse = {

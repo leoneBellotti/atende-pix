@@ -7,6 +7,7 @@ export type UpdateTenantSettingsInput = {
   phone?: string;
   logoUrl?: string;
   aiEnabled?: boolean;
+  aiMonthlyLimit?: number;
 };
 
 export type PaymentProviderConfig = {

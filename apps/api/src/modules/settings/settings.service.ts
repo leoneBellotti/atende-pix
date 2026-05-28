@@ -30,7 +30,8 @@ export class SettingsService {
         document: this.nullable(input.document),
         phone: this.nullable(input.phone),
         logoUrl: this.nullable(input.logoUrl),
-        aiEnabled: input.aiEnabled
+        aiEnabled: input.aiEnabled,
+        aiMonthlyLimit: input.aiMonthlyLimit
       },
       select: this.tenantSelect()
     });
@@ -151,6 +152,7 @@ export class SettingsService {
       phone: true,
       logoUrl: true,
       aiEnabled: true,
+      aiMonthlyLimit: true,
       updatedAt: true
     };
   }

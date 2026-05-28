@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthenticatedRequest, JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { GenerateQuoteItemsDto } from './dto/generate-quote-items.dto';
@@ -10,6 +10,12 @@ import { AiService } from './ai.service';
 @Controller('ai')
 export class AiController {
   constructor(private readonly aiService: AiService) {}
+
+  @Get('usage')
+  @ApiOkResponse({ description: 'Uso mensal da IA do tenant autenticado.' })
+  getUsage(@Req() request: AuthenticatedRequest) {
+    return this.aiService.getUsage(request.user.tenantId);
+  }
 
   @Post('conversations/:id/summary')
   @ApiOkResponse({ description: 'Gera resumo assistido da conversa.' })

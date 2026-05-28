@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsOptional, IsString, IsUrl, MinLength } from 'class-validator';
+import { IsBoolean, IsInt, IsOptional, IsString, IsUrl, Min, MinLength } from 'class-validator';
 
 export class UpdateTenantSettingsDto {
   @ApiPropertyOptional({ example: 'AtendePix Demo' })
@@ -27,4 +27,10 @@ export class UpdateTenantSettingsDto {
   @IsOptional()
   @IsBoolean()
   aiEnabled?: boolean;
+
+  @ApiPropertyOptional({ example: 100 })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  aiMonthlyLimit?: number;
 }

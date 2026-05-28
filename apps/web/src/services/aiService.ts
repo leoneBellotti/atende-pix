@@ -19,6 +19,19 @@ export type GeneratedQuoteItem = {
   discount: number;
 };
 
+export type AiUsage = {
+  enabled: boolean;
+  limit: number;
+  used: number;
+  remaining: number;
+  periodStart: string;
+};
+
+export async function getAiUsage() {
+  const { data } = await apiClient.get<AiUsage>('/ai/usage');
+  return data;
+}
+
 export async function summarizeConversation(conversationId: string) {
   const { data } = await apiClient.post<ConversationSummaryResult>(
     `/ai/conversations/${conversationId}/summary`

@@ -48,14 +48,15 @@ Atualizado em: 2026-05-27
 - Geracao de itens de orcamento a partir de texto livre.
 - Sugestao editavel de follow-up no inbox.
 - Configuracao para ativar/desativar IA por empresa.
+- Logs de uso de IA e limite mensal por empresa.
 
 ### Em andamento
 
-- Preparacao para Fase 5: IA assistente.
+- Preparacao para Fase 6: SaaS comercial.
 
 ### Proximo
 
-- Logs de uso e limite por plano.
+- Planos.
 
 ## 1. Visao do produto
 
@@ -920,6 +921,8 @@ Demo publica:
 
 ### Fase 5 - IA assistente
 
+Status: concluida.
+
 Objetivo:
 
 Adicionar diferencial de produto e conteudo forte para redes.
@@ -931,7 +934,7 @@ Entregas:
 - [x] Geracao de itens de orcamento a partir de texto.
 - [x] Sugestao de follow-up.
 - [x] Configuracao para ativar/desativar IA.
-- Logs de uso e limite por plano.
+- [x] Logs de uso e limite por plano.
 
 Criterios de pronto:
 

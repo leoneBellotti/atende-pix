@@ -6,7 +6,7 @@ export class AiService {
   constructor(private readonly prisma: PrismaService) {}
 
   async generateQuoteItemsFromText(tenantId: string, text: string) {
-    await this.ensureAiEnabled(tenantId);
+    await this.ensureAiAvailable(tenantId, 'QUOTE_ITEMS');
 
     const items = text
       .split(/\r?\n/)
@@ -21,7 +21,7 @@ export class AiService {
   }
 
   async summarizeConversation(tenantId: string, conversationId: string) {
-    await this.ensureAiEnabled(tenantId);
+    await this.ensureAiAvailable(tenantId, 'CONVERSATION_SUMMARY');
 
     const messages = await this.prisma.message.findMany({
       where: {
@@ -75,7 +75,7 @@ export class AiService {
   }
 
   async suggestReply(tenantId: string, conversationId: string) {
-    await this.ensureAiEnabled(tenantId);
+    await this.ensureAiAvailable(tenantId, 'REPLY_SUGGESTION');
 
     const messages = await this.prisma.message.findMany({
       where: {
@@ -127,7 +127,7 @@ export class AiService {
   }
 
   async suggestFollowUp(tenantId: string, conversationId: string) {
-    await this.ensureAiEnabled(tenantId);
+    await this.ensureAiAvailable(tenantId, 'FOLLOW_UP_SUGGESTION');
 
     const messages = await this.prisma.message.findMany({
       where: {
@@ -192,16 +192,70 @@ export class AiService {
     };
   }
 
-  private async ensureAiEnabled(tenantId: string) {
+  async getUsage(tenantId: string) {
+    const periodStart = this.monthStart();
     const tenant = await this.prisma.tenant.findUnique({
       where: { id: tenantId },
       select: {
-        aiEnabled: true
+        aiEnabled: true,
+        aiMonthlyLimit: true
+      }
+    });
+    const used = await this.prisma.aiUsageLog.count({
+      where: {
+        tenantId,
+        createdAt: {
+          gte: periodStart
+        }
+      }
+    });
+
+    return {
+      enabled: tenant?.aiEnabled ?? false,
+      limit: tenant?.aiMonthlyLimit ?? 0,
+      used,
+      remaining: Math.max((tenant?.aiMonthlyLimit ?? 0) - used, 0),
+      periodStart
+    };
+  }
+
+  private async ensureAiAvailable(tenantId: string, feature: string) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: {
+        aiEnabled: true,
+        aiMonthlyLimit: true
       }
     });
 
     if (!tenant?.aiEnabled) {
       throw new ForbiddenException('IA desativada para esta empresa.');
     }
+
+    const used = await this.prisma.aiUsageLog.count({
+      where: {
+        tenantId,
+        createdAt: {
+          gte: this.monthStart()
+        }
+      }
+    });
+
+    if (used >= tenant.aiMonthlyLimit) {
+      throw new ForbiddenException('Limite mensal de IA atingido.');
+    }
+
+    await this.prisma.aiUsageLog.create({
+      data: {
+        tenantId,
+        feature,
+        provider: 'LOCAL'
+      }
+    });
+  }
+
+  private monthStart() {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
   }
 }
