@@ -1,11 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma/prisma.service';
 
 @Injectable()
 export class AiService {
   constructor(private readonly prisma: PrismaService) {}
 
-  generateQuoteItemsFromText(text: string) {
+  async generateQuoteItemsFromText(tenantId: string, text: string) {
+    await this.ensureAiEnabled(tenantId);
+
     const items = text
       .split(/\r?\n/)
       .map((line) => line.trim())
@@ -19,6 +21,8 @@ export class AiService {
   }
 
   async summarizeConversation(tenantId: string, conversationId: string) {
+    await this.ensureAiEnabled(tenantId);
+
     const messages = await this.prisma.message.findMany({
       where: {
         tenantId,
@@ -71,6 +75,8 @@ export class AiService {
   }
 
   async suggestReply(tenantId: string, conversationId: string) {
+    await this.ensureAiEnabled(tenantId);
+
     const messages = await this.prisma.message.findMany({
       where: {
         tenantId,
@@ -121,6 +127,8 @@ export class AiService {
   }
 
   async suggestFollowUp(tenantId: string, conversationId: string) {
+    await this.ensureAiEnabled(tenantId);
+
     const messages = await this.prisma.message.findMany({
       where: {
         tenantId,
@@ -182,5 +190,18 @@ export class AiService {
       unitPrice,
       discount: 0
     };
+  }
+
+  private async ensureAiEnabled(tenantId: string) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: {
+        aiEnabled: true
+      }
+    });
+
+    if (!tenant?.aiEnabled) {
+      throw new ForbiddenException('IA desativada para esta empresa.');
+    }
   }
 }

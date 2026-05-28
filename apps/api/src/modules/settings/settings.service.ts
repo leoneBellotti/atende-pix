@@ -29,7 +29,8 @@ export class SettingsService {
         name: input.name,
         document: this.nullable(input.document),
         phone: this.nullable(input.phone),
-        logoUrl: this.nullable(input.logoUrl)
+        logoUrl: this.nullable(input.logoUrl),
+        aiEnabled: input.aiEnabled
       },
       select: this.tenantSelect()
     });
@@ -149,6 +150,7 @@ export class SettingsService {
       document: true,
       phone: true,
       logoUrl: true,
+      aiEnabled: true,
       updatedAt: true
     };
   }

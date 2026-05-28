@@ -31,7 +31,7 @@ export class AiController {
 
   @Post('quote-items')
   @ApiOkResponse({ description: 'Gera itens de orcamento a partir de texto livre.' })
-  generateQuoteItems(@Body() input: GenerateQuoteItemsDto) {
-    return this.aiService.generateQuoteItemsFromText(input.text);
+  generateQuoteItems(@Req() request: AuthenticatedRequest, @Body() input: GenerateQuoteItemsDto) {
+    return this.aiService.generateQuoteItemsFromText(request.user.tenantId, input.text);
   }
 }

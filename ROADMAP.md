@@ -47,6 +47,7 @@ Atualizado em: 2026-05-27
 - Sugestao editavel de resposta no inbox com provedor local plugavel.
 - Geracao de itens de orcamento a partir de texto livre.
 - Sugestao editavel de follow-up no inbox.
+- Configuracao para ativar/desativar IA por empresa.
 
 ### Em andamento
 
@@ -54,7 +55,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Configuracao para ativar/desativar IA.
+- Logs de uso e limite por plano.
 
 ## 1. Visao do produto
 
@@ -929,7 +930,7 @@ Entregas:
 - [x] Sugestao de resposta.
 - [x] Geracao de itens de orcamento a partir de texto.
 - [x] Sugestao de follow-up.
-- Configuracao para ativar/desativar IA.
+- [x] Configuracao para ativar/desativar IA.
 - Logs de uso e limite por plano.
 
 Criterios de pronto:

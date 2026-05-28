@@ -15,7 +15,8 @@ const form = reactive({
   name: '',
   document: '',
   phone: '',
-  logoUrl: ''
+  logoUrl: '',
+  aiEnabled: true
 });
 const pixForm = reactive({
   active: false,
@@ -63,6 +64,7 @@ async function loadSettings() {
     form.document = settings.document ?? '';
     form.phone = settings.phone ?? '';
     form.logoUrl = settings.logoUrl ?? '';
+    form.aiEnabled = settings.aiEnabled ?? true;
     pixForm.active = pixConfig.active;
     pixForm.sandbox = pixConfig.sandbox;
     pixForm.hasAccessToken = pixConfig.hasAccessToken;
@@ -153,7 +155,8 @@ async function submit() {
       name: form.name,
       document: form.document,
       phone: form.phone,
-      logoUrl: form.logoUrl
+      logoUrl: form.logoUrl,
+      aiEnabled: form.aiEnabled
     });
     sessionStore.updateTenant(settings);
     successMessage.value = 'Configuracoes salvas.';
@@ -222,6 +225,10 @@ async function submit() {
             placeholder="https://..."
             type="url"
           />
+        </label>
+        <label class="flex items-center gap-2 text-sm font-medium">
+          <input v-model="form.aiEnabled" class="h-4 w-4 accent-[#11644f]" type="checkbox" />
+          IA assistente ativa
         </label>
       </div>
 

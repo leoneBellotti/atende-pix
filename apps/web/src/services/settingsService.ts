@@ -6,6 +6,7 @@ export type UpdateTenantSettingsInput = {
   document?: string;
   phone?: string;
   logoUrl?: string;
+  aiEnabled?: boolean;
 };
 
 export type PaymentProviderConfig = {

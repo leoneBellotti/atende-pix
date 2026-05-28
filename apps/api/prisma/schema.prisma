@@ -89,6 +89,7 @@ model Tenant {
   document  String?
   phone     String?
   logoUrl   String?
+  aiEnabled Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

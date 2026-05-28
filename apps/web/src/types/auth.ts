@@ -11,6 +11,7 @@ export type AuthTenant = {
   document?: string | null;
   phone?: string | null;
   logoUrl?: string | null;
+  aiEnabled?: boolean;
 };
 
 export type AuthResponse = {

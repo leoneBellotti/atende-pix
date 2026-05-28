@@ -1,12 +1,19 @@
 import { AiService } from './ai.service';
 
 describe('AiService', () => {
-  it('generates quote items from free text lines', () => {
-    const service = new AiService({} as never);
+  it('generates quote items from free text lines', async () => {
+    const prisma = {
+      tenant: {
+        findUnique: vi.fn().mockResolvedValue({
+          aiEnabled: true
+        })
+      }
+    };
+    const service = new AiService(prisma as never);
 
-    expect(
-      service.generateQuoteItemsFromText('Troca de tela 1x 250\nPelicula 2x 30')
-    ).toEqual({
+    await expect(
+      service.generateQuoteItemsFromText('tenant-1', 'Troca de tela 1x 250\nPelicula 2x 30')
+    ).resolves.toEqual({
       provider: 'LOCAL',
       items: [
         {
@@ -25,8 +32,28 @@ describe('AiService', () => {
     });
   });
 
+  it('blocks ai actions when ai is disabled for the tenant', async () => {
+    const prisma = {
+      tenant: {
+        findUnique: vi.fn().mockResolvedValue({
+          aiEnabled: false
+        })
+      }
+    };
+    const service = new AiService(prisma as never);
+
+    await expect(service.summarizeConversation('tenant-1', 'customer-1')).rejects.toThrow(
+      'IA desativada'
+    );
+  });
+
   it('summarizes a whatsapp conversation from recent messages', async () => {
     const prisma = {
+      tenant: {
+        findUnique: vi.fn().mockResolvedValue({
+          aiEnabled: true
+        })
+      },
       message: {
         findMany: vi.fn().mockResolvedValue([
           {
@@ -71,6 +98,11 @@ describe('AiService', () => {
 
   it('suggests an editable reply from the last inbound message', async () => {
     const prisma = {
+      tenant: {
+        findUnique: vi.fn().mockResolvedValue({
+          aiEnabled: true
+        })
+      },
       message: {
         findMany: vi.fn().mockResolvedValue([
           {
@@ -95,6 +127,11 @@ describe('AiService', () => {
 
   it('suggests an editable follow-up message', async () => {
     const prisma = {
+      tenant: {
+        findUnique: vi.fn().mockResolvedValue({
+          aiEnabled: true
+        })
+      },
       message: {
         findMany: vi.fn().mockResolvedValue([
           {
