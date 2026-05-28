@@ -42,14 +42,15 @@ Atualizado em: 2026-05-27
 - Lembrete de pagamento pendente com agendamento idempotente e logs.
 - Mensagem de pedido pronto com agendamento idempotente e logs.
 - Fila BullMQ para execucao futura de automacoes agendadas.
+- Worker BullMQ registrando execucao e falhas de automacao.
 
 ### Em andamento
 
-- Preparacao para Fase 4: automacoes e produtividade.
+- Preparacao para Fase 5: IA assistente.
 
 ### Proximo
 
-- Logs de automacao.
+- Botao para resumir conversa.
 
 ## 1. Visao do produto
 
@@ -884,6 +885,8 @@ Demo publica:
 - "Uma mensagem chegou no WhatsApp e virou atendimento, orcamento e Pix dentro do painel."
 
 ### Fase 4 - Automacoes e produtividade
+
+Status: concluida.
 
 Objetivo:
 

@@ -287,6 +287,48 @@ export class AutomationsService {
     };
   }
 
+  async executeScheduledLog(logId: string) {
+    const log = await this.prisma.automationLog.findUnique({
+      where: { id: logId }
+    });
+
+    if (!log) {
+      return {
+        executed: false,
+        reason: 'LOG_NOT_FOUND'
+      };
+    }
+
+    if (!log.message) {
+      await this.prisma.automationLog.update({
+        where: { id: log.id },
+        data: {
+          status: 'FAILED',
+          executedAt: new Date(),
+          errorMessage: 'Mensagem da automacao ausente.'
+        }
+      });
+
+      return {
+        executed: false,
+        reason: 'MESSAGE_MISSING'
+      };
+    }
+
+    await this.prisma.automationLog.update({
+      where: { id: log.id },
+      data: {
+        status: 'EXECUTED',
+        executedAt: new Date(),
+        errorMessage: null
+      }
+    });
+
+    return {
+      executed: true
+    };
+  }
+
   private renderMessage(template: string, values: Record<string, string>) {
     return Object.entries(values).reduce(
       (message, [key, value]) => message.replaceAll(`{{${key}}}`, value),

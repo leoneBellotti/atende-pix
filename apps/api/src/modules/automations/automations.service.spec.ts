@@ -242,4 +242,57 @@ describe('AutomationsService', () => {
       })
     );
   });
+
+  it('marks scheduled logs as executed when the queued job runs', async () => {
+    const prisma = {
+      automationLog: {
+        findUnique: vi.fn().mockResolvedValue({
+          id: 'log-1',
+          message: 'Mensagem agendada'
+        }),
+        update: vi.fn().mockResolvedValue({})
+      }
+    };
+    const service = new AutomationsService(prisma as never);
+
+    await expect(service.executeScheduledLog('log-1')).resolves.toEqual({
+      executed: true
+    });
+
+    expect(prisma.automationLog.update).toHaveBeenCalledWith({
+      where: { id: 'log-1' },
+      data: expect.objectContaining({
+        status: 'EXECUTED',
+        executedAt: expect.any(Date),
+        errorMessage: null
+      })
+    });
+  });
+
+  it('marks scheduled logs as failed when the message is missing', async () => {
+    const prisma = {
+      automationLog: {
+        findUnique: vi.fn().mockResolvedValue({
+          id: 'log-1',
+          message: null
+        }),
+        update: vi.fn().mockResolvedValue({})
+      }
+    };
+    const service = new AutomationsService(prisma as never);
+
+    await expect(service.executeScheduledLog('log-1')).resolves.toEqual({
+      executed: false,
+      reason: 'MESSAGE_MISSING'
+    });
+
+    expect(prisma.automationLog.update).toHaveBeenCalledWith({
+      where: { id: 'log-1' },
+      data: expect.objectContaining({
+        status: 'FAILED',
+        executedAt: expect.any(Date),
+        errorMessage: 'Mensagem da automacao ausente.'
+      })
+    });
+  });
 });
