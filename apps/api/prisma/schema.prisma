@@ -73,6 +73,15 @@ enum PaymentStatus {
   FAILED
 }
 
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum MessageChannel {
+  WHATSAPP
+}
+
 model Tenant {
   id        String   @id @default(cuid())
   name      String
@@ -93,6 +102,7 @@ model Tenant {
   paymentProviderConfigs PaymentProviderConfig[]
   paymentWebhookEvents PaymentWebhookEvent[]
   whatsappConfigs WhatsAppConfig[]
+  messages        Message[]
 }
 
 model User {
@@ -138,6 +148,7 @@ model Customer {
   attendances Attendance[]
   quotes      Quote[]
   orders      Order[]
+  messages    Message[]
 
   @@index([tenantId])
   @@index([tenantId, phone])
@@ -159,6 +170,7 @@ model Attendance {
   tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   customer Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
   quotes   Quote[]
+  messages Message[]
 
   @@index([tenantId])
   @@index([customerId])
@@ -314,6 +326,37 @@ model WhatsAppConfig {
 
   @@index([tenantId])
   @@index([tenantId, active])
+}
+
+model Message {
+  id                String           @id @default(cuid())
+  tenantId          String
+  customerId        String?
+  attendanceId      String?
+  channel           MessageChannel   @default(WHATSAPP)
+  direction         MessageDirection
+  externalMessageId String?
+  phoneNumberId     String?
+  fromPhone         String?
+  toPhone           String?
+  contactName       String?
+  type              String?
+  body              String?
+  sentAt            DateTime?
+  rawPayload        Json?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer   Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  attendance Attendance? @relation(fields: [attendanceId], references: [id], onDelete: SetNull)
+
+  @@unique([channel, externalMessageId])
+  @@index([tenantId])
+  @@index([customerId])
+  @@index([attendanceId])
+  @@index([tenantId, channel, createdAt])
+  @@index([tenantId, fromPhone])
 }
 
 model PaymentProviderConfig {

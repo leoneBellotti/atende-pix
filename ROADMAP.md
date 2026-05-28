@@ -28,6 +28,7 @@ Atualizado em: 2026-05-27
 - Webhook Mercado Pago com idempotencia, logs e atualizacao automatica de pedido pago.
 - Logs de pagamento exibidos no painel financeiro.
 - Configuracao de WhatsApp Cloud API por empresa.
+- Webhook de mensagens recebidas com persistencia idempotente.
 
 ### Em andamento
 
@@ -35,7 +36,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Webhook de mensagens recebidas.
+- Lista de conversas.
 
 ## 1. Visao do produto
 
@@ -847,7 +848,7 @@ Trazer atendimento conversacional para dentro do produto.
 Entregas:
 
 - [x] Configuracao de WhatsApp Cloud API.
-- Webhook de mensagens recebidas.
+- [x] Webhook de mensagens recebidas.
 - Lista de conversas.
 - Conversa vinculada ao cliente.
 - Criar cliente a partir de mensagem.
