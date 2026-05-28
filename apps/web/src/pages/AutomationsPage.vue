@@ -6,6 +6,7 @@ import {
   listAutomationRules,
   processExpiringQuoteReminders,
   processPendingPaymentReminders,
+  processReadyOrderMessages,
   updateAutomationRule
 } from '../services/automationsService';
 import type { AutomationLog, AutomationRule, AutomationTrigger } from '../types/automation';
@@ -17,6 +18,7 @@ const isLoading = ref(false);
 const isSaving = ref(false);
 const isProcessing = ref(false);
 const isProcessingPayments = ref(false);
+const isProcessingOrders = ref(false);
 
 const form = reactive({
   name: 'Follow-up de orcamento',
@@ -109,6 +111,20 @@ async function processPendingPayments() {
   }
 }
 
+async function processReadyOrders() {
+  errorMessage.value = '';
+  isProcessingOrders.value = true;
+
+  try {
+    await processReadyOrderMessages();
+    await loadRules();
+  } catch {
+    errorMessage.value = 'Nao foi possivel processar as mensagens de pedido pronto.';
+  } finally {
+    isProcessingOrders.value = false;
+  }
+}
+
 function triggerLabel(trigger: AutomationTrigger) {
   return triggerOptions.find((option) => option.value === trigger)?.label ?? trigger;
 }
@@ -149,6 +165,14 @@ function formatDate(value?: string | null) {
         @click="processPendingPayments"
       >
         Processar pagamentos pendentes
+      </button>
+      <button
+        class="rounded-md border border-[#cfd7ce] bg-white px-4 py-2 text-sm font-semibold text-[#465047] hover:bg-[#edf3ee] disabled:cursor-not-allowed disabled:opacity-60"
+        type="button"
+        :disabled="isProcessingOrders"
+        @click="processReadyOrders"
+      >
+        Processar pedidos prontos
       </button>
     </div>
 

@@ -32,3 +32,8 @@ export async function processPendingPaymentReminders() {
   );
   return data;
 }
+
+export async function processReadyOrderMessages() {
+  const { data } = await apiClient.post<{ scheduled: number }>('/automations/process/order-ready');
+  return data;
+}

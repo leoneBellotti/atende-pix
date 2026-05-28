@@ -212,6 +212,74 @@ export class AutomationsService {
     };
   }
 
+  async scheduleReadyOrderMessages(tenantId: string) {
+    const rules = await this.prisma.automationRule.findMany({
+      where: {
+        tenantId,
+        trigger: 'ORDER_READY',
+        active: true
+      }
+    });
+
+    if (!rules.length) {
+      return {
+        scheduled: 0
+      };
+    }
+
+    const orders = await this.prisma.order.findMany({
+      where: {
+        tenantId,
+        status: 'READY'
+      },
+      include: {
+        customer: true
+      }
+    });
+
+    let scheduled = 0;
+    const now = new Date();
+
+    for (const rule of rules) {
+      for (const order of orders) {
+        const scheduledFor = new Date(now.getTime() + rule.delayHours * 60 * 60 * 1000);
+
+        await this.prisma.automationLog.upsert({
+          where: {
+            tenantId_ruleId_targetType_targetId: {
+              tenantId,
+              ruleId: rule.id,
+              targetType: 'ORDER',
+              targetId: order.id
+            }
+          },
+          create: {
+            tenantId,
+            ruleId: rule.id,
+            targetType: 'ORDER',
+            targetId: order.id,
+            status: 'SCHEDULED',
+            scheduledFor,
+            message: this.renderMessage(rule.messageBody, {
+              customerName: order.customer.name,
+              orderNumber: String(order.number)
+            })
+          },
+          update: {
+            status: 'SCHEDULED',
+            scheduledFor
+          }
+        });
+
+        scheduled += 1;
+      }
+    }
+
+    return {
+      scheduled
+    };
+  }
+
   private renderMessage(template: string, values: Record<string, string>) {
     return Object.entries(values).reduce(
       (message, [key, value]) => message.replaceAll(`{{${key}}}`, value),

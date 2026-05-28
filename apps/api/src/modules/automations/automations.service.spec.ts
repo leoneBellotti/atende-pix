@@ -149,4 +149,56 @@ describe('AutomationsService', () => {
       })
     );
   });
+
+  it('schedules messages for ready orders', async () => {
+    const prisma = {
+      automationRule: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: 'rule-1',
+            delayHours: 1,
+            messageBody: 'Ola {{customerName}}, pedido #{{orderNumber}} esta pronto.'
+          }
+        ])
+      },
+      order: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: 'order-1',
+            number: 30,
+            customer: {
+              name: 'Carla'
+            }
+          }
+        ])
+      },
+      automationLog: {
+        upsert: vi.fn().mockResolvedValue({})
+      }
+    };
+    const service = new AutomationsService(prisma as never);
+
+    await expect(service.scheduleReadyOrderMessages('tenant-1')).resolves.toEqual({
+      scheduled: 1
+    });
+
+    expect(prisma.order.findMany).toHaveBeenCalledWith({
+      where: {
+        tenantId: 'tenant-1',
+        status: 'READY'
+      },
+      include: {
+        customer: true
+      }
+    });
+    expect(prisma.automationLog.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({
+          targetType: 'ORDER',
+          targetId: 'order-1',
+          message: 'Ola Carla, pedido #30 esta pronto.'
+        })
+      })
+    );
+  });
 });

@@ -59,4 +59,10 @@ export class AutomationJobsController {
   processPendingPayments(@Req() request: AuthenticatedRequest) {
     return this.automationsService.schedulePendingPaymentReminders(request.user.tenantId);
   }
+
+  @Post('process/order-ready')
+  @ApiOkResponse({ description: 'Agenda mensagens para pedidos prontos.' })
+  processReadyOrders(@Req() request: AuthenticatedRequest) {
+    return this.automationsService.scheduleReadyOrderMessages(request.user.tenantId);
+  }
 }

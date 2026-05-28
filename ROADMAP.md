@@ -40,6 +40,7 @@ Atualizado em: 2026-05-27
 - Tela para ligar/desligar regras de automacao.
 - Lembrete de orcamento vencendo com agendamento idempotente e logs.
 - Lembrete de pagamento pendente com agendamento idempotente e logs.
+- Mensagem de pedido pronto com agendamento idempotente e logs.
 
 ### Em andamento
 
@@ -47,7 +48,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Mensagem de pedido pronto.
+- Jobs com BullMQ.
 
 ## 1. Visao do produto
 
@@ -892,7 +893,7 @@ Entregas:
 - [x] Regras de follow-up.
 - [x] Lembrete de orcamento vencendo.
 - [x] Lembrete de pagamento pendente.
-- Mensagem de pedido pronto.
+- [x] Mensagem de pedido pronto.
 - Jobs com BullMQ.
 - [x] Logs de automacao.
 - [x] Tela para ligar/desligar regras.
