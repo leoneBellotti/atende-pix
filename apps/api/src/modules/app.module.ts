@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from '../common/prisma/prisma.module';
 import { AttendancesModule } from './attendances/attendances.module';
+import { AutomationsModule } from './automations/automations.module';
 import { AuthModule } from './auth/auth.module';
 import { CatalogModule } from './catalog/catalog.module';
 import { CustomersModule } from './customers/customers.module';
@@ -20,6 +21,7 @@ import { WhatsAppModule } from './whatsapp/whatsapp.module';
     }),
     PrismaModule,
     AttendancesModule,
+    AutomationsModule,
     AuthModule,
     CatalogModule,
     CustomersModule,

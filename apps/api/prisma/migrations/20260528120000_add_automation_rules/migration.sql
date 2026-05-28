@@ -1,0 +1,26 @@
+-- CreateTable
+CREATE TABLE "AutomationRule" (
+    "id" TEXT NOT NULL,
+    "tenantId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "trigger" TEXT NOT NULL,
+    "delayHours" INTEGER NOT NULL DEFAULT 24,
+    "messageBody" TEXT NOT NULL,
+    "active" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "AutomationRule_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE INDEX "AutomationRule_tenantId_idx" ON "AutomationRule"("tenantId");
+
+-- CreateIndex
+CREATE INDEX "AutomationRule_tenantId_active_idx" ON "AutomationRule"("tenantId", "active");
+
+-- CreateIndex
+CREATE INDEX "AutomationRule_tenantId_trigger_idx" ON "AutomationRule"("tenantId", "trigger");
+
+-- AddForeignKey
+ALTER TABLE "AutomationRule" ADD CONSTRAINT "AutomationRule_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "Tenant"("id") ON DELETE CASCADE ON UPDATE CASCADE;

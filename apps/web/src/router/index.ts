@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import AttendancesPage from '../pages/AttendancesPage.vue';
+import AutomationsPage from '../pages/AutomationsPage.vue';
 import CatalogPage from '../pages/CatalogPage.vue';
 import CustomersPage from '../pages/CustomersPage.vue';
 import CustomerDetailPage from '../pages/CustomerDetailPage.vue';
@@ -27,6 +28,11 @@ export const router = createRouter({
     {
       path: '/inbox',
       component: InboxPage,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/automations',
+      component: AutomationsPage,
       meta: { requiresAuth: true }
     },
     {

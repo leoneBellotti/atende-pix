@@ -104,6 +104,7 @@ model Tenant {
   whatsappConfigs WhatsAppConfig[]
   messages        Message[]
   messageTemplates MessageTemplate[]
+  automationRules AutomationRule[]
 }
 
 model User {
@@ -378,6 +379,24 @@ model MessageTemplate {
   @@unique([tenantId, name])
   @@index([tenantId])
   @@index([tenantId, active])
+}
+
+model AutomationRule {
+  id          String   @id @default(cuid())
+  tenantId    String
+  name        String
+  trigger     String
+  delayHours  Int      @default(24)
+  messageBody String
+  active      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, active])
+  @@index([tenantId, trigger])
 }
 
 model PaymentProviderConfig {

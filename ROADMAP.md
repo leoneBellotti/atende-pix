@@ -36,6 +36,8 @@ Atualizado em: 2026-05-27
 - Envio de respostas de texto pela WhatsApp Cloud API dentro da janela de atendimento.
 - Templates de utilidade no inbox.
 - Status de entrega/leitura de mensagem quando recebido pelo webhook.
+- Regras de follow-up configuraveis, desligadas por padrao.
+- Tela para ligar/desligar regras de automacao.
 
 ### Em andamento
 
@@ -43,7 +45,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Regras de follow-up.
+- Lembrete de orcamento vencendo.
 
 ## 1. Visao do produto
 
@@ -885,13 +887,13 @@ Reduzir tarefas repetitivas e aumentar conversao.
 
 Entregas:
 
-- Regras de follow-up.
+- [x] Regras de follow-up.
 - Lembrete de orcamento vencendo.
 - Lembrete de pagamento pendente.
 - Mensagem de pedido pronto.
 - Jobs com BullMQ.
 - Logs de automacao.
-- Tela para ligar/desligar regras.
+- [x] Tela para ligar/desligar regras.
 
 Criterios de pronto:
 
