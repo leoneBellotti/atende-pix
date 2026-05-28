@@ -53,4 +53,10 @@ export class AutomationJobsController {
   processExpiringQuotes(@Req() request: AuthenticatedRequest) {
     return this.automationsService.scheduleExpiringQuoteReminders(request.user.tenantId);
   }
+
+  @Post('process/payment-pending')
+  @ApiOkResponse({ description: 'Agenda lembretes para pagamentos pendentes.' })
+  processPendingPayments(@Req() request: AuthenticatedRequest) {
+    return this.automationsService.schedulePendingPaymentReminders(request.user.tenantId);
+  }
 }

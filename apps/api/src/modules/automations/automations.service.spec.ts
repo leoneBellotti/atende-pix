@@ -95,4 +95,58 @@ describe('AutomationsService', () => {
       })
     );
   });
+
+  it('schedules reminders for pending payments', async () => {
+    const prisma = {
+      automationRule: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: 'rule-1',
+            delayHours: 1,
+            messageBody: 'Ola {{customerName}}, pagamento do pedido #{{orderNumber}} esta pendente.'
+          }
+        ])
+      },
+      payment: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: 'payment-1',
+            amount: '50.00',
+            order: {
+              number: 20,
+              customer: {
+                name: 'Bruno'
+              }
+            }
+          }
+        ])
+      },
+      automationLog: {
+        upsert: vi.fn().mockResolvedValue({})
+      }
+    };
+    const service = new AutomationsService(prisma as never);
+
+    await expect(service.schedulePendingPaymentReminders('tenant-1')).resolves.toEqual({
+      scheduled: 1
+    });
+
+    expect(prisma.payment.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          tenantId: 'tenant-1',
+          status: 'PENDING'
+        }
+      })
+    );
+    expect(prisma.automationLog.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({
+          targetType: 'PAYMENT',
+          targetId: 'payment-1',
+          message: 'Ola Bruno, pagamento do pedido #20 esta pendente.'
+        })
+      })
+    );
+  });
 });

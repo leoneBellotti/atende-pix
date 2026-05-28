@@ -25,3 +25,10 @@ export async function processExpiringQuoteReminders() {
   const { data } = await apiClient.post<{ scheduled: number }>('/automations/process/quote-expiring');
   return data;
 }
+
+export async function processPendingPaymentReminders() {
+  const { data } = await apiClient.post<{ scheduled: number }>(
+    '/automations/process/payment-pending'
+  );
+  return data;
+}

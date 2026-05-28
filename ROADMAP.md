@@ -39,6 +39,7 @@ Atualizado em: 2026-05-27
 - Regras de follow-up configuraveis, desligadas por padrao.
 - Tela para ligar/desligar regras de automacao.
 - Lembrete de orcamento vencendo com agendamento idempotente e logs.
+- Lembrete de pagamento pendente com agendamento idempotente e logs.
 
 ### Em andamento
 
@@ -46,7 +47,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Lembrete de pagamento pendente.
+- Mensagem de pedido pronto.
 
 ## 1. Visao do produto
 
@@ -890,7 +891,7 @@ Entregas:
 
 - [x] Regras de follow-up.
 - [x] Lembrete de orcamento vencendo.
-- Lembrete de pagamento pendente.
+- [x] Lembrete de pagamento pendente.
 - Mensagem de pedido pronto.
 - Jobs com BullMQ.
 - [x] Logs de automacao.

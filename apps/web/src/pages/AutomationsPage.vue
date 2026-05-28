@@ -5,6 +5,7 @@ import {
   listAutomationLogs,
   listAutomationRules,
   processExpiringQuoteReminders,
+  processPendingPaymentReminders,
   updateAutomationRule
 } from '../services/automationsService';
 import type { AutomationLog, AutomationRule, AutomationTrigger } from '../types/automation';
@@ -15,6 +16,7 @@ const errorMessage = ref('');
 const isLoading = ref(false);
 const isSaving = ref(false);
 const isProcessing = ref(false);
+const isProcessingPayments = ref(false);
 
 const form = reactive({
   name: 'Follow-up de orcamento',
@@ -93,6 +95,20 @@ async function processExpiringQuotes() {
   }
 }
 
+async function processPendingPayments() {
+  errorMessage.value = '';
+  isProcessingPayments.value = true;
+
+  try {
+    await processPendingPaymentReminders();
+    await loadRules();
+  } catch {
+    errorMessage.value = 'Nao foi possivel processar os lembretes de pagamento.';
+  } finally {
+    isProcessingPayments.value = false;
+  }
+}
+
 function triggerLabel(trigger: AutomationTrigger) {
   return triggerOptions.find((option) => option.value === trigger)?.label ?? trigger;
 }
@@ -117,7 +133,7 @@ function formatDate(value?: string | null) {
         Configure follow-ups simples para reduzir tarefas repetitivas.
       </p>
     </div>
-    <div>
+    <div class="flex flex-col gap-2 sm:flex-row">
       <button
         class="rounded-md border border-[#cfd7ce] bg-white px-4 py-2 text-sm font-semibold text-[#465047] hover:bg-[#edf3ee] disabled:cursor-not-allowed disabled:opacity-60"
         type="button"
@@ -125,6 +141,14 @@ function formatDate(value?: string | null) {
         @click="processExpiringQuotes"
       >
         Processar orcamentos vencendo
+      </button>
+      <button
+        class="rounded-md border border-[#cfd7ce] bg-white px-4 py-2 text-sm font-semibold text-[#465047] hover:bg-[#edf3ee] disabled:cursor-not-allowed disabled:opacity-60"
+        type="button"
+        :disabled="isProcessingPayments"
+        @click="processPendingPayments"
+      >
+        Processar pagamentos pendentes
       </button>
     </div>
 

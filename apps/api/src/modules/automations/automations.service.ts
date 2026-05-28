@@ -139,6 +139,79 @@ export class AutomationsService {
     };
   }
 
+  async schedulePendingPaymentReminders(tenantId: string) {
+    const rules = await this.prisma.automationRule.findMany({
+      where: {
+        tenantId,
+        trigger: 'PAYMENT_PENDING',
+        active: true
+      }
+    });
+
+    if (!rules.length) {
+      return {
+        scheduled: 0
+      };
+    }
+
+    const payments = await this.prisma.payment.findMany({
+      where: {
+        tenantId,
+        status: 'PENDING'
+      },
+      include: {
+        order: {
+          include: {
+            customer: true
+          }
+        }
+      }
+    });
+
+    let scheduled = 0;
+    const now = new Date();
+
+    for (const rule of rules) {
+      for (const payment of payments) {
+        const scheduledFor = new Date(now.getTime() + rule.delayHours * 60 * 60 * 1000);
+
+        await this.prisma.automationLog.upsert({
+          where: {
+            tenantId_ruleId_targetType_targetId: {
+              tenantId,
+              ruleId: rule.id,
+              targetType: 'PAYMENT',
+              targetId: payment.id
+            }
+          },
+          create: {
+            tenantId,
+            ruleId: rule.id,
+            targetType: 'PAYMENT',
+            targetId: payment.id,
+            status: 'SCHEDULED',
+            scheduledFor,
+            message: this.renderMessage(rule.messageBody, {
+              customerName: payment.order.customer.name,
+              orderNumber: String(payment.order.number),
+              amount: String(payment.amount)
+            })
+          },
+          update: {
+            status: 'SCHEDULED',
+            scheduledFor
+          }
+        });
+
+        scheduled += 1;
+      }
+    }
+
+    return {
+      scheduled
+    };
+  }
+
   private renderMessage(template: string, values: Record<string, string>) {
     return Object.entries(values).reduce(
       (message, [key, value]) => message.replaceAll(`{{${key}}}`, value),
