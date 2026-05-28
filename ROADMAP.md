@@ -43,6 +43,7 @@ Atualizado em: 2026-05-27
 - Mensagem de pedido pronto com agendamento idempotente e logs.
 - Fila BullMQ para execucao futura de automacoes agendadas.
 - Worker BullMQ registrando execucao e falhas de automacao.
+- Botao para resumir conversa no inbox com provedor local plugavel.
 
 ### Em andamento
 
@@ -50,7 +51,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Botao para resumir conversa.
+- Sugestao de resposta.
 
 ## 1. Visao do produto
 
@@ -921,7 +922,7 @@ Adicionar diferencial de produto e conteudo forte para redes.
 
 Entregas:
 
-- Botao para resumir conversa.
+- [x] Botao para resumir conversa.
 - Sugestao de resposta.
 - Geracao de itens de orcamento a partir de texto.
 - Sugestao de follow-up.

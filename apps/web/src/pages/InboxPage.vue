@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { createAttendance } from '../services/attendancesService';
+import { summarizeConversation } from '../services/aiService';
 import { createCustomer, listCustomers } from '../services/customersService';
 import {
   linkConversationToCustomer,
@@ -17,6 +18,7 @@ const customers = ref<Customer[]>([]);
 const messageTemplates = ref<MessageTemplate[]>([]);
 const selectedCustomers = ref<Record<string, string>>({});
 const replyDrafts = ref<Record<string, string>>({});
+const conversationSummaries = ref<Record<string, string>>({});
 const search = ref('');
 const errorMessage = ref('');
 const isLoading = ref(false);
@@ -24,6 +26,7 @@ const linkingConversationId = ref('');
 const creatingCustomerConversationId = ref('');
 const creatingAttendanceConversationId = ref('');
 const sendingConversationId = ref('');
+const summarizingConversationId = ref('');
 const router = useRouter();
 
 const filteredConversations = computed(() => {
@@ -195,6 +198,20 @@ async function sendReply(conversation: ConversationSummary) {
   }
 }
 
+async function summarize(conversation: ConversationSummary) {
+  errorMessage.value = '';
+  summarizingConversationId.value = conversation.id;
+
+  try {
+    const result = await summarizeConversation(conversation.id);
+    conversationSummaries.value[conversation.id] = result.summary;
+  } catch {
+    errorMessage.value = 'Nao foi possivel resumir a conversa.';
+  } finally {
+    summarizingConversationId.value = '';
+  }
+}
+
 function applyTemplate(conversation: ConversationSummary, templateBody: string) {
   if (!templateBody) {
     return;
@@ -280,6 +297,20 @@ function applySelectedTemplate(conversation: ConversationSummary, event: Event) 
               <p class="mt-1 text-xs text-[#667067]">{{ formatPhone(conversation.phone) }}</p>
               <p class="mt-2 truncate text-sm text-[#465047]">
                 {{ lastMessagePreview(conversation) }}
+              </p>
+              <button
+                class="mt-3 rounded-md border border-[#cfd7ce] px-3 py-1.5 text-xs font-semibold text-[#465047] hover:bg-[#edf3ee] disabled:cursor-not-allowed disabled:opacity-60"
+                type="button"
+                :disabled="summarizingConversationId === conversation.id"
+                @click="summarize(conversation)"
+              >
+                Resumir conversa
+              </button>
+              <p
+                v-if="conversationSummaries[conversation.id]"
+                class="mt-3 rounded-md border border-[#dfe4da] bg-[#fbfcf9] px-3 py-2 text-xs leading-5 text-[#465047]"
+              >
+                {{ conversationSummaries[conversation.id] }}
               </p>
             </div>
             <div v-if="!conversation.customer" class="flex flex-col gap-2">

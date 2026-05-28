@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from '../common/prisma/prisma.module';
+import { AiModule } from './ai/ai.module';
 import { AttendancesModule } from './attendances/attendances.module';
 import { AutomationsModule } from './automations/automations.module';
 import { AuthModule } from './auth/auth.module';
@@ -20,6 +21,7 @@ import { WhatsAppModule } from './whatsapp/whatsapp.module';
       isGlobal: true
     }),
     PrismaModule,
+    AiModule,
     AttendancesModule,
     AutomationsModule,
     AuthModule,
