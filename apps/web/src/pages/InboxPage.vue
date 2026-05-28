@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { listCustomers } from '../services/customersService';
+import { createCustomer, listCustomers } from '../services/customersService';
 import { linkConversationToCustomer, listConversations } from '../services/messagesService';
 import type { Customer } from '../types/customer';
 import type { ConversationSummary } from '../types/message';
@@ -12,6 +12,7 @@ const search = ref('');
 const errorMessage = ref('');
 const isLoading = ref(false);
 const linkingConversationId = ref('');
+const creatingCustomerConversationId = ref('');
 
 const filteredConversations = computed(() => {
   const term = search.value.trim().toLowerCase();
@@ -95,6 +96,32 @@ async function linkCustomer(conversation: ConversationSummary) {
     linkingConversationId.value = '';
   }
 }
+
+async function createCustomerFromConversation(conversation: ConversationSummary) {
+  const phone = conversation.phone ?? '';
+  const name = conversation.contactName ?? phone;
+
+  if (!name) {
+    return;
+  }
+
+  errorMessage.value = '';
+  creatingCustomerConversationId.value = conversation.id;
+
+  try {
+    const customer = await createCustomer({
+      name,
+      phone,
+      notes: 'Criado a partir de mensagem recebida no WhatsApp.'
+    });
+    await linkConversationToCustomer(conversation.id, customer.id);
+    await loadConversations();
+  } catch {
+    errorMessage.value = 'Nao foi possivel criar o cliente a partir da conversa.';
+  } finally {
+    creatingCustomerConversationId.value = '';
+  }
+}
 </script>
 
 <template>
@@ -170,23 +197,33 @@ async function linkCustomer(conversation: ConversationSummary) {
                 {{ lastMessagePreview(conversation) }}
               </p>
             </div>
-            <div v-if="!conversation.customer" class="flex flex-col gap-2 sm:flex-row">
-              <select
-                v-model="selectedCustomers[conversation.id]"
-                class="min-w-0 flex-1 rounded-md border border-[#cfd7ce] bg-white px-3 py-2 text-sm outline-none focus:border-mint"
-              >
-                <option value="">Vincular cliente</option>
-                <option v-for="customer in customers" :key="customer.id" :value="customer.id">
-                  {{ customer.name }}
-                </option>
-              </select>
+            <div v-if="!conversation.customer" class="flex flex-col gap-2">
+              <div class="flex flex-col gap-2 sm:flex-row">
+                <select
+                  v-model="selectedCustomers[conversation.id]"
+                  class="min-w-0 flex-1 rounded-md border border-[#cfd7ce] bg-white px-3 py-2 text-sm outline-none focus:border-mint"
+                >
+                  <option value="">Vincular cliente</option>
+                  <option v-for="customer in customers" :key="customer.id" :value="customer.id">
+                    {{ customer.name }}
+                  </option>
+                </select>
+                <button
+                  class="rounded-md bg-mint px-3 py-2 text-sm font-semibold text-white hover:bg-[#176d58] disabled:cursor-not-allowed disabled:opacity-60"
+                  type="button"
+                  :disabled="!selectedCustomers[conversation.id] || linkingConversationId === conversation.id"
+                  @click="linkCustomer(conversation)"
+                >
+                  Vincular
+                </button>
+              </div>
               <button
-                class="rounded-md bg-mint px-3 py-2 text-sm font-semibold text-white hover:bg-[#176d58] disabled:cursor-not-allowed disabled:opacity-60"
+                class="rounded-md border border-[#cfd7ce] px-3 py-2 text-sm font-semibold text-[#465047] hover:bg-[#edf3ee] disabled:cursor-not-allowed disabled:opacity-60"
                 type="button"
-                :disabled="!selectedCustomers[conversation.id] || linkingConversationId === conversation.id"
-                @click="linkCustomer(conversation)"
+                :disabled="creatingCustomerConversationId === conversation.id"
+                @click="createCustomerFromConversation(conversation)"
               >
-                Vincular
+                Criar cliente
               </button>
             </div>
             <div v-else class="text-sm text-[#667067]">

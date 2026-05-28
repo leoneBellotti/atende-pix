@@ -31,6 +31,7 @@ Atualizado em: 2026-05-27
 - Webhook de mensagens recebidas com persistencia idempotente.
 - Lista de conversas no inbox.
 - Vinculo manual de conversa ao cliente.
+- Criacao de cliente a partir de conversa recebida.
 
 ### Em andamento
 
@@ -38,7 +39,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Criar cliente a partir de mensagem.
+- Criar atendimento a partir de conversa.
 
 ## 1. Visao do produto
 
@@ -853,7 +854,7 @@ Entregas:
 - [x] Webhook de mensagens recebidas.
 - [x] Lista de conversas.
 - [x] Conversa vinculada ao cliente.
-- Criar cliente a partir de mensagem.
+- [x] Criar cliente a partir de mensagem.
 - Criar atendimento a partir de conversa.
 - Envio de mensagens permitidas.
 - Templates de utilidade.
