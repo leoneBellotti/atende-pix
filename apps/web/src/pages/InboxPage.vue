@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { listConversations } from '../services/messagesService';
+import { listCustomers } from '../services/customersService';
+import { linkConversationToCustomer, listConversations } from '../services/messagesService';
+import type { Customer } from '../types/customer';
 import type { ConversationSummary } from '../types/message';
 
 const conversations = ref<ConversationSummary[]>([]);
+const customers = ref<Customer[]>([]);
+const selectedCustomers = ref<Record<string, string>>({});
 const search = ref('');
 const errorMessage = ref('');
 const isLoading = ref(false);
+const linkingConversationId = ref('');
 
 const filteredConversations = computed(() => {
   const term = search.value.trim().toLowerCase();
@@ -34,7 +39,9 @@ async function loadConversations() {
   isLoading.value = true;
 
   try {
-    conversations.value = await listConversations();
+    const [conversationData, customerData] = await Promise.all([listConversations(), listCustomers()]);
+    conversations.value = conversationData;
+    customers.value = customerData;
   } catch {
     errorMessage.value = 'Nao foi possivel carregar as conversas.';
   } finally {
@@ -67,6 +74,26 @@ function formatDate(value?: string | null) {
 
 function lastMessagePreview(conversation: ConversationSummary) {
   return conversation.lastMessage.body || `Mensagem do tipo ${conversation.lastMessage.type ?? 'desconhecido'}`;
+}
+
+async function linkCustomer(conversation: ConversationSummary) {
+  const customerId = selectedCustomers.value[conversation.id];
+
+  if (!customerId) {
+    return;
+  }
+
+  errorMessage.value = '';
+  linkingConversationId.value = conversation.id;
+
+  try {
+    await linkConversationToCustomer(conversation.id, customerId);
+    await loadConversations();
+  } catch {
+    errorMessage.value = 'Nao foi possivel vincular a conversa ao cliente.';
+  } finally {
+    linkingConversationId.value = '';
+  }
 }
 </script>
 
@@ -125,7 +152,7 @@ function lastMessagePreview(conversation: ConversationSummary) {
           :key="conversation.id"
           class="px-4 py-4 hover:bg-[#fbfcf9]"
         >
-          <div class="grid gap-3 lg:grid-cols-[1fr_180px] lg:items-center">
+          <div class="grid gap-3 lg:grid-cols-[1fr_280px_180px] lg:items-center">
             <div class="min-w-0">
               <div class="flex flex-wrap items-center gap-2">
                 <h3 class="truncate font-semibold text-ink">
@@ -142,6 +169,28 @@ function lastMessagePreview(conversation: ConversationSummary) {
               <p class="mt-2 truncate text-sm text-[#465047]">
                 {{ lastMessagePreview(conversation) }}
               </p>
+            </div>
+            <div v-if="!conversation.customer" class="flex flex-col gap-2 sm:flex-row">
+              <select
+                v-model="selectedCustomers[conversation.id]"
+                class="min-w-0 flex-1 rounded-md border border-[#cfd7ce] bg-white px-3 py-2 text-sm outline-none focus:border-mint"
+              >
+                <option value="">Vincular cliente</option>
+                <option v-for="customer in customers" :key="customer.id" :value="customer.id">
+                  {{ customer.name }}
+                </option>
+              </select>
+              <button
+                class="rounded-md bg-mint px-3 py-2 text-sm font-semibold text-white hover:bg-[#176d58] disabled:cursor-not-allowed disabled:opacity-60"
+                type="button"
+                :disabled="!selectedCustomers[conversation.id] || linkingConversationId === conversation.id"
+                @click="linkCustomer(conversation)"
+              >
+                Vincular
+              </button>
+            </div>
+            <div v-else class="text-sm text-[#667067]">
+              {{ conversation.customer.phone || 'Cliente sem telefone' }}
             </div>
             <div class="text-xs text-[#667067] lg:text-right">
               <p>{{ conversation.lastMessage.direction === 'INBOUND' ? 'Recebida' : 'Enviada' }}</p>

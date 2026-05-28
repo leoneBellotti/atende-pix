@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../common/prisma/prisma.service';
 
@@ -99,6 +99,46 @@ export class WhatsAppService {
         createdAt: message.createdAt
       }
     }));
+  }
+
+  async linkConversationToCustomer(tenantId: string, conversationId: string, customerId: string) {
+    const customer = await this.prisma.customer.findFirst({
+      where: {
+        id: customerId,
+        tenantId
+      },
+      select: {
+        id: true
+      }
+    });
+
+    if (!customer) {
+      throw new NotFoundException('Cliente nao encontrado para vincular conversa.');
+    }
+
+    const result = await this.prisma.message.updateMany({
+      where: {
+        tenantId,
+        channel: 'WHATSAPP',
+        OR: [
+          { customerId: conversationId },
+          { fromPhone: conversationId },
+          { toPhone: conversationId }
+        ]
+      },
+      data: {
+        customerId: customer.id
+      }
+    });
+
+    if (!result.count) {
+      throw new NotFoundException('Conversa nao encontrada.');
+    }
+
+    return {
+      linked: true,
+      updatedMessages: result.count
+    };
   }
 
   async verifyWebhook(input: { mode?: string; token?: string; challenge?: string }) {

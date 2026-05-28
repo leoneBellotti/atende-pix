@@ -57,6 +57,44 @@ describe('WhatsAppService', () => {
     ]);
   });
 
+  it('links all messages from a conversation to a customer', async () => {
+    const prisma = {
+      customer: {
+        findFirst: vi.fn().mockResolvedValue({
+          id: 'customer-1'
+        })
+      },
+      message: {
+        updateMany: vi.fn().mockResolvedValue({
+          count: 2
+        })
+      }
+    };
+    const service = new WhatsAppService(prisma as never);
+
+    await expect(
+      service.linkConversationToCustomer('tenant-1', '5511999990000', 'customer-1')
+    ).resolves.toEqual({
+      linked: true,
+      updatedMessages: 2
+    });
+
+    expect(prisma.message.updateMany).toHaveBeenCalledWith({
+      where: {
+        tenantId: 'tenant-1',
+        channel: 'WHATSAPP',
+        OR: [
+          { customerId: '5511999990000' },
+          { fromPhone: '5511999990000' },
+          { toPhone: '5511999990000' }
+        ]
+      },
+      data: {
+        customerId: 'customer-1'
+      }
+    });
+  });
+
   it('returns the challenge when the verify token matches an active config', async () => {
     const prisma = {
       whatsAppConfig: {

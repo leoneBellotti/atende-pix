@@ -30,6 +30,7 @@ Atualizado em: 2026-05-27
 - Configuracao de WhatsApp Cloud API por empresa.
 - Webhook de mensagens recebidas com persistencia idempotente.
 - Lista de conversas no inbox.
+- Vinculo manual de conversa ao cliente.
 
 ### Em andamento
 
@@ -37,7 +38,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Conversa vinculada ao cliente.
+- Criar cliente a partir de mensagem.
 
 ## 1. Visao do produto
 
@@ -851,7 +852,7 @@ Entregas:
 - [x] Configuracao de WhatsApp Cloud API.
 - [x] Webhook de mensagens recebidas.
 - [x] Lista de conversas.
-- Conversa vinculada ao cliente.
+- [x] Conversa vinculada ao cliente.
 - Criar cliente a partir de mensagem.
 - Criar atendimento a partir de conversa.
 - Envio de mensagens permitidas.
