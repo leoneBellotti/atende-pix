@@ -96,6 +96,47 @@ describe('AutomationsService', () => {
     );
   });
 
+  it('enqueues scheduled automation logs in BullMQ', async () => {
+    const prisma = {
+      automationRule: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: 'rule-1',
+            delayHours: 2,
+            messageBody: 'Ola {{customerName}}.'
+          }
+        ])
+      },
+      quote: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: 'quote-1',
+            number: 10,
+            customer: {
+              name: 'Ana'
+            }
+          }
+        ])
+      },
+      automationLog: {
+        upsert: vi.fn().mockResolvedValue({
+          id: 'log-1'
+        })
+      }
+    };
+    const queue = {
+      enqueueAutomationLog: vi.fn().mockResolvedValue(undefined)
+    };
+    const service = new AutomationsService(prisma as never, queue as never);
+
+    await service.scheduleExpiringQuoteReminders('tenant-1');
+
+    expect(queue.enqueueAutomationLog).toHaveBeenCalledWith({
+      logId: 'log-1',
+      scheduledFor: expect.any(Date)
+    });
+  });
+
   it('schedules reminders for pending payments', async () => {
     const prisma = {
       automationRule: {

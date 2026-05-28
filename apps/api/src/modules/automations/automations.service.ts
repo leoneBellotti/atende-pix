@@ -1,11 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { AutomationsQueue } from './automations.queue';
 import { CreateAutomationRuleDto } from './dto/create-automation-rule.dto';
 import { UpdateAutomationRuleDto } from './dto/update-automation-rule.dto';
 
 @Injectable()
 export class AutomationsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly automationsQueue?: AutomationsQueue
+  ) {}
 
   listLogs(tenantId: string) {
     return this.prisma.automationLog.findMany({
@@ -103,7 +107,7 @@ export class AutomationsService {
       for (const quote of quotes) {
         const scheduledFor = new Date(now.getTime() + rule.delayHours * 60 * 60 * 1000);
 
-        await this.prisma.automationLog.upsert({
+        const log = await this.prisma.automationLog.upsert({
           where: {
             tenantId_ruleId_targetType_targetId: {
               tenantId,
@@ -129,6 +133,7 @@ export class AutomationsService {
             scheduledFor
           }
         });
+        await this.enqueueLog(log.id, scheduledFor);
 
         scheduled += 1;
       }
@@ -175,7 +180,7 @@ export class AutomationsService {
       for (const payment of payments) {
         const scheduledFor = new Date(now.getTime() + rule.delayHours * 60 * 60 * 1000);
 
-        await this.prisma.automationLog.upsert({
+        const log = await this.prisma.automationLog.upsert({
           where: {
             tenantId_ruleId_targetType_targetId: {
               tenantId,
@@ -202,6 +207,7 @@ export class AutomationsService {
             scheduledFor
           }
         });
+        await this.enqueueLog(log.id, scheduledFor);
 
         scheduled += 1;
       }
@@ -244,7 +250,7 @@ export class AutomationsService {
       for (const order of orders) {
         const scheduledFor = new Date(now.getTime() + rule.delayHours * 60 * 60 * 1000);
 
-        await this.prisma.automationLog.upsert({
+        const log = await this.prisma.automationLog.upsert({
           where: {
             tenantId_ruleId_targetType_targetId: {
               tenantId,
@@ -270,6 +276,7 @@ export class AutomationsService {
             scheduledFor
           }
         });
+        await this.enqueueLog(log.id, scheduledFor);
 
         scheduled += 1;
       }
@@ -285,5 +292,12 @@ export class AutomationsService {
       (message, [key, value]) => message.replaceAll(`{{${key}}}`, value),
       template
     );
+  }
+
+  private async enqueueLog(logId: string, scheduledFor: Date) {
+    await this.automationsQueue?.enqueueAutomationLog({
+      logId,
+      scheduledFor
+    });
   }
 }
