@@ -7,6 +7,19 @@ import { UpdateAutomationRuleDto } from './dto/update-automation-rule.dto';
 export class AutomationsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  listLogs(tenantId: string) {
+    return this.prisma.automationLog.findMany({
+      where: { tenantId },
+      include: {
+        rule: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: 50
+    });
+  }
+
   listRules(tenantId: string) {
     return this.prisma.automationRule.findMany({
       where: { tenantId },
@@ -51,5 +64,85 @@ export class AutomationsService {
         active: input.active
       }
     });
+  }
+
+  async scheduleExpiringQuoteReminders(tenantId: string) {
+    const rules = await this.prisma.automationRule.findMany({
+      where: {
+        tenantId,
+        trigger: 'QUOTE_EXPIRING',
+        active: true
+      }
+    });
+
+    if (!rules.length) {
+      return {
+        scheduled: 0
+      };
+    }
+
+    const now = new Date();
+    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const quotes = await this.prisma.quote.findMany({
+      where: {
+        tenantId,
+        status: 'SENT',
+        validUntil: {
+          gte: now,
+          lte: tomorrow
+        }
+      },
+      include: {
+        customer: true
+      }
+    });
+
+    let scheduled = 0;
+
+    for (const rule of rules) {
+      for (const quote of quotes) {
+        const scheduledFor = new Date(now.getTime() + rule.delayHours * 60 * 60 * 1000);
+
+        await this.prisma.automationLog.upsert({
+          where: {
+            tenantId_ruleId_targetType_targetId: {
+              tenantId,
+              ruleId: rule.id,
+              targetType: 'QUOTE',
+              targetId: quote.id
+            }
+          },
+          create: {
+            tenantId,
+            ruleId: rule.id,
+            targetType: 'QUOTE',
+            targetId: quote.id,
+            status: 'SCHEDULED',
+            scheduledFor,
+            message: this.renderMessage(rule.messageBody, {
+              customerName: quote.customer.name,
+              quoteNumber: String(quote.number)
+            })
+          },
+          update: {
+            status: 'SCHEDULED',
+            scheduledFor
+          }
+        });
+
+        scheduled += 1;
+      }
+    }
+
+    return {
+      scheduled
+    };
+  }
+
+  private renderMessage(template: string, values: Record<string, string>) {
+    return Object.entries(values).reduce(
+      (message, [key, value]) => message.replaceAll(`{{${key}}}`, value),
+      template
+    );
   }
 }

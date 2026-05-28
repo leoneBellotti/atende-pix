@@ -38,6 +38,7 @@ Atualizado em: 2026-05-27
 - Status de entrega/leitura de mensagem quando recebido pelo webhook.
 - Regras de follow-up configuraveis, desligadas por padrao.
 - Tela para ligar/desligar regras de automacao.
+- Lembrete de orcamento vencendo com agendamento idempotente e logs.
 
 ### Em andamento
 
@@ -45,7 +46,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Lembrete de orcamento vencendo.
+- Lembrete de pagamento pendente.
 
 ## 1. Visao do produto
 
@@ -888,11 +889,11 @@ Reduzir tarefas repetitivas e aumentar conversao.
 Entregas:
 
 - [x] Regras de follow-up.
-- Lembrete de orcamento vencendo.
+- [x] Lembrete de orcamento vencendo.
 - Lembrete de pagamento pendente.
 - Mensagem de pedido pronto.
 - Jobs com BullMQ.
-- Logs de automacao.
+- [x] Logs de automacao.
 - [x] Tela para ligar/desligar regras.
 
 Criterios de pronto:

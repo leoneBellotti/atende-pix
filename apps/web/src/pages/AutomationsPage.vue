@@ -2,15 +2,19 @@
 import { onMounted, reactive, ref } from 'vue';
 import {
   createAutomationRule,
+  listAutomationLogs,
   listAutomationRules,
+  processExpiringQuoteReminders,
   updateAutomationRule
 } from '../services/automationsService';
-import type { AutomationRule, AutomationTrigger } from '../types/automation';
+import type { AutomationLog, AutomationRule, AutomationTrigger } from '../types/automation';
 
 const rules = ref<AutomationRule[]>([]);
+const logs = ref<AutomationLog[]>([]);
 const errorMessage = ref('');
 const isLoading = ref(false);
 const isSaving = ref(false);
+const isProcessing = ref(false);
 
 const form = reactive({
   name: 'Follow-up de orcamento',
@@ -21,6 +25,7 @@ const form = reactive({
 
 const triggerOptions: Array<{ value: AutomationTrigger; label: string }> = [
   { value: 'QUOTE_SENT', label: 'Orcamento enviado' },
+  { value: 'QUOTE_EXPIRING', label: 'Orcamento vencendo' },
   { value: 'PAYMENT_PENDING', label: 'Pagamento pendente' },
   { value: 'ORDER_READY', label: 'Pedido pronto' }
 ];
@@ -34,7 +39,9 @@ async function loadRules() {
   isLoading.value = true;
 
   try {
-    rules.value = await listAutomationRules();
+    const [rulesData, logsData] = await Promise.all([listAutomationRules(), listAutomationLogs()]);
+    rules.value = rulesData;
+    logs.value = logsData;
   } catch {
     errorMessage.value = 'Nao foi possivel carregar as automacoes.';
   } finally {
@@ -72,8 +79,33 @@ async function toggleRule(rule: AutomationRule) {
   }
 }
 
+async function processExpiringQuotes() {
+  errorMessage.value = '';
+  isProcessing.value = true;
+
+  try {
+    await processExpiringQuoteReminders();
+    await loadRules();
+  } catch {
+    errorMessage.value = 'Nao foi possivel processar os lembretes de orcamento.';
+  } finally {
+    isProcessing.value = false;
+  }
+}
+
 function triggerLabel(trigger: AutomationTrigger) {
   return triggerOptions.find((option) => option.value === trigger)?.label ?? trigger;
+}
+
+function formatDate(value?: string | null) {
+  if (!value) {
+    return 'Sem data';
+  }
+
+  return new Intl.DateTimeFormat('pt-BR', {
+    dateStyle: 'short',
+    timeStyle: 'short'
+  }).format(new Date(value));
 }
 </script>
 
@@ -84,6 +116,16 @@ function triggerLabel(trigger: AutomationTrigger) {
       <p class="mt-1 text-sm text-[#667067]">
         Configure follow-ups simples para reduzir tarefas repetitivas.
       </p>
+    </div>
+    <div>
+      <button
+        class="rounded-md border border-[#cfd7ce] bg-white px-4 py-2 text-sm font-semibold text-[#465047] hover:bg-[#edf3ee] disabled:cursor-not-allowed disabled:opacity-60"
+        type="button"
+        :disabled="isProcessing"
+        @click="processExpiringQuotes"
+      >
+        Processar orcamentos vencendo
+      </button>
     </div>
 
     <p
@@ -179,6 +221,33 @@ function triggerLabel(trigger: AutomationTrigger) {
           </article>
         </div>
       </section>
+    </section>
+
+    <section class="overflow-hidden rounded-md border border-[#dfe4da] bg-white">
+      <div class="border-b border-[#edf0ea] px-4 py-3">
+        <h2 class="text-base font-semibold">Logs de automacao</h2>
+        <p class="mt-1 text-xs text-[#667067]">{{ logs.length }} eventos recentes</p>
+      </div>
+      <div v-if="!logs.length" class="px-4 py-8 text-sm text-[#667067]">
+        Nenhum log registrado ainda.
+      </div>
+      <div v-else class="divide-y divide-[#edf0ea]">
+        <article v-for="log in logs" :key="log.id" class="px-4 py-3">
+          <div class="grid gap-2 lg:grid-cols-[1fr_160px_180px] lg:items-center">
+            <div>
+              <p class="text-sm font-semibold text-ink">
+                {{ log.rule?.name || log.targetType }} - {{ log.status }}
+              </p>
+              <p class="mt-1 text-xs text-[#667067]">{{ log.message || 'Sem mensagem' }}</p>
+              <p v-if="log.errorMessage" class="mt-1 text-xs text-coral">
+                {{ log.errorMessage }}
+              </p>
+            </div>
+            <p class="text-xs text-[#667067]">Agendado: {{ formatDate(log.scheduledFor) }}</p>
+            <p class="text-xs text-[#667067] lg:text-right">{{ formatDate(log.createdAt) }}</p>
+          </div>
+        </article>
+      </div>
     </section>
   </section>
 </template>

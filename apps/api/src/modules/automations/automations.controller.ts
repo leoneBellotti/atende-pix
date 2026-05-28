@@ -34,3 +34,23 @@ export class AutomationsController {
     return this.automationsService.updateRule(request.user.tenantId, id, input);
   }
 }
+
+@ApiTags('automations')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
+@Controller('automations')
+export class AutomationJobsController {
+  constructor(private readonly automationsService: AutomationsService) {}
+
+  @Get('logs')
+  @ApiOkResponse({ description: 'Lista logs de automacao do tenant autenticado.' })
+  listLogs(@Req() request: AuthenticatedRequest) {
+    return this.automationsService.listLogs(request.user.tenantId);
+  }
+
+  @Post('process/quote-expiring')
+  @ApiOkResponse({ description: 'Agenda lembretes para orcamentos perto do vencimento.' })
+  processExpiringQuotes(@Req() request: AuthenticatedRequest) {
+    return this.automationsService.scheduleExpiringQuoteReminders(request.user.tenantId);
+  }
+}

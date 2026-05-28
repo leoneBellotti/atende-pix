@@ -105,6 +105,7 @@ model Tenant {
   messages        Message[]
   messageTemplates MessageTemplate[]
   automationRules AutomationRule[]
+  automationLogs AutomationLog[]
 }
 
 model User {
@@ -393,10 +394,33 @@ model AutomationRule {
   updatedAt   DateTime @updatedAt
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  logs   AutomationLog[]
 
   @@index([tenantId])
   @@index([tenantId, active])
   @@index([tenantId, trigger])
+}
+
+model AutomationLog {
+  id           String    @id @default(cuid())
+  tenantId     String
+  ruleId       String?
+  targetType   String
+  targetId     String
+  status       String
+  scheduledFor DateTime?
+  executedAt   DateTime?
+  message      String?
+  errorMessage String?
+  createdAt    DateTime  @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  rule   AutomationRule? @relation(fields: [ruleId], references: [id], onDelete: SetNull)
+
+  @@unique([tenantId, ruleId, targetType, targetId])
+  @@index([tenantId])
+  @@index([ruleId])
+  @@index([tenantId, status])
 }
 
 model PaymentProviderConfig {
