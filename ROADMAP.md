@@ -29,6 +29,7 @@ Atualizado em: 2026-05-27
 - Logs de pagamento exibidos no painel financeiro.
 - Configuracao de WhatsApp Cloud API por empresa.
 - Webhook de mensagens recebidas com persistencia idempotente.
+- Lista de conversas no inbox.
 
 ### Em andamento
 
@@ -36,7 +37,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Lista de conversas.
+- Conversa vinculada ao cliente.
 
 ## 1. Visao do produto
 
@@ -849,7 +850,7 @@ Entregas:
 
 - [x] Configuracao de WhatsApp Cloud API.
 - [x] Webhook de mensagens recebidas.
-- Lista de conversas.
+- [x] Lista de conversas.
 - Conversa vinculada ao cliente.
 - Criar cliente a partir de mensagem.
 - Criar atendimento a partir de conversa.

@@ -7,6 +7,7 @@ const sessionStore = useSessionStore();
 
 const navigation = [
   { label: 'Dashboard', href: '/' },
+  { label: 'Inbox', href: '/inbox' },
   { label: 'Atendimentos', href: '/attendances' },
   { label: 'Clientes', href: '/customers' },
   { label: 'Catalogo', href: '/catalog' },

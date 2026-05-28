@@ -54,6 +54,53 @@ type WhatsAppWebhookBody = {
 export class WhatsAppService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async listConversations(tenantId: string) {
+    const messages = await this.prisma.message.findMany({
+      where: {
+        tenantId,
+        channel: 'WHATSAPP'
+      },
+      include: {
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            phone: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: 100
+    });
+
+    const conversations = new Map<string, (typeof messages)[number]>();
+
+    for (const message of messages) {
+      const key = message.customerId ?? message.fromPhone ?? message.toPhone ?? message.id;
+
+      if (!conversations.has(key)) {
+        conversations.set(key, message);
+      }
+    }
+
+    return Array.from(conversations.entries()).map(([conversationKey, message]) => ({
+      id: conversationKey,
+      customer: message.customer,
+      contactName: message.contactName,
+      phone: message.fromPhone ?? message.toPhone,
+      lastMessage: {
+        id: message.id,
+        direction: message.direction,
+        type: message.type,
+        body: message.body,
+        sentAt: message.sentAt,
+        createdAt: message.createdAt
+      }
+    }));
+  }
+
   async verifyWebhook(input: { mode?: string; token?: string; challenge?: string }) {
     if (input.mode !== 'subscribe' || !input.token || !input.challenge) {
       throw new ForbiddenException('Verificacao invalida.');

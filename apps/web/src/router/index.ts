@@ -4,6 +4,7 @@ import CatalogPage from '../pages/CatalogPage.vue';
 import CustomersPage from '../pages/CustomersPage.vue';
 import CustomerDetailPage from '../pages/CustomerDetailPage.vue';
 import DashboardPage from '../pages/DashboardPage.vue';
+import InboxPage from '../pages/InboxPage.vue';
 import LoginPage from '../pages/LoginPage.vue';
 import OrdersPage from '../pages/OrdersPage.vue';
 import PaymentsPage from '../pages/PaymentsPage.vue';
@@ -23,6 +24,11 @@ export const router = createRouter({
     { path: '/public/quotes/:token', component: PublicQuotePage },
     { path: '/public/payments/:token', component: PublicPaymentPage },
     { path: '/', component: DashboardPage, meta: { requiresAuth: true } },
+    {
+      path: '/inbox',
+      component: InboxPage,
+      meta: { requiresAuth: true }
+    },
     {
       path: '/orders',
       component: OrdersPage,

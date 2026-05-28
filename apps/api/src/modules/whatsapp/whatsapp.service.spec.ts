@@ -2,6 +2,61 @@ import { ForbiddenException } from '@nestjs/common';
 import { WhatsAppService } from './whatsapp.service';
 
 describe('WhatsAppService', () => {
+  it('groups recent whatsapp messages as conversations', async () => {
+    const prisma = {
+      message: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: 'message-2',
+            customerId: 'customer-1',
+            customer: {
+              id: 'customer-1',
+              name: 'Cliente',
+              phone: '5511999990000'
+            },
+            contactName: 'Cliente',
+            fromPhone: '5511999990000',
+            toPhone: null,
+            direction: 'INBOUND',
+            type: 'text',
+            body: 'Mensagem mais recente',
+            sentAt: new Date('2026-05-28T10:00:00.000Z'),
+            createdAt: new Date('2026-05-28T10:00:01.000Z')
+          },
+          {
+            id: 'message-1',
+            customerId: 'customer-1',
+            customer: {
+              id: 'customer-1',
+              name: 'Cliente',
+              phone: '5511999990000'
+            },
+            contactName: 'Cliente',
+            fromPhone: '5511999990000',
+            toPhone: null,
+            direction: 'INBOUND',
+            type: 'text',
+            body: 'Mensagem antiga',
+            sentAt: new Date('2026-05-28T09:00:00.000Z'),
+            createdAt: new Date('2026-05-28T09:00:01.000Z')
+          }
+        ])
+      }
+    };
+    const service = new WhatsAppService(prisma as never);
+
+    await expect(service.listConversations('tenant-1')).resolves.toEqual([
+      expect.objectContaining({
+        id: 'customer-1',
+        phone: '5511999990000',
+        lastMessage: expect.objectContaining({
+          id: 'message-2',
+          body: 'Mensagem mais recente'
+        })
+      })
+    ]);
+  });
+
   it('returns the challenge when the verify token matches an active config', async () => {
     const prisma = {
       whatsAppConfig: {
