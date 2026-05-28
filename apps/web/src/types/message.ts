@@ -11,6 +11,9 @@ export type ConversationSummary = {
     id: string;
     direction: MessageDirection;
     type?: string | null;
+    status?: string | null;
+    statusAt?: string | null;
+    failureReason?: string | null;
     body?: string | null;
     sentAt?: string | null;
     createdAt: string;

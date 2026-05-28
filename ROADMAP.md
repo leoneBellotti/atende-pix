@@ -35,14 +35,15 @@ Atualizado em: 2026-05-27
 - Criacao de atendimento a partir do inbox.
 - Envio de respostas de texto pela WhatsApp Cloud API dentro da janela de atendimento.
 - Templates de utilidade no inbox.
+- Status de entrega/leitura de mensagem quando recebido pelo webhook.
 
 ### Em andamento
 
-- Preparacao para Fase 3: WhatsApp oficial e inbox.
+- Preparacao para Fase 4: automacoes e produtividade.
 
 ### Proximo
 
-- Status de mensagem quando disponivel.
+- Regras de follow-up.
 
 ## 1. Visao do produto
 
@@ -847,6 +848,8 @@ Demo publica:
 
 ### Fase 3 - WhatsApp oficial e inbox
 
+Status: concluida.
+
 Objetivo:
 
 Trazer atendimento conversacional para dentro do produto.
@@ -861,7 +864,7 @@ Entregas:
 - [x] Criar atendimento a partir de conversa.
 - [x] Envio de mensagens permitidas.
 - [x] Templates de utilidade.
-- Status de mensagem quando disponivel.
+- [x] Status de mensagem quando disponivel.
 
 Criterios de pronto:
 

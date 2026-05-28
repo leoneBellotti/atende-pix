@@ -331,4 +331,57 @@ describe('WhatsAppService', () => {
       })
     );
   });
+
+  it('updates outbound message statuses from whatsapp webhooks', async () => {
+    const prisma = {
+      whatsAppConfig: {
+        findFirst: vi.fn().mockResolvedValue({
+          tenantId: 'tenant-1'
+        })
+      },
+      message: {
+        updateMany: vi.fn().mockResolvedValue({ count: 1 })
+      }
+    };
+    const service = new WhatsAppService(prisma as never);
+
+    await expect(
+      service.handleWebhook({
+        body: {
+          entry: [
+            {
+              changes: [
+                {
+                  value: {
+                    metadata: {
+                      phone_number_id: 'phone-number-1'
+                    },
+                    statuses: [
+                      {
+                        id: 'wamid.outbound-1',
+                        status: 'delivered',
+                        timestamp: '1780000000'
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      })
+    ).resolves.toEqual({ received: true, storedMessages: 0 });
+
+    expect(prisma.message.updateMany).toHaveBeenCalledWith({
+      where: {
+        tenantId: 'tenant-1',
+        channel: 'WHATSAPP',
+        externalMessageId: 'wamid.outbound-1'
+      },
+      data: expect.objectContaining({
+        status: 'delivered',
+        failureReason: null
+      })
+    });
+  });
 });

@@ -31,6 +31,20 @@ type WhatsAppWebhookMessage = {
   };
 };
 
+type WhatsAppWebhookStatus = {
+  id?: string;
+  status?: string;
+  timestamp?: string;
+  recipient_id?: string;
+  errors?: Array<{
+    title?: string;
+    message?: string;
+    error_data?: {
+      details?: string;
+    };
+  }>;
+};
+
 type WhatsAppWebhookBody = {
   entry?: Array<{
     changes?: Array<{
@@ -46,6 +60,7 @@ type WhatsAppWebhookBody = {
           };
         }>;
         messages?: WhatsAppWebhookMessage[];
+        statuses?: WhatsAppWebhookStatus[];
       };
     }>;
   }>;
@@ -147,6 +162,9 @@ export class WhatsAppService {
         id: message.id,
         direction: message.direction,
         type: message.type,
+        status: message.status,
+        statusAt: message.statusAt,
+        failureReason: message.failureReason,
         body: message.body,
         sentAt: message.sentAt,
         createdAt: message.createdAt
@@ -275,6 +293,8 @@ export class WhatsAppService {
         fromPhone: config.phoneNumberId,
         toPhone: recipientPhone,
         type: 'text',
+        status: 'sent',
+        statusAt: new Date(),
         body,
         sentAt: new Date(),
         rawPayload: sentMessage.rawPayload as Prisma.InputJsonValue
@@ -378,6 +398,25 @@ export class WhatsAppService {
 
           storedMessages += 1;
         }
+
+        for (const status of value.statuses ?? []) {
+          if (!status.id) {
+            continue;
+          }
+
+          await this.prisma.message.updateMany({
+            where: {
+              tenantId: config.tenantId,
+              channel: 'WHATSAPP',
+              externalMessageId: status.id
+            },
+            data: {
+              status: status.status,
+              statusAt: this.parseWhatsAppTimestamp(status.timestamp),
+              failureReason: this.extractStatusFailureReason(status)
+            }
+          });
+        }
       }
     }
 
@@ -421,6 +460,12 @@ export class WhatsAppService {
     }
 
     return new Date(timestampNumber * 1000);
+  }
+
+  private extractStatusFailureReason(status: WhatsAppWebhookStatus) {
+    const error = status.errors?.[0];
+
+    return error?.error_data?.details ?? error?.message ?? error?.title ?? null;
   }
 
   private normalizePhone(phone?: string) {

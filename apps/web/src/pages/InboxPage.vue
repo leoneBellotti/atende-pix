@@ -94,6 +94,17 @@ function lastMessagePreview(conversation: ConversationSummary) {
   return conversation.lastMessage.body || `Mensagem do tipo ${conversation.lastMessage.type ?? 'desconhecido'}`;
 }
 
+function messageStatusLabel(status?: string | null) {
+  const labels: Record<string, string> = {
+    sent: 'Enviada',
+    delivered: 'Entregue',
+    read: 'Lida',
+    failed: 'Falhou'
+  };
+
+  return status ? (labels[status] ?? status) : '';
+}
+
 async function linkCustomer(conversation: ConversationSummary) {
   const customerId = selectedCustomers.value[conversation.id];
 
@@ -343,6 +354,12 @@ function applySelectedTemplate(conversation: ConversationSummary, event: Event) 
             </div>
             <div class="text-xs text-[#667067] lg:text-right">
               <p>{{ conversation.lastMessage.direction === 'INBOUND' ? 'Recebida' : 'Enviada' }}</p>
+              <p v-if="conversation.lastMessage.status" class="mt-1">
+                {{ messageStatusLabel(conversation.lastMessage.status) }}
+              </p>
+              <p v-if="conversation.lastMessage.failureReason" class="mt-1 text-coral">
+                {{ conversation.lastMessage.failureReason }}
+              </p>
               <p class="mt-1">{{ formatDate(conversation.lastMessage.sentAt) }}</p>
             </div>
           </div>

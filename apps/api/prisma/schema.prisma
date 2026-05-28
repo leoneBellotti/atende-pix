@@ -342,6 +342,9 @@ model Message {
   toPhone           String?
   contactName       String?
   type              String?
+  status            String?
+  statusAt          DateTime?
+  failureReason     String?
   body              String?
   sentAt            DateTime?
   rawPayload        Json?
