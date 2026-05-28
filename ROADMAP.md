@@ -45,6 +45,7 @@ Atualizado em: 2026-05-27
 - Worker BullMQ registrando execucao e falhas de automacao.
 - Botao para resumir conversa no inbox com provedor local plugavel.
 - Sugestao editavel de resposta no inbox com provedor local plugavel.
+- Geracao de itens de orcamento a partir de texto livre.
 
 ### Em andamento
 
@@ -52,7 +53,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Geracao de itens de orcamento a partir de texto.
+- Sugestao de follow-up.
 
 ## 1. Visao do produto
 
@@ -925,7 +926,7 @@ Entregas:
 
 - [x] Botao para resumir conversa.
 - [x] Sugestao de resposta.
-- Geracao de itens de orcamento a partir de texto.
+- [x] Geracao de itens de orcamento a partir de texto.
 - Sugestao de follow-up.
 - Configuracao para ativar/desativar IA.
 - Logs de uso e limite por plano.

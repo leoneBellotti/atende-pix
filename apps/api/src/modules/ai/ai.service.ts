@@ -5,6 +5,19 @@ import { PrismaService } from '../../common/prisma/prisma.service';
 export class AiService {
   constructor(private readonly prisma: PrismaService) {}
 
+  generateQuoteItemsFromText(text: string) {
+    const items = text
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => this.parseQuoteItemLine(line));
+
+    return {
+      provider: 'LOCAL',
+      items
+    };
+  }
+
   async summarizeConversation(tenantId: string, conversationId: string) {
     const messages = await this.prisma.message.findMany({
       where: {
@@ -104,6 +117,25 @@ export class AiService {
           : 'Vou verificar os detalhes e te retorno em seguida.',
         'Se preferir, posso te enviar um orcamento ou link de pagamento por aqui.'
       ].join(' ')
+    };
+  }
+
+  private parseQuoteItemLine(line: string) {
+    const priceMatch = line.match(/(?:R\$\s*)?(\d+(?:[.,]\d{1,2})?)\s*$/);
+    const quantityMatch = line.match(/\b(\d+(?:[.,]\d+)?)\s*(?:x|un|und|unid|unidade|unidades)\b/i);
+    const unitPrice = priceMatch ? Number(priceMatch[1].replace(',', '.')) : 0;
+    const quantity = quantityMatch ? Number(quantityMatch[1].replace(',', '.')) : 1;
+    const description = line
+      .replace(/(?:R\$\s*)?\d+(?:[.,]\d{1,2})?\s*$/, '')
+      .replace(/\b\d+(?:[.,]\d+)?\s*(?:x|un|und|unid|unidade|unidades)\b/i, '')
+      .replace(/[-:|]+$/g, '')
+      .trim();
+
+    return {
+      description: description || line,
+      quantity,
+      unitPrice,
+      discount: 0
     };
   }
 }

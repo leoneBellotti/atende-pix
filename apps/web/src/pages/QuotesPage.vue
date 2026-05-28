@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue';
 import { listAttendances } from '../services/attendancesService';
+import { generateQuoteItemsFromText } from '../services/aiService';
 import { listCatalogItems } from '../services/catalogService';
 import { listCustomers } from '../services/customersService';
 import { convertQuoteToOrder, createQuote, listQuotes } from '../services/quotesService';
@@ -17,6 +18,8 @@ const selectedCatalogItemId = ref('');
 const errorMessage = ref('');
 const isLoading = ref(false);
 const isSaving = ref(false);
+const isGeneratingItems = ref(false);
+const itemPrompt = ref('');
 
 const form = reactive({
   customerId: '',
@@ -139,6 +142,35 @@ function addCatalogItemToQuote() {
   }
 
   selectedCatalogItemId.value = '';
+}
+
+async function generateItems() {
+  const text = itemPrompt.value.trim();
+
+  if (!text) {
+    return;
+  }
+
+  errorMessage.value = '';
+  isGeneratingItems.value = true;
+
+  try {
+    const result = await generateQuoteItemsFromText(text);
+    form.items = result.items.length
+      ? result.items
+      : [
+          {
+            description: '',
+            quantity: 1,
+            unitPrice: 0,
+            discount: 0
+          }
+        ];
+  } catch {
+    errorMessage.value = 'Nao foi possivel gerar itens a partir do texto.';
+  } finally {
+    isGeneratingItems.value = false;
+  }
 }
 
 function removeItem(index: number) {
@@ -270,6 +302,21 @@ function quotePdfUrl(quote: Quote) {
             >
               Adicionar item livre
             </button>
+            <div class="rounded-md border border-[#edf0ea] bg-[#fbfcf9] p-3">
+              <textarea
+                v-model="itemPrompt"
+                class="min-h-24 w-full resize-none rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
+                placeholder="Cole pedidos do cliente, um item por linha"
+              />
+              <button
+                class="mt-2 rounded-md border border-[#dfe4da] px-3 py-2 text-sm font-semibold text-[#11644f] hover:bg-[#edf3ee] disabled:opacity-50"
+                type="button"
+                :disabled="!itemPrompt.trim() || isGeneratingItems"
+                @click="generateItems"
+              >
+                Gerar itens
+              </button>
+            </div>
           </div>
           <div
             v-for="(item, index) in form.items"

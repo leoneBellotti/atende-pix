@@ -1,6 +1,30 @@
 import { AiService } from './ai.service';
 
 describe('AiService', () => {
+  it('generates quote items from free text lines', () => {
+    const service = new AiService({} as never);
+
+    expect(
+      service.generateQuoteItemsFromText('Troca de tela 1x 250\nPelicula 2x 30')
+    ).toEqual({
+      provider: 'LOCAL',
+      items: [
+        {
+          description: 'Troca de tela',
+          quantity: 1,
+          unitPrice: 250,
+          discount: 0
+        },
+        {
+          description: 'Pelicula',
+          quantity: 2,
+          unitPrice: 30,
+          discount: 0
+        }
+      ]
+    });
+  });
+
   it('summarizes a whatsapp conversation from recent messages', async () => {
     const prisma = {
       message: {
