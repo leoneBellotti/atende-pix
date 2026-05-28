@@ -44,4 +44,28 @@ describe('AiService', () => {
       })
     );
   });
+
+  it('suggests an editable reply from the last inbound message', async () => {
+    const prisma = {
+      message: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            direction: 'INBOUND',
+            body: 'Voce consegue me mandar o Pix?',
+            contactName: 'Ana',
+            customer: {
+              name: 'Ana Cliente'
+            }
+          }
+        ])
+      }
+    };
+    const service = new AiService(prisma as never);
+
+    await expect(service.suggestReply('tenant-1', 'customer-1')).resolves.toEqual({
+      conversationId: 'customer-1',
+      provider: 'LOCAL',
+      suggestion: expect.stringContaining('Ola, Ana Cliente')
+    });
+  });
 });

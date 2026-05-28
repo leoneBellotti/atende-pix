@@ -15,4 +15,10 @@ export class AiController {
   summarizeConversation(@Req() request: AuthenticatedRequest, @Param('id') id: string) {
     return this.aiService.summarizeConversation(request.user.tenantId, id);
   }
+
+  @Post('conversations/:id/reply-suggestion')
+  @ApiOkResponse({ description: 'Gera sugestao editavel de resposta.' })
+  suggestReply(@Req() request: AuthenticatedRequest, @Param('id') id: string) {
+    return this.aiService.suggestReply(request.user.tenantId, id);
+  }
 }

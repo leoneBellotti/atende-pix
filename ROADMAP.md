@@ -44,6 +44,7 @@ Atualizado em: 2026-05-27
 - Fila BullMQ para execucao futura de automacoes agendadas.
 - Worker BullMQ registrando execucao e falhas de automacao.
 - Botao para resumir conversa no inbox com provedor local plugavel.
+- Sugestao editavel de resposta no inbox com provedor local plugavel.
 
 ### Em andamento
 
@@ -51,7 +52,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Sugestao de resposta.
+- Geracao de itens de orcamento a partir de texto.
 
 ## 1. Visao do produto
 
@@ -923,7 +924,7 @@ Adicionar diferencial de produto e conteudo forte para redes.
 Entregas:
 
 - [x] Botao para resumir conversa.
-- Sugestao de resposta.
+- [x] Sugestao de resposta.
 - Geracao de itens de orcamento a partir de texto.
 - Sugestao de follow-up.
 - Configuracao para ativar/desativar IA.

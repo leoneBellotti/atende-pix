@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { createAttendance } from '../services/attendancesService';
-import { summarizeConversation } from '../services/aiService';
+import { suggestConversationReply, summarizeConversation } from '../services/aiService';
 import { createCustomer, listCustomers } from '../services/customersService';
 import {
   linkConversationToCustomer,
@@ -27,6 +27,7 @@ const creatingCustomerConversationId = ref('');
 const creatingAttendanceConversationId = ref('');
 const sendingConversationId = ref('');
 const summarizingConversationId = ref('');
+const suggestingConversationId = ref('');
 const router = useRouter();
 
 const filteredConversations = computed(() => {
@@ -212,6 +213,20 @@ async function summarize(conversation: ConversationSummary) {
   }
 }
 
+async function suggestReply(conversation: ConversationSummary) {
+  errorMessage.value = '';
+  suggestingConversationId.value = conversation.id;
+
+  try {
+    const result = await suggestConversationReply(conversation.id);
+    replyDrafts.value[conversation.id] = result.suggestion;
+  } catch {
+    errorMessage.value = 'Nao foi possivel sugerir uma resposta.';
+  } finally {
+    suggestingConversationId.value = '';
+  }
+}
+
 function applyTemplate(conversation: ConversationSummary, templateBody: string) {
   if (!templateBody) {
     return;
@@ -365,6 +380,14 @@ function applySelectedTemplate(conversation: ConversationSummary, event: Event) 
                   class="min-h-20 resize-none rounded-md border border-[#cfd7ce] bg-white px-3 py-2 text-sm outline-none focus:border-mint"
                   placeholder="Responder dentro da janela"
                 />
+                <button
+                  class="rounded-md border border-[#cfd7ce] px-3 py-2 text-sm font-semibold text-[#465047] hover:bg-[#edf3ee] disabled:cursor-not-allowed disabled:opacity-60"
+                  type="button"
+                  :disabled="suggestingConversationId === conversation.id"
+                  @click="suggestReply(conversation)"
+                >
+                  Sugerir resposta
+                </button>
                 <button
                   class="rounded-md border border-[#cfd7ce] px-3 py-2 text-sm font-semibold text-[#465047] hover:bg-[#edf3ee] disabled:cursor-not-allowed disabled:opacity-60"
                   type="button"
