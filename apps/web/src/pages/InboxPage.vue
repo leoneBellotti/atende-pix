@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { createAttendance } from '../services/attendancesService';
 import { createCustomer, listCustomers } from '../services/customersService';
 import { linkConversationToCustomer, listConversations } from '../services/messagesService';
 import type { Customer } from '../types/customer';
@@ -13,6 +15,8 @@ const errorMessage = ref('');
 const isLoading = ref(false);
 const linkingConversationId = ref('');
 const creatingCustomerConversationId = ref('');
+const creatingAttendanceConversationId = ref('');
+const router = useRouter();
 
 const filteredConversations = computed(() => {
   const term = search.value.trim().toLowerCase();
@@ -122,6 +126,28 @@ async function createCustomerFromConversation(conversation: ConversationSummary)
     creatingCustomerConversationId.value = '';
   }
 }
+
+async function createAttendanceFromConversation(conversation: ConversationSummary) {
+  if (!conversation.customer) {
+    return;
+  }
+
+  errorMessage.value = '';
+  creatingAttendanceConversationId.value = conversation.id;
+
+  try {
+    await createAttendance({
+      customerId: conversation.customer.id,
+      origin: 'WHATSAPP',
+      summary: lastMessagePreview(conversation)
+    });
+    router.push('/attendances');
+  } catch {
+    errorMessage.value = 'Nao foi possivel criar o atendimento a partir da conversa.';
+  } finally {
+    creatingAttendanceConversationId.value = '';
+  }
+}
 </script>
 
 <template>
@@ -226,8 +252,18 @@ async function createCustomerFromConversation(conversation: ConversationSummary)
                 Criar cliente
               </button>
             </div>
-            <div v-else class="text-sm text-[#667067]">
-              {{ conversation.customer.phone || 'Cliente sem telefone' }}
+            <div v-else class="flex flex-col gap-2">
+              <p class="text-sm text-[#667067]">
+                {{ conversation.customer.phone || 'Cliente sem telefone' }}
+              </p>
+              <button
+                class="rounded-md bg-mint px-3 py-2 text-sm font-semibold text-white hover:bg-[#176d58] disabled:cursor-not-allowed disabled:opacity-60"
+                type="button"
+                :disabled="creatingAttendanceConversationId === conversation.id"
+                @click="createAttendanceFromConversation(conversation)"
+              >
+                Criar atendimento
+              </button>
             </div>
             <div class="text-xs text-[#667067] lg:text-right">
               <p>{{ conversation.lastMessage.direction === 'INBOUND' ? 'Recebida' : 'Enviada' }}</p>

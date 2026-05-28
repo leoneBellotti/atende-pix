@@ -32,6 +32,7 @@ Atualizado em: 2026-05-27
 - Lista de conversas no inbox.
 - Vinculo manual de conversa ao cliente.
 - Criacao de cliente a partir de conversa recebida.
+- Criacao de atendimento a partir do inbox.
 
 ### Em andamento
 
@@ -39,7 +40,7 @@ Atualizado em: 2026-05-27
 
 ### Proximo
 
-- Criar atendimento a partir de conversa.
+- Envio de mensagens permitidas.
 
 ## 1. Visao do produto
 
@@ -855,7 +856,7 @@ Entregas:
 - [x] Lista de conversas.
 - [x] Conversa vinculada ao cliente.
 - [x] Criar cliente a partir de mensagem.
-- Criar atendimento a partir de conversa.
+- [x] Criar atendimento a partir de conversa.
 - Envio de mensagens permitidas.
 - Templates de utilidade.
 - Status de mensagem quando disponivel.
