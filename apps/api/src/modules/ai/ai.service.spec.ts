@@ -117,7 +117,7 @@ describe('AiService', () => {
         findMany: vi.fn().mockResolvedValue([
           {
             direction: 'INBOUND',
-            body: 'Preciso de um orcamento para manutencao.',
+            body: 'Preciso de um orçamento para manutenção.',
             fromPhone: '5511999990000',
             contactName: 'Ana',
             customer: {
@@ -141,7 +141,7 @@ describe('AiService', () => {
     await expect(service.summarizeConversation('tenant-1', 'customer-1')).resolves.toEqual({
       conversationId: 'customer-1',
       provider: 'LOCAL',
-      summary: expect.stringContaining('Preciso de um orcamento')
+      summary: expect.stringContaining('Preciso de um orçamento')
     });
 
     expect(prisma.message.findMany).toHaveBeenCalledWith(
@@ -171,7 +171,7 @@ describe('AiService', () => {
         findMany: vi.fn().mockResolvedValue([
           {
             direction: 'INBOUND',
-            body: 'Voce consegue me mandar o Pix?',
+            body: 'Você consegue me mandar o Pix?',
             contactName: 'Ana',
             customer: {
               name: 'Ana Cliente'
@@ -185,7 +185,7 @@ describe('AiService', () => {
     await expect(service.suggestReply('tenant-1', 'customer-1')).resolves.toEqual({
       conversationId: 'customer-1',
       provider: 'LOCAL',
-      suggestion: expect.stringContaining('Ola, Ana Cliente')
+      suggestion: expect.stringContaining('Olá, Ana Cliente')
     });
   });
 
@@ -205,7 +205,7 @@ describe('AiService', () => {
         findMany: vi.fn().mockResolvedValue([
           {
             direction: 'OUTBOUND',
-            body: 'Enviei o orcamento.',
+            body: 'Enviei o orçamento.',
             contactName: null,
             customer: {
               name: 'Bruno Cliente'

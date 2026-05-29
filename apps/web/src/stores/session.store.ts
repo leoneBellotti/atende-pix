@@ -11,7 +11,7 @@ export const useSessionStore = defineStore('session', {
   getters: {
     isAuthenticated: (state) => Boolean(state.accessToken),
     tenantName: (state) => state.tenant?.name ?? 'AtendePix',
-    userName: (state) => state.user?.name ?? 'Usuario'
+    userName: (state) => state.user?.name ?? 'Usuário'
   },
   actions: {
     async login(input: { email: string; password: string }) {

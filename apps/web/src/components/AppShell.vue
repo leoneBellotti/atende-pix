@@ -13,16 +13,16 @@ const navigation = [
   { label: 'Inbox', href: '/inbox' },
   { label: 'Atendimentos', href: '/attendances' },
   { label: 'Clientes', href: '/customers' },
-  { label: 'Catalogo', href: '/catalog' },
-  { label: 'Orcamentos', href: '/quotes' },
+  { label: 'Catálogo', href: '/catalog' },
+  { label: 'Orçamentos', href: '/quotes' },
   { label: 'Pedidos', href: '/orders' },
   { label: 'Pagamentos', href: '/payments' },
-  { label: 'Automacoes', href: '/automations' },
+  { label: 'Automações', href: '/automations' },
   { label: 'Plano', href: '/billing' },
   { label: 'Admin', href: '/admin', adminOnly: true },
   { label: 'Erros', href: '/admin/errors', adminOnly: true },
-  { label: 'Relatorios', href: '/reports' },
-  { label: 'Configuracoes', href: '/settings' }
+  { label: 'Relatórios', href: '/reports' },
+  { label: 'Configurações', href: '/settings' }
 ];
 
 const visibleNavigation = computed(() => navigation.filter((item) => !item.adminOnly || isAdmin.value));
@@ -43,6 +43,10 @@ async function loadAdminStatus() {
 function logout() {
   sessionStore.logout();
   router.push('/login');
+}
+
+function createNewQuote() {
+  router.push({ path: '/quotes', query: { new: '1' } });
 }
 </script>
 
@@ -78,8 +82,9 @@ function logout() {
           <button
             class="rounded-md bg-mint px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#176d58]"
             type="button"
+            @click="createNewQuote"
           >
-            Novo orcamento
+            Novo orçamento
           </button>
           <button
             class="rounded-md border border-[#dfe4da] px-3 py-2 text-sm font-semibold text-[#465047] hover:bg-[#edf3ee]"

@@ -25,7 +25,7 @@ export class CatalogController {
   constructor(private readonly catalogService: CatalogService) {}
 
   @Get()
-  @ApiOkResponse({ description: 'Lista produtos e servicos do tenant autenticado.' })
+  @ApiOkResponse({ description: 'Lista produtos e serviços do tenant autenticado.' })
   list(
     @Req() request: AuthenticatedRequest,
     @Query('search') search?: string,
@@ -40,19 +40,19 @@ export class CatalogController {
   }
 
   @Post()
-  @ApiCreatedResponse({ description: 'Item de catalogo criado.' })
+  @ApiCreatedResponse({ description: 'Item de catálogo criado.' })
   create(@Req() request: AuthenticatedRequest, @Body() input: CreateCatalogItemDto) {
     return this.catalogService.create(request.user.tenantId, input);
   }
 
   @Get(':id')
-  @ApiOkResponse({ description: 'Detalhe do item de catalogo.' })
+  @ApiOkResponse({ description: 'Detalhe do item de catálogo.' })
   getById(@Req() request: AuthenticatedRequest, @Param('id') id: string) {
     return this.catalogService.getById(request.user.tenantId, id);
   }
 
   @Patch(':id')
-  @ApiOkResponse({ description: 'Item de catalogo atualizado.' })
+  @ApiOkResponse({ description: 'Item de catálogo atualizado.' })
   update(
     @Req() request: AuthenticatedRequest,
     @Param('id') id: string,
@@ -62,7 +62,7 @@ export class CatalogController {
   }
 
   @Delete(':id')
-  @ApiOkResponse({ description: 'Item de catalogo desativado.' })
+  @ApiOkResponse({ description: 'Item de catálogo desativado.' })
   remove(@Req() request: AuthenticatedRequest, @Param('id') id: string) {
     return this.catalogService.remove(request.user.tenantId, id);
   }

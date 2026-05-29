@@ -15,7 +15,9 @@ describe('AdminService', () => {
         findUnique: vi.fn().mockResolvedValue({ email: 'admin@atendepix.test' })
       },
       tenant: { count: vi.fn().mockResolvedValue(3) },
-      subscription: { count: vi.fn().mockResolvedValueOnce(2).mockResolvedValueOnce(1).mockResolvedValueOnce(0) },
+      subscription: {
+        count: vi.fn().mockResolvedValueOnce(2).mockResolvedValueOnce(1).mockResolvedValueOnce(0)
+      },
       subscriptionCheckout: {
         aggregate: vi.fn().mockResolvedValue({
           _sum: { amount: new Prisma.Decimal(79) },
@@ -48,9 +50,22 @@ describe('AdminService', () => {
           tenantId: 'tenant-1',
           currentPeriodEnd: null,
           renewsAt: null
-        }),
-        update: vi.fn().mockResolvedValue({ status: 'PAST_DUE' })
-      }
+        })
+      },
+      $transaction: vi.fn((callback) =>
+        callback({
+          subscription: {
+            update: vi.fn().mockResolvedValue({
+              id: 'subscription-1',
+              status: 'PAST_DUE',
+              plan: {
+                code: 'pro',
+                name: 'Pro'
+              }
+            })
+          }
+        })
+      )
     };
     const service = new AdminService(
       prisma as never,
@@ -60,13 +75,54 @@ describe('AdminService', () => {
     await expect(service.markTenantPastDue('user-1', 'tenant-1')).resolves.toMatchObject({
       status: 'PAST_DUE'
     });
-    expect(prisma.subscription.update).toHaveBeenCalledWith(
+    const callback = prisma.$transaction.mock.calls[0][0];
+    const tx = {
+      subscription: {
+        update: vi.fn().mockResolvedValue({
+          id: 'subscription-1',
+          status: 'PAST_DUE',
+          plan: {
+            code: 'pro',
+            name: 'Pro'
+          }
+        })
+      }
+    };
+
+    await callback(tx);
+
+    expect(tx.subscription.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { tenantId: 'tenant-1' },
         data: expect.objectContaining({
           status: 'PAST_DUE',
           suspendedAt: null
         })
+      })
+    );
+  });
+
+  it('lists audit logs for a tenant when requested by an admin', async () => {
+    const prisma = {
+      user: {
+        findUnique: vi.fn().mockResolvedValue({ email: 'admin@atendepix.test' })
+      },
+      auditLog: {
+        findMany: vi.fn().mockResolvedValue([{ id: 'audit-1' }])
+      }
+    };
+    const service = new AdminService(
+      prisma as never,
+      { get: vi.fn().mockReturnValue('admin@atendepix.test') } as never
+    );
+
+    await expect(service.auditLogs('user-1', 'tenant-1', '20')).resolves.toEqual([
+      { id: 'audit-1' }
+    ]);
+    expect(prisma.auditLog.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { tenantId: 'tenant-1' },
+        take: 20
       })
     );
   });

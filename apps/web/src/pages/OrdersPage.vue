@@ -30,7 +30,7 @@ async function loadOrders() {
   try {
     orders.value = await listOrders(status.value);
   } catch {
-    errorMessage.value = 'Nao foi possivel carregar os pedidos.';
+    errorMessage.value = 'Não foi possível carregar os pedidos.';
   } finally {
     isLoading.value = false;
   }
@@ -43,7 +43,7 @@ async function changeStatus(order: Order, nextStatus: OrderStatus) {
     await updateOrderStatus(order.id, nextStatus);
     await loadOrders();
   } catch {
-    errorMessage.value = 'Nao foi possivel atualizar o pedido.';
+    errorMessage.value = 'Não foi possível atualizar o pedido.';
   }
 }
 
@@ -54,7 +54,7 @@ async function confirmPayment(order: Order) {
     await manualConfirmPayment(order.id, Number(order.total));
     await loadOrders();
   } catch {
-    errorMessage.value = 'Nao foi possivel confirmar o pagamento.';
+    errorMessage.value = 'Não foi possível confirmar o pagamento.';
   }
 }
 
@@ -65,7 +65,7 @@ async function generatePix(order: Order) {
     await createPixPayment(order.id);
     await loadOrders();
   } catch {
-    errorMessage.value = 'Nao foi possivel gerar o Pix. Verifique as configuracoes.';
+    errorMessage.value = 'Não foi possível gerar o Pix. Verifique as configurações.';
   }
 }
 
@@ -87,7 +87,7 @@ function statusLabel(value: OrderStatus) {
       <div>
         <h1 class="text-2xl font-semibold text-ink">Pedidos</h1>
         <p class="mt-1 text-sm text-[#667067]">
-          Acompanhe pedidos gerados de orcamentos e confirme pagamentos manuais.
+          Acompanhe pedidos gerados de orçamentos e confirme pagamentos manuais.
         </p>
       </div>
       <form class="flex gap-2" @submit.prevent="loadOrders">

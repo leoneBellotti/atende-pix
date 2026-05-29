@@ -15,7 +15,7 @@ describe('QuotePdfService', () => {
       customer: { name: 'Cliente Teste' },
       items: [
         {
-          description: 'Servico',
+          description: 'Serviço',
           quantity: new Prisma.Decimal(1),
           unitPrice: new Prisma.Decimal(100),
           discount: new Prisma.Decimal(0),

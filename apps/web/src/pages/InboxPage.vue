@@ -70,7 +70,7 @@ async function loadConversations() {
     customers.value = customerData;
     messageTemplates.value = templateData;
   } catch {
-    errorMessage.value = 'Nao foi possivel carregar as conversas.';
+    errorMessage.value = 'Não foi possível carregar as conversas.';
   } finally {
     isLoading.value = false;
   }
@@ -82,7 +82,7 @@ function conversationName(conversation: ConversationSummary) {
 
 function formatPhone(phone?: string | null) {
   if (!phone) {
-    return 'Telefone nao informado';
+    return 'Telefone não informado';
   }
 
   return phone;
@@ -128,7 +128,7 @@ async function linkCustomer(conversation: ConversationSummary) {
     await linkConversationToCustomer(conversation.id, customerId);
     await loadConversations();
   } catch {
-    errorMessage.value = 'Nao foi possivel vincular a conversa ao cliente.';
+    errorMessage.value = 'Não foi possível vincular a conversa ao cliente.';
   } finally {
     linkingConversationId.value = '';
   }
@@ -154,7 +154,7 @@ async function createCustomerFromConversation(conversation: ConversationSummary)
     await linkConversationToCustomer(conversation.id, customer.id);
     await loadConversations();
   } catch {
-    errorMessage.value = 'Nao foi possivel criar o cliente a partir da conversa.';
+    errorMessage.value = 'Não foi possível criar o cliente a partir da conversa.';
   } finally {
     creatingCustomerConversationId.value = '';
   }
@@ -176,7 +176,7 @@ async function createAttendanceFromConversation(conversation: ConversationSummar
     });
     router.push('/attendances');
   } catch {
-    errorMessage.value = 'Nao foi possivel criar o atendimento a partir da conversa.';
+    errorMessage.value = 'Não foi possível criar o atendimento a partir da conversa.';
   } finally {
     creatingAttendanceConversationId.value = '';
   }
@@ -198,7 +198,7 @@ async function sendReply(conversation: ConversationSummary) {
     await loadConversations();
   } catch {
     errorMessage.value =
-      'Nao foi possivel enviar a mensagem. Verifique a janela de atendimento do WhatsApp.';
+      'Não foi possível enviar a mensagem. Verifique a janela de atendimento do WhatsApp.';
   } finally {
     sendingConversationId.value = '';
   }
@@ -212,7 +212,7 @@ async function summarize(conversation: ConversationSummary) {
     const result = await summarizeConversation(conversation.id);
     conversationSummaries.value[conversation.id] = result.summary;
   } catch {
-    errorMessage.value = 'Nao foi possivel resumir a conversa.';
+    errorMessage.value = 'Não foi possível resumir a conversa.';
   } finally {
     summarizingConversationId.value = '';
   }
@@ -226,7 +226,7 @@ async function suggestReply(conversation: ConversationSummary) {
     const result = await suggestConversationReply(conversation.id);
     replyDrafts.value[conversation.id] = result.suggestion;
   } catch {
-    errorMessage.value = 'Nao foi possivel sugerir uma resposta.';
+    errorMessage.value = 'Não foi possível sugerir uma resposta.';
   } finally {
     suggestingConversationId.value = '';
   }
@@ -240,7 +240,7 @@ async function suggestFollowUp(conversation: ConversationSummary) {
     const result = await suggestConversationFollowUp(conversation.id);
     replyDrafts.value[conversation.id] = result.suggestion;
   } catch {
-    errorMessage.value = 'Nao foi possivel sugerir um follow-up.';
+    errorMessage.value = 'Não foi possível sugerir um follow-up.';
   } finally {
     suggestingFollowUpConversationId.value = '';
   }

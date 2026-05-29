@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+
+jobs:
+  validate:
+    name: Lint, test, build and e2e
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: atende_pix
+          POSTGRES_PASSWORD: atende_pix
+          POSTGRES_DB: atende_pix_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U atende_pix -d atende_pix_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://atende_pix:atende_pix@localhost:5432/atende_pix_test?schema=public
+      REDIS_URL: redis://localhost:6379
+      JWT_ACCESS_SECRET: ci-access-secret
+      JWT_REFRESH_SECRET: ci-refresh-secret
+      JWT_ACCESS_EXPIRES_IN_SECONDS: 28800
+      ADMIN_EMAILS: admin@atendepix.local
+      API_PORT: 3000
+      WEB_PORT: 5173
+      WEB_ORIGIN: http://localhost:5173
+      VITE_API_BASE_URL: http://localhost:3000
+      ERROR_MONITORING_ENABLED: 'true'
+      ERROR_LOG_PATH: .logs/api-errors.log
+      STRUCTURED_LOGGING_ENABLED: 'true'
+      STRUCTURED_LOGGING_VERBOSE: 'false'
+      REQUEST_LOGGING_ENABLED: 'true'
+      RATE_LIMIT_ENABLED: 'true'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npm run db:generate
+
+      - name: Apply database migrations
+        run: npm run db:deploy
+
+      - name: Production dependency audit
+        run: npm audit --omit=dev
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit and integration tests
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      - name: Start API for e2e
+        run: |
+          mkdir -p .logs
+          npm run start -w @atende-pix/api > .logs/ci-api.log 2>&1 &
+          echo $! > .logs/ci-api.pid
+
+      - name: Wait for API healthcheck
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent http://localhost:3000/health > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat .logs/ci-api.log
+          exit 1
+
+      - name: End-to-end tests
+        run: npm run test:e2e
+
+      - name: Upload CI API logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-api-logs
+          path: .logs/ci-api.log

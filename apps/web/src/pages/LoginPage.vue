@@ -38,7 +38,7 @@ async function submit() {
         <p class="text-sm font-semibold text-[#11644f]">AtendePix</p>
         <h1 class="mt-3 text-3xl font-semibold">Entre para organizar atendimentos e Pix.</h1>
         <p class="mt-3 max-w-md text-sm leading-6 text-[#667067]">
-          Acesse o painel para acompanhar clientes, orcamentos, pedidos e pagamentos em um fluxo
+          Acesse o painel para acompanhar clientes, orçamentos, pedidos e pagamentos em um fluxo
           simples.
         </p>
       </div>
@@ -73,7 +73,7 @@ async function submit() {
           {{ isSubmitting ? 'Entrando...' : 'Entrar' }}
         </button>
         <p class="mt-4 text-center text-sm text-[#667067]">
-          Ainda nao tem conta?
+          Ainda não tem conta?
           <RouterLink class="font-semibold text-[#11644f]" to="/register">Criar empresa</RouterLink>
         </p>
       </form>

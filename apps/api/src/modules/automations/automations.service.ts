@@ -55,7 +55,7 @@ export class AutomationsService {
     });
 
     if (!rule) {
-      throw new NotFoundException('Regra de automacao nao encontrada.');
+      throw new NotFoundException('Regra de automação não encontrada.');
     }
 
     return this.prisma.automationRule.update({
@@ -305,7 +305,7 @@ export class AutomationsService {
         data: {
           status: 'FAILED',
           executedAt: new Date(),
-          errorMessage: 'Mensagem da automacao ausente.'
+          errorMessage: 'Mensagem da automação ausente.'
         }
       });
 

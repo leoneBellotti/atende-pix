@@ -14,13 +14,13 @@ export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
 
   @Get()
-  @ApiOkResponse({ description: 'Configuracoes da empresa autenticada.' })
+  @ApiOkResponse({ description: 'Configurações da empresa autenticada.' })
   getTenantSettings(@Req() request: AuthenticatedRequest) {
     return this.settingsService.getTenantSettings(request.user.tenantId);
   }
 
   @Patch()
-  @ApiOkResponse({ description: 'Configuracoes da empresa atualizadas.' })
+  @ApiOkResponse({ description: 'Configurações da empresa atualizadas.' })
   updateTenantSettings(
     @Req() request: AuthenticatedRequest,
     @Body() input: UpdateTenantSettingsDto
@@ -29,13 +29,13 @@ export class SettingsController {
   }
 
   @Get('payment-provider')
-  @ApiOkResponse({ description: 'Configuracao do provedor Pix da empresa.' })
+  @ApiOkResponse({ description: 'Configuração do provedor Pix da empresa.' })
   getPaymentProviderConfig(@Req() request: AuthenticatedRequest) {
     return this.settingsService.getPaymentProviderConfig(request.user.tenantId);
   }
 
   @Patch('payment-provider')
-  @ApiOkResponse({ description: 'Configuracao do provedor Pix atualizada.' })
+  @ApiOkResponse({ description: 'Configuração do provedor Pix atualizada.' })
   updatePaymentProviderConfig(
     @Req() request: AuthenticatedRequest,
     @Body() input: UpdatePaymentProviderConfigDto
@@ -44,13 +44,13 @@ export class SettingsController {
   }
 
   @Get('whatsapp')
-  @ApiOkResponse({ description: 'Configuracao do WhatsApp Cloud API da empresa.' })
+  @ApiOkResponse({ description: 'Configuração do WhatsApp Cloud API da empresa.' })
   getWhatsAppConfig(@Req() request: AuthenticatedRequest) {
     return this.settingsService.getWhatsAppConfig(request.user.tenantId);
   }
 
   @Patch('whatsapp')
-  @ApiOkResponse({ description: 'Configuracao do WhatsApp Cloud API atualizada.' })
+  @ApiOkResponse({ description: 'Configuração do WhatsApp Cloud API atualizada.' })
   updateWhatsAppConfig(
     @Req() request: AuthenticatedRequest,
     @Body() input: UpdateWhatsAppConfigDto

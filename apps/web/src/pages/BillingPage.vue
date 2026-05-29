@@ -39,7 +39,7 @@ async function loadBilling() {
     subscription.value = usageData.subscription;
     pendingCheckout.value = usageData.pendingCheckout ?? null;
   } catch {
-    errorMessage.value = 'Nao foi possivel carregar os planos.';
+    errorMessage.value = 'Não foi possível carregar os planos.';
   } finally {
     isLoading.value = false;
   }
@@ -55,7 +55,7 @@ async function choosePlan(plan: SubscriptionPlan) {
     successMessage.value = 'Checkout de assinatura criado.';
   } catch (error: unknown) {
     const message = (error as { response?: { data?: { message?: string } } }).response?.data?.message;
-    errorMessage.value = message ?? 'Nao foi possivel iniciar a assinatura.';
+    errorMessage.value = message ?? 'Não foi possível iniciar a assinatura.';
   } finally {
     selectingPlanCode.value = '';
   }
@@ -77,7 +77,7 @@ async function confirmCheckout() {
     successMessage.value = 'Assinatura ativada.';
   } catch (error: unknown) {
     const message = (error as { response?: { data?: { message?: string } } }).response?.data?.message;
-    errorMessage.value = message ?? 'Nao foi possivel confirmar o checkout.';
+    errorMessage.value = message ?? 'Não foi possível confirmar o checkout.';
   } finally {
     isConfirmingCheckout.value = false;
   }
@@ -96,7 +96,7 @@ async function cancelCurrentSubscription() {
     successMessage.value = 'Cancelamento agendado.';
   } catch (error: unknown) {
     const message = (error as { response?: { data?: { message?: string } } }).response?.data?.message;
-    errorMessage.value = message ?? 'Nao foi possivel cancelar a assinatura.';
+    errorMessage.value = message ?? 'Não foi possível cancelar a assinatura.';
   } finally {
     isUpdatingSubscription.value = false;
   }
@@ -112,7 +112,7 @@ async function reactivateCurrentSubscription() {
     usage.value = await getBillingUsage();
     successMessage.value = 'Assinatura reativada.';
   } catch {
-    errorMessage.value = 'Nao foi possivel reativar a assinatura.';
+    errorMessage.value = 'Não foi possível reativar a assinatura.';
   } finally {
     isUpdatingSubscription.value = false;
   }
@@ -161,7 +161,7 @@ function trialMessage() {
   }
 
   if (trial.expired) {
-    return 'Seu trial terminou. Assine um plano para continuar criando orcamentos.';
+    return 'Seu trial terminou. Assine um plano para continuar criando orçamentos.';
   }
 
   return `Restam ${trial.daysRemaining} dias do trial.`;
@@ -274,11 +274,11 @@ async function confirmCancellation() {
       </div>
       <dl class="mt-4 grid gap-3 text-sm text-[#465047] md:grid-cols-3">
         <div class="rounded-md border border-[#edf0ea] bg-[#f8faf6] p-3">
-          <dt class="text-xs font-semibold uppercase text-[#667067]">Orcamentos do mes</dt>
+          <dt class="text-xs font-semibold uppercase text-[#667067]">Orçamentos do mês</dt>
           <dd class="mt-1 font-semibold">{{ usageText(usage?.limits.quotes.used, usage?.limits.quotes.limit) }}</dd>
         </div>
         <div class="rounded-md border border-[#edf0ea] bg-[#f8faf6] p-3">
-          <dt class="text-xs font-semibold uppercase text-[#667067]">Usuarios</dt>
+          <dt class="text-xs font-semibold uppercase text-[#667067]">Usuários</dt>
           <dd class="mt-1 font-semibold">{{ usageText(usage?.limits.users.used, usage?.limits.users.limit) }}</dd>
         </div>
         <div class="rounded-md border border-[#edf0ea] bg-[#f8faf6] p-3">
@@ -301,9 +301,9 @@ async function confirmCancellation() {
       <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <p class="text-xs font-semibold uppercase text-[#7a4b33]">Confirmar cancelamento</p>
-          <h2 class="mt-2 text-lg font-semibold text-ink">A assinatura fica ativa ate {{ formatDate(subscription?.currentPeriodEnd) }}.</h2>
+          <h2 class="mt-2 text-lg font-semibold text-ink">A assinatura fica ativa até {{ formatDate(subscription?.currentPeriodEnd) }}.</h2>
           <p class="mt-1 text-sm leading-6 text-[#667067]">
-            Depois dessa data, recursos pagos podem ser bloqueados ate que uma assinatura seja reativada.
+            Depois dessa data, recursos pagos podem ser bloqueados até que uma assinatura seja reativada.
           </p>
         </div>
         <button
@@ -380,11 +380,11 @@ async function confirmCancellation() {
         </div>
         <dl class="mt-4 space-y-2 text-sm text-[#465047]">
           <div class="flex justify-between gap-3">
-            <dt>Orcamentos</dt>
+            <dt>Orçamentos</dt>
             <dd class="font-semibold">{{ limitLabel(plan.quoteLimit) }}</dd>
           </div>
           <div class="flex justify-between gap-3">
-            <dt>Usuarios</dt>
+            <dt>Usuários</dt>
             <dd class="font-semibold">{{ limitLabel(plan.userLimit) }}</dd>
           </div>
           <div class="flex justify-between gap-3">

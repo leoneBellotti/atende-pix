@@ -39,7 +39,7 @@ async function loadItems() {
   try {
     items.value = await listCatalogItems(filters);
   } catch {
-    errorMessage.value = 'Nao foi possivel carregar o catalogo.';
+    errorMessage.value = 'Não foi possível carregar o catálogo.';
   } finally {
     isLoading.value = false;
   }
@@ -59,7 +59,7 @@ async function submit() {
     resetForm();
     await loadItems();
   } catch {
-    errorMessage.value = 'Nao foi possivel salvar. Verifique se ja existe item com esse nome.';
+    errorMessage.value = 'Não foi possível salvar. Verifique se já existe item com esse nome.';
   } finally {
     isSaving.value = false;
   }
@@ -72,7 +72,7 @@ async function disableItem(item: CatalogItem) {
     await disableCatalogItem(item.id);
     await loadItems();
   } catch {
-    errorMessage.value = 'Nao foi possivel desativar o item.';
+    errorMessage.value = 'Não foi possível desativar o item.';
   }
 }
 
@@ -83,7 +83,7 @@ async function activateItem(item: CatalogItem) {
     await setCatalogItemActive(item.id, true);
     await loadItems();
   } catch {
-    errorMessage.value = 'Nao foi possivel ativar o item.';
+    errorMessage.value = 'Não foi possível ativar o item.';
   }
 }
 
@@ -102,7 +102,7 @@ function formatCurrency(value: string) {
 }
 
 function typeLabel(type: CatalogItemType) {
-  return type === 'SERVICE' ? 'Servico' : 'Produto';
+  return type === 'SERVICE' ? 'Serviço' : 'Produto';
 }
 </script>
 
@@ -110,23 +110,23 @@ function typeLabel(type: CatalogItemType) {
   <section class="space-y-5">
     <div class="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
       <div>
-        <h1 class="text-2xl font-semibold text-ink">Catalogo</h1>
+        <h1 class="text-2xl font-semibold text-ink">Catálogo</h1>
         <p class="mt-1 text-sm text-[#667067]">
-          Produtos e servicos reutilizaveis para montar orcamentos com rapidez.
+          Produtos e serviços reutilizaveis para montar orçamentos com rapidez.
         </p>
       </div>
       <form class="grid gap-2 sm:grid-cols-[1fr_140px_120px_auto]" @submit.prevent="loadItems">
         <input
           v-model="filters.search"
           class="rounded-md border border-[#cfd7ce] bg-white px-3 py-2 text-sm outline-none focus:border-mint"
-          placeholder="Buscar no catalogo"
+          placeholder="Buscar no catálogo"
         />
         <select
           v-model="filters.type"
           class="rounded-md border border-[#cfd7ce] bg-white px-3 py-2 text-sm outline-none focus:border-mint"
         >
           <option value="">Todos</option>
-          <option value="SERVICE">Servicos</option>
+          <option value="SERVICE">Serviços</option>
           <option value="PRODUCT">Produtos</option>
         </select>
         <select
@@ -165,7 +165,7 @@ function typeLabel(type: CatalogItemType) {
             type="button"
             @click="form.type = 'SERVICE'"
           >
-            Servico
+            Serviço
           </button>
           <button
             class="rounded px-3 py-2 text-sm font-semibold"
@@ -219,7 +219,7 @@ function typeLabel(type: CatalogItemType) {
           <span class="text-xs text-[#667067]">{{ items.length }} encontrados</span>
         </div>
 
-        <div v-if="isLoading" class="px-4 py-8 text-sm text-[#667067]">Carregando catalogo...</div>
+        <div v-if="isLoading" class="px-4 py-8 text-sm text-[#667067]">Carregando catálogo...</div>
         <div v-else-if="!hasItems" class="px-4 py-8 text-sm text-[#667067]">
           Nenhum item encontrado.
         </div>

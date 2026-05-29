@@ -11,7 +11,7 @@ export class CreateAttendanceDto {
   @IsEnum(AttendanceOrigin)
   origin!: AttendanceOrigin;
 
-  @ApiProperty({ example: 'Cliente pediu orcamento para troca de tela.', required: false })
+  @ApiProperty({ example: 'Cliente pediu orçamento para troca de tela.', required: false })
   @IsOptional()
   @IsString()
   summary?: string;

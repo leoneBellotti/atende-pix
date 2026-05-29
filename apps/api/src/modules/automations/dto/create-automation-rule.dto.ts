@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsInt, IsOptional, IsString, Min, MinLength } from 'class-validator';
 
 export class CreateAutomationRuleDto {
-  @ApiProperty({ example: 'Follow-up de orcamento' })
+  @ApiProperty({ example: 'Follow-up de orçamento' })
   @IsString()
   @MinLength(2)
   name!: string;
@@ -16,7 +16,7 @@ export class CreateAutomationRuleDto {
   @Min(1)
   delayHours!: number;
 
-  @ApiProperty({ example: 'Ola! Passando para saber se ficou alguma duvida sobre o orcamento.' })
+  @ApiProperty({ example: 'Olá! Passando para saber se ficou alguma dúvida sobre o orçamento.' })
   @IsString()
   @MinLength(1)
   messageBody!: string;

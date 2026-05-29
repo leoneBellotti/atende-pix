@@ -71,7 +71,7 @@ async function loadReports() {
     orders.value = ordersData;
     payments.value = paymentsData;
   } catch {
-    errorMessage.value = 'Nao foi possivel carregar os relatorios.';
+    errorMessage.value = 'Não foi possível carregar os relatórios.';
   } finally {
     isLoading.value = false;
   }
@@ -154,9 +154,9 @@ function csvCell(value: string | number) {
   <section class="space-y-5">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <h1 class="text-2xl font-semibold text-ink">Relatorios</h1>
+        <h1 class="text-2xl font-semibold text-ink">Relatórios</h1>
         <p class="mt-1 text-sm text-[#667067]">
-          Fechamento mensal simples para pedidos, recebimentos e exportacoes.
+          Fechamento mensal simples para pedidos, recebimentos e exportações.
         </p>
       </div>
       <div class="flex flex-col gap-2 sm:flex-row">
@@ -213,7 +213,7 @@ function csvCell(value: string | number) {
       <article class="rounded-md border border-[#dfe4da] bg-white">
         <div class="flex items-center justify-between border-b border-[#edf0ea] px-4 py-3">
           <div>
-            <h2 class="text-base font-semibold">Pedidos do periodo</h2>
+            <h2 class="text-base font-semibold">Pedidos do período</h2>
             <p class="mt-1 text-xs text-[#667067]">{{ filteredOrders.length }} encontrados</p>
           </div>
           <button
@@ -226,7 +226,7 @@ function csvCell(value: string | number) {
           </button>
         </div>
         <div v-if="!filteredOrders.length" class="px-4 py-8 text-sm text-[#667067]">
-          Nenhum pedido no periodo.
+          Nenhum pedido no período.
         </div>
         <ul v-else class="divide-y divide-[#edf0ea]">
           <li v-for="order in filteredOrders" :key="order.id" class="px-4 py-3 text-sm">
@@ -246,7 +246,7 @@ function csvCell(value: string | number) {
       <article class="rounded-md border border-[#dfe4da] bg-white">
         <div class="flex items-center justify-between border-b border-[#edf0ea] px-4 py-3">
           <div>
-            <h2 class="text-base font-semibold">Pagamentos do periodo</h2>
+            <h2 class="text-base font-semibold">Pagamentos do período</h2>
             <p class="mt-1 text-xs text-[#667067]">{{ filteredPayments.length }} encontrados</p>
           </div>
           <button
@@ -259,7 +259,7 @@ function csvCell(value: string | number) {
           </button>
         </div>
         <div v-if="!filteredPayments.length" class="px-4 py-8 text-sm text-[#667067]">
-          Nenhum pagamento no periodo.
+          Nenhum pagamento no período.
         </div>
         <ul v-else class="divide-y divide-[#edf0ea]">
           <li v-for="payment in filteredPayments" :key="payment.id" class="px-4 py-3 text-sm">

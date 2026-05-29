@@ -58,7 +58,7 @@ export class CatalogService {
     });
 
     if (!item) {
-      throw new NotFoundException('Item de catalogo nao encontrado.');
+      throw new NotFoundException('Item de catálogo não encontrado.');
     }
 
     return item;
@@ -106,7 +106,7 @@ export class CatalogService {
     });
 
     if (existing) {
-      throw new ConflictException('Ja existe item de catalogo com esse nome.');
+      throw new ConflictException('Já existe item de catálogo com esse nome.');
     }
   }
 }

@@ -84,7 +84,7 @@ async function loadSettings() {
     whatsappForm.hasAppSecret = whatsappConfig.hasAppSecret;
     sessionStore.updateTenant(settings);
   } catch {
-    errorMessage.value = 'Nao foi possivel carregar as configuracoes.';
+    errorMessage.value = 'Não foi possível carregar as configurações.';
   } finally {
     isLoading.value = false;
   }
@@ -113,9 +113,9 @@ async function submitWhatsApp() {
     whatsappForm.accessToken = '';
     whatsappForm.verifyToken = '';
     whatsappForm.appSecret = '';
-    successMessage.value = 'Configuracao WhatsApp salva.';
+    successMessage.value = 'Configuração WhatsApp salva.';
   } catch {
-    errorMessage.value = 'Nao foi possivel salvar a configuracao WhatsApp.';
+    errorMessage.value = 'Não foi possível salvar a configuração WhatsApp.';
   } finally {
     isSavingWhatsApp.value = false;
   }
@@ -143,9 +143,9 @@ async function submitPix() {
     pixForm.accessToken = '';
     pixForm.publicKey = '';
     pixForm.webhookSecret = '';
-    successMessage.value = 'Configuracao Pix salva.';
+    successMessage.value = 'Configuração Pix salva.';
   } catch {
-    errorMessage.value = 'Nao foi possivel salvar a configuracao Pix.';
+    errorMessage.value = 'Não foi possível salvar a configuração Pix.';
   } finally {
     isSavingPix.value = false;
   }
@@ -166,9 +166,9 @@ async function submit() {
       aiMonthlyLimit: Number(form.aiMonthlyLimit)
     });
     sessionStore.updateTenant(settings);
-    successMessage.value = 'Configuracoes salvas.';
+    successMessage.value = 'Configurações salvas.';
   } catch {
-    errorMessage.value = 'Nao foi possivel salvar as configuracoes.';
+    errorMessage.value = 'Não foi possível salvar as configurações.';
   } finally {
     isSaving.value = false;
   }
@@ -178,9 +178,9 @@ async function submit() {
 <template>
   <section class="space-y-5">
     <div>
-      <h1 class="text-2xl font-semibold text-ink">Configuracoes</h1>
+      <h1 class="text-2xl font-semibold text-ink">Configurações</h1>
       <p class="mt-1 text-sm text-[#667067]">
-        Dados da empresa usados no painel, nos orcamentos publicos e no PDF.
+        Dados da empresa usados no painel, nos orçamentos públicos e no PDF.
       </p>
     </div>
 
@@ -198,7 +198,7 @@ async function submit() {
     </p>
 
     <form class="rounded-md border border-[#dfe4da] bg-white p-5" @submit.prevent="submit">
-      <div v-if="isLoading" class="text-sm text-[#667067]">Carregando configuracoes...</div>
+      <div v-if="isLoading" class="text-sm text-[#667067]">Carregando configurações...</div>
       <div v-else class="grid gap-4 lg:grid-cols-2">
         <label class="block text-sm font-medium">
           Nome da empresa
@@ -247,7 +247,7 @@ async function submit() {
           />
         </label>
         <div v-if="aiUsage" class="text-sm text-[#667067]">
-          Uso de IA no mes:
+          Uso de IA no mês:
           <span class="font-semibold text-ink">{{ aiUsage.used }} / {{ aiUsage.limit }}</span>
         </div>
       </div>
@@ -258,7 +258,7 @@ async function submit() {
           type="submit"
           :disabled="isLoading || isSaving"
         >
-          {{ isSaving ? 'Salvando...' : 'Salvar configuracoes' }}
+          {{ isSaving ? 'Salvando...' : 'Salvar configurações' }}
         </button>
       </div>
     </form>
@@ -268,7 +268,7 @@ async function submit() {
         <div>
           <h2 class="text-base font-semibold">Pix via Mercado Pago</h2>
           <p class="mt-1 text-sm text-[#667067]">
-            Credenciais usadas para gerar cobrancas Pix em sandbox ou producao.
+            Credenciais usadas para gerar cobranças Pix em sandbox ou produção.
           </p>
         </div>
         <label class="flex items-center gap-2 text-sm font-medium">
@@ -294,7 +294,7 @@ async function submit() {
           <input
             v-model="pixForm.accessToken"
             class="mt-2 w-full rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
-            :placeholder="pixForm.hasAccessToken ? 'Token ja cadastrado' : 'TEST-...'"
+            :placeholder="pixForm.hasAccessToken ? 'Token já cadastrado' : 'TEST-...'"
             type="password"
           />
         </label>
@@ -303,7 +303,7 @@ async function submit() {
           <input
             v-model="pixForm.publicKey"
             class="mt-2 w-full rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
-            :placeholder="pixForm.hasPublicKey ? 'Chave ja cadastrada' : 'TEST-...'"
+            :placeholder="pixForm.hasPublicKey ? 'Chave já cadastrada' : 'TEST-...'"
           />
         </label>
         <label class="block text-sm font-medium lg:col-span-2">
@@ -311,7 +311,7 @@ async function submit() {
           <input
             v-model="pixForm.webhookSecret"
             class="mt-2 w-full rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
-            :placeholder="pixForm.hasWebhookSecret ? 'Segredo ja cadastrado' : 'Segredo do webhook'"
+            :placeholder="pixForm.hasWebhookSecret ? 'Segredo já cadastrado' : 'Segredo do webhook'"
             type="password"
           />
         </label>
@@ -363,7 +363,7 @@ async function submit() {
           <input
             v-model="whatsappForm.accessToken"
             class="mt-2 w-full rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
-            :placeholder="whatsappForm.hasAccessToken ? 'Token ja cadastrado' : 'EAAB...'"
+            :placeholder="whatsappForm.hasAccessToken ? 'Token já cadastrado' : 'EAAB...'"
             type="password"
           />
         </label>
@@ -373,7 +373,7 @@ async function submit() {
             v-model="whatsappForm.verifyToken"
             class="mt-2 w-full rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
             :placeholder="
-              whatsappForm.hasVerifyToken ? 'Token ja cadastrado' : 'Token de verificacao'
+              whatsappForm.hasVerifyToken ? 'Token já cadastrado' : 'Token de verificação'
             "
             type="password"
           />
@@ -383,7 +383,7 @@ async function submit() {
           <input
             v-model="whatsappForm.appSecret"
             class="mt-2 w-full rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
-            :placeholder="whatsappForm.hasAppSecret ? 'Segredo ja cadastrado' : 'App secret'"
+            :placeholder="whatsappForm.hasAppSecret ? 'Segredo já cadastrado' : 'App secret'"
             type="password"
           />
         </label>

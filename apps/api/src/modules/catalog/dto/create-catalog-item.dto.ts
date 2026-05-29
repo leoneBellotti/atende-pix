@@ -12,7 +12,7 @@ export class CreateCatalogItemDto {
   @MinLength(2)
   name!: string;
 
-  @ApiProperty({ example: 'Servico de troca de tela com garantia.', required: false })
+  @ApiProperty({ example: 'Serviço de troca de tela com garantia.', required: false })
   @IsOptional()
   @IsString()
   description?: string;

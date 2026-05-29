@@ -72,7 +72,7 @@ export class CustomersService {
     });
 
     if (!customer) {
-      throw new NotFoundException('Cliente nao encontrado.');
+      throw new NotFoundException('Cliente não encontrado.');
     }
 
     return customer;
@@ -130,7 +130,7 @@ export class CustomersService {
     });
 
     if (existing) {
-      throw new ConflictException('Ja existe cliente com esse telefone ou documento.');
+      throw new ConflictException('Já existe cliente com esse telefone ou documento.');
     }
   }
 }

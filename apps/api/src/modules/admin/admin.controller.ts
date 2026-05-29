@@ -17,7 +17,7 @@ export class AdminController {
   }
 
   @Get('me')
-  @ApiOkResponse({ description: 'Confirma se o usuario autenticado e administrador.' })
+  @ApiOkResponse({ description: 'Confirma se o usuário autenticado e administrador.' })
   me(@Req() request: AuthenticatedRequest) {
     return this.adminService.me(request.user.userId);
   }
@@ -32,6 +32,16 @@ export class AdminController {
   @ApiOkResponse({ description: 'Empresas cadastradas no SaaS.' })
   tenants(@Req() request: AuthenticatedRequest) {
     return this.adminService.tenants(request.user.userId);
+  }
+
+  @Get('tenants/:tenantId/audit-logs')
+  @ApiOkResponse({ description: 'Eventos recentes de auditoria da empresa.' })
+  auditLogs(
+    @Req() request: AuthenticatedRequest,
+    @Param('tenantId') tenantId: string,
+    @Query('limit') limit?: string
+  ) {
+    return this.adminService.auditLogs(request.user.userId, tenantId, limit);
   }
 
   @Post('tenants/:tenantId/past-due')

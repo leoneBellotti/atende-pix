@@ -28,7 +28,7 @@ async function submit() {
     });
     await router.push('/');
   } catch {
-    errorMessage.value = 'Nao foi possivel criar a conta com esses dados.';
+    errorMessage.value = 'Não foi possível criar a conta com esses dados.';
   } finally {
     isSubmitting.value = false;
   }
@@ -44,8 +44,8 @@ async function submit() {
         <p class="text-sm font-semibold text-[#11644f]">AtendePix</p>
         <h1 class="mt-3 text-3xl font-semibold">Crie a empresa e entre no painel.</h1>
         <p class="mt-3 max-w-md text-sm leading-6 text-[#667067]">
-          O primeiro usuario entra como dono da empresa e ja pode iniciar o cadastro de clientes e
-          orcamentos.
+          O primeiro usuário entra como dono da empresa e já pode iniciar o cadastro de clientes e
+          orçamentos.
         </p>
       </div>
 
@@ -102,13 +102,13 @@ async function submit() {
           {{ isSubmitting ? 'Criando...' : 'Criar conta' }}
         </button>
         <p class="mt-3 text-center text-xs leading-5 text-[#667067]">
-          Ao criar a conta, voce concorda com os
+          Ao criar a conta, você concorda com os
           <RouterLink class="font-semibold text-[#11644f]" to="/terms">Termos</RouterLink>
           e a
           <RouterLink class="font-semibold text-[#11644f]" to="/privacy">Politica de privacidade</RouterLink>.
         </p>
         <p class="mt-4 text-center text-sm text-[#667067]">
-          Ja tem conta?
+          Já tem conta?
           <RouterLink class="font-semibold text-[#11644f]" to="/login">Entrar</RouterLink>
         </p>
       </form>

@@ -2,13 +2,15 @@ import { readFile } from 'node:fs/promises';
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
+import { AuditService } from '../../common/audit/audit.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 
 @Injectable()
 export class AdminService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly auditService?: AuditService
   ) {}
 
   async summary(userId: string) {
@@ -139,24 +141,65 @@ export class AdminService {
     }));
   }
 
+  async auditLogs(userId: string, tenantId: string, limitInput?: string) {
+    await this.ensureAdmin(userId);
+
+    return this.prisma.auditLog.findMany({
+      where: { tenantId },
+      include: {
+        actor: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: this.normalizeLimit(limitInput)
+    });
+  }
+
   async markTenantPastDue(userId: string, tenantId: string) {
     await this.ensureAdmin(userId);
 
     const subscription = await this.findSubscription(tenantId);
     const now = new Date();
 
-    return this.prisma.subscription.update({
-      where: { tenantId },
-      data: {
-        status: 'PAST_DUE',
-        pastDueAt: now,
-        suspendedAt: null,
-        currentPeriodEnd: subscription.currentPeriodEnd ?? now,
-        renewsAt: subscription.renewsAt ?? now
-      },
-      include: {
-        plan: true
-      }
+    return this.prisma.$transaction(async (tx) => {
+      const updated = await tx.subscription.update({
+        where: { tenantId },
+        data: {
+          status: 'PAST_DUE',
+          pastDueAt: now,
+          suspendedAt: null,
+          currentPeriodEnd: subscription.currentPeriodEnd ?? now,
+          renewsAt: subscription.renewsAt ?? now
+        },
+        include: {
+          plan: true
+        }
+      });
+
+      await this.auditService?.record(
+        {
+          tenantId,
+          actorUserId: userId,
+          action: 'ADMIN_TENANT_MARKED_PAST_DUE',
+          entityType: 'Subscription',
+          entityId: updated.id,
+          metadata: {
+            planCode: updated.plan.code,
+            planName: updated.plan.name,
+            pastDueAt: now.toISOString()
+          }
+        },
+        tx
+      );
+
+      return updated;
     });
   }
 
@@ -166,16 +209,36 @@ export class AdminService {
     await this.findSubscription(tenantId);
     const now = new Date();
 
-    return this.prisma.subscription.update({
-      where: { tenantId },
-      data: {
-        status: 'SUSPENDED',
-        pastDueAt: now,
-        suspendedAt: now
-      },
-      include: {
-        plan: true
-      }
+    return this.prisma.$transaction(async (tx) => {
+      const updated = await tx.subscription.update({
+        where: { tenantId },
+        data: {
+          status: 'SUSPENDED',
+          pastDueAt: now,
+          suspendedAt: now
+        },
+        include: {
+          plan: true
+        }
+      });
+
+      await this.auditService?.record(
+        {
+          tenantId,
+          actorUserId: userId,
+          action: 'ADMIN_TENANT_SUSPENDED',
+          entityType: 'Subscription',
+          entityId: updated.id,
+          metadata: {
+            planCode: updated.plan.code,
+            planName: updated.plan.name,
+            suspendedAt: now.toISOString()
+          }
+        },
+        tx
+      );
+
+      return updated;
     });
   }
 
@@ -186,22 +249,42 @@ export class AdminService {
     const now = new Date();
     const renewsAt = this.addMonths(now, 1);
 
-    return this.prisma.subscription.update({
-      where: { tenantId },
-      data: {
-        status: 'ACTIVE',
-        currentPeriodStart: now,
-        currentPeriodEnd: renewsAt,
-        renewsAt,
-        pastDueAt: null,
-        suspendedAt: null,
-        cancelAtPeriodEnd: false,
-        canceledAt: null,
-        cancellationReason: null
-      },
-      include: {
-        plan: true
-      }
+    return this.prisma.$transaction(async (tx) => {
+      const updated = await tx.subscription.update({
+        where: { tenantId },
+        data: {
+          status: 'ACTIVE',
+          currentPeriodStart: now,
+          currentPeriodEnd: renewsAt,
+          renewsAt,
+          pastDueAt: null,
+          suspendedAt: null,
+          cancelAtPeriodEnd: false,
+          canceledAt: null,
+          cancellationReason: null
+        },
+        include: {
+          plan: true
+        }
+      });
+
+      await this.auditService?.record(
+        {
+          tenantId,
+          actorUserId: userId,
+          action: 'ADMIN_TENANT_REGULARIZED',
+          entityType: 'Subscription',
+          entityId: updated.id,
+          metadata: {
+            planCode: updated.plan.code,
+            planName: updated.plan.name,
+            renewsAt: renewsAt.toISOString()
+          }
+        },
+        tx
+      );
+
+      return updated;
     });
   }
 
@@ -209,7 +292,7 @@ export class AdminService {
     const isAdmin = await this.isAdmin(userId);
 
     if (!this.getAdminEmails().length) {
-      throw new ForbiddenException('Acesso administrativo nao configurado.');
+      throw new ForbiddenException('Acesso administrativo não configurado.');
     }
 
     if (!isAdmin) {
@@ -285,7 +368,7 @@ export class AdminService {
     });
 
     if (!subscription) {
-      throw new NotFoundException('Assinatura da empresa nao encontrada.');
+      throw new NotFoundException('Assinatura da empresa não encontrada.');
     }
 
     return subscription;

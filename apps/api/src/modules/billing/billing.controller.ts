@@ -34,30 +34,42 @@ export class BillingController {
   @Post('subscription')
   @ApiOkResponse({ description: 'Seleciona plano para o tenant autenticado.' })
   selectPlan(@Req() request: AuthenticatedRequest, @Body() input: SelectPlanDto) {
-    return this.billingService.selectPlan(request.user.tenantId, input.planCode);
+    return this.billingService.selectPlan(
+      request.user.tenantId,
+      request.user.userId,
+      input.planCode
+    );
   }
 
   @Post('subscription/checkout')
   @ApiOkResponse({ description: 'Inicia checkout de assinatura do SaaS.' })
   startCheckout(@Req() request: AuthenticatedRequest, @Body() input: StartSubscriptionCheckoutDto) {
-    return this.billingService.startCheckout(request.user.tenantId, input.planCode);
+    return this.billingService.startCheckout(
+      request.user.tenantId,
+      request.user.userId,
+      input.planCode
+    );
   }
 
   @Post('subscription/checkout/:id/confirm')
   @ApiOkResponse({ description: 'Confirma pagamento local do checkout de assinatura.' })
   confirmCheckout(@Req() request: AuthenticatedRequest, @Param('id') id: string) {
-    return this.billingService.confirmCheckout(request.user.tenantId, id);
+    return this.billingService.confirmCheckout(request.user.tenantId, request.user.userId, id);
   }
 
   @Post('subscription/cancel')
-  @ApiOkResponse({ description: 'Agenda cancelamento da assinatura ao fim do periodo.' })
+  @ApiOkResponse({ description: 'Agenda cancelamento da assinatura ao fim do período.' })
   cancelSubscription(@Req() request: AuthenticatedRequest, @Body() input: CancelSubscriptionDto) {
-    return this.billingService.cancelSubscription(request.user.tenantId, input.reason);
+    return this.billingService.cancelSubscription(
+      request.user.tenantId,
+      request.user.userId,
+      input.reason
+    );
   }
 
   @Post('subscription/reactivate')
   @ApiOkResponse({ description: 'Reativa assinatura com cancelamento agendado.' })
   reactivateSubscription(@Req() request: AuthenticatedRequest) {
-    return this.billingService.reactivateSubscription(request.user.tenantId);
+    return this.billingService.reactivateSubscription(request.user.tenantId, request.user.userId);
   }
 }

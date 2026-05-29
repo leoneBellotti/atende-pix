@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue';
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { listAttendances } from '../services/attendancesService';
 import { generateQuoteItemsFromText } from '../services/aiService';
 import { listCatalogItems } from '../services/catalogService';
@@ -11,6 +12,7 @@ import type { Customer } from '../types/customer';
 import type { Quote } from '../types/quote';
 
 const quotes = ref<Quote[]>([]);
+const route = useRoute();
 const customers = ref<Customer[]>([]);
 const attendances = ref<Attendance[]>([]);
 const catalogItems = ref<CatalogItem[]>([]);
@@ -20,6 +22,7 @@ const isLoading = ref(false);
 const isSaving = ref(false);
 const isGeneratingItems = ref(false);
 const itemPrompt = ref('');
+const newQuoteFormRef = ref<HTMLFormElement | null>(null);
 
 const form = reactive({
   customerId: '',
@@ -42,7 +45,15 @@ const availableAttendances = computed(() =>
 
 onMounted(async () => {
   await Promise.all([loadCustomers(), loadAttendances(), loadCatalogItems(), loadQuotes()]);
+  await focusNewQuoteFromRoute();
 });
+
+watch(
+  () => [route.query.new, route.hash],
+  () => {
+    focusNewQuoteFromRoute();
+  }
+);
 
 async function loadCustomers() {
   customers.value = await listCustomers();
@@ -67,7 +78,7 @@ async function loadQuotes() {
   try {
     quotes.value = await listQuotes();
   } catch {
-    errorMessage.value = 'Nao foi possivel carregar os orcamentos.';
+    errorMessage.value = 'Não foi possível carregar os orçamentos.';
   } finally {
     isLoading.value = false;
   }
@@ -92,7 +103,7 @@ async function submit() {
     resetForm();
     await loadQuotes();
   } catch {
-    errorMessage.value = 'Nao foi possivel criar o orcamento.';
+    errorMessage.value = 'Não foi possível criar o orçamento.';
   } finally {
     isSaving.value = false;
   }
@@ -105,7 +116,7 @@ async function convertToOrder(quote: Quote) {
     await convertQuoteToOrder(quote.id);
     await loadQuotes();
   } catch {
-    errorMessage.value = 'Nao foi possivel converter o orcamento em pedido.';
+    errorMessage.value = 'Não foi possível converter o orçamento em pedido.';
   }
 }
 
@@ -167,7 +178,7 @@ async function generateItems() {
           }
         ];
   } catch {
-    errorMessage.value = 'Nao foi possivel gerar itens a partir do texto.';
+    errorMessage.value = 'Não foi possível gerar itens a partir do texto.';
   } finally {
     isGeneratingItems.value = false;
   }
@@ -194,6 +205,19 @@ function resetForm() {
   selectedCatalogItemId.value = '';
 }
 
+async function focusNewQuoteFromRoute() {
+  if (route.query.new !== '1' && route.hash !== '#novo-orçamento') {
+    return;
+  }
+
+  await nextTick();
+  newQuoteFormRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const firstField = newQuoteFormRef.value?.querySelector<HTMLSelectElement | HTMLInputElement>(
+    'select, input, textarea'
+  );
+  firstField?.focus({ preventScroll: true });
+}
+
 function formatCurrency(value: string | number) {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -214,9 +238,9 @@ function quotePdfUrl(quote: Quote) {
 <template>
   <section class="space-y-5">
     <div>
-      <h1 class="text-2xl font-semibold text-ink">Orcamentos</h1>
+      <h1 class="text-2xl font-semibold text-ink">Orçamentos</h1>
       <p class="mt-1 text-sm text-[#667067]">
-        Monte uma primeira versao de orcamento com itens livres e link publico.
+        Monte uma primeira versão de orçamento com itens livres e link público.
       </p>
     </div>
 
@@ -228,8 +252,13 @@ function quotePdfUrl(quote: Quote) {
     </p>
 
     <div class="grid gap-4 xl:grid-cols-[460px_1fr]">
-      <form class="rounded-md border border-[#dfe4da] bg-white p-4" @submit.prevent="submit">
-        <h2 class="text-base font-semibold">Novo orcamento</h2>
+      <form
+        id="novo-orçamento"
+        ref="newQuoteFormRef"
+        class="rounded-md border border-[#dfe4da] bg-white p-4"
+        @submit.prevent="submit"
+      >
+        <h2 class="text-base font-semibold">Novo orçamento</h2>
         <label class="mt-4 block text-sm font-medium">
           Cliente
           <select
@@ -250,7 +279,7 @@ function quotePdfUrl(quote: Quote) {
             v-model="form.attendanceId"
             class="mt-2 w-full rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
           >
-            <option value="">Sem vinculo</option>
+            <option value="">Sem vínculo</option>
             <option
               v-for="attendance in availableAttendances"
               :key="attendance.id"
@@ -277,7 +306,7 @@ function quotePdfUrl(quote: Quote) {
                 v-model="selectedCatalogItemId"
                 class="rounded-md border border-[#cfd7ce] bg-white px-3 py-2 text-sm outline-none focus:border-mint"
               >
-                <option value="">Adicionar produto/servico do catalogo</option>
+                <option value="">Adicionar produto/serviço do catálogo</option>
                 <option
                   v-for="catalogItem in catalogItems"
                   :key="catalogItem.id"
@@ -372,18 +401,18 @@ function quotePdfUrl(quote: Quote) {
           type="submit"
           :disabled="isSaving || !customers.length"
         >
-          {{ isSaving ? 'Salvando...' : 'Criar orcamento' }}
+          {{ isSaving ? 'Salvando...' : 'Criar orçamento' }}
         </button>
       </form>
 
       <section class="overflow-hidden rounded-md border border-[#dfe4da] bg-white">
         <div class="flex items-center justify-between border-b border-[#edf0ea] px-4 py-3">
-          <h2 class="text-base font-semibold">Orcamentos criados</h2>
+          <h2 class="text-base font-semibold">Orçamentos criados</h2>
           <span class="text-xs text-[#667067]">{{ quotes.length }} cadastrados</span>
         </div>
         <div v-if="isLoading" class="px-4 py-8 text-sm text-[#667067]">Carregando...</div>
         <div v-else-if="!hasQuotes" class="px-4 py-8 text-sm text-[#667067]">
-          Nenhum orcamento criado.
+          Nenhum orçamento criado.
         </div>
         <div v-else class="divide-y divide-[#edf0ea]">
           <article v-for="quote in quotes" :key="quote.id" class="px-4 py-4">
@@ -401,7 +430,7 @@ function quotePdfUrl(quote: Quote) {
                   :href="publicQuoteUrl(quote)"
                   target="_blank"
                 >
-                  Link publico
+                  Link público
                 </a>
                 <a
                   class="rounded-md border border-[#dfe4da] px-3 py-2 text-sm font-semibold text-[#11644f] hover:bg-[#edf3ee]"

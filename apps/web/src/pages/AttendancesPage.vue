@@ -67,7 +67,7 @@ async function loadAttendances() {
   try {
     attendances.value = await listAttendances(filters);
   } catch {
-    errorMessage.value = 'Nao foi possivel carregar os atendimentos.';
+    errorMessage.value = 'Não foi possível carregar os atendimentos.';
   } finally {
     isLoading.value = false;
   }
@@ -88,7 +88,7 @@ async function submit() {
     resetForm();
     await loadAttendances();
   } catch {
-    errorMessage.value = 'Nao foi possivel criar o atendimento.';
+    errorMessage.value = 'Não foi possível criar o atendimento.';
   } finally {
     isSaving.value = false;
   }
@@ -101,7 +101,7 @@ async function changeStatus(attendance: Attendance, status: AttendanceStatus) {
     await updateAttendanceStatus(attendance.id, status);
     await loadAttendances();
   } catch {
-    errorMessage.value = 'Nao foi possivel atualizar o status.';
+    errorMessage.value = 'Não foi possível atualizar o status.';
   }
 }
 
@@ -124,7 +124,7 @@ function optionLabel<T extends string>(options: Array<{ value: T; label: string 
       <div>
         <h1 class="text-2xl font-semibold text-ink">Atendimentos</h1>
         <p class="mt-1 text-sm text-[#667067]">
-          Registre a origem da conversa, acompanhe status e puxe o proximo passo.
+          Registre a origem da conversa, acompanhe status e puxe o próximo passo.
         </p>
       </div>
       <form
@@ -198,7 +198,7 @@ function optionLabel<T extends string>(options: Array<{ value: T; label: string 
           </select>
         </label>
         <label class="mt-4 block text-sm font-medium">
-          Responsavel
+          Responsável
           <input
             v-model="form.responsibleName"
             class="mt-2 w-full rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
@@ -256,7 +256,7 @@ function optionLabel<T extends string>(options: Array<{ value: T; label: string 
                   {{ attendance.summary || 'Sem resumo informado.' }}
                 </p>
                 <p class="mt-2 text-xs text-[#667067]">
-                  Responsavel: {{ attendance.responsibleName || 'Nao definido' }}
+                  Responsável: {{ attendance.responsibleName || 'Não definido' }}
                 </p>
               </div>
               <select

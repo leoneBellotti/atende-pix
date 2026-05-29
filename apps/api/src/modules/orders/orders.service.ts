@@ -59,11 +59,11 @@ export class OrdersService {
     });
 
     if (!quote) {
-      throw new NotFoundException('Orcamento nao encontrado para conversao.');
+      throw new NotFoundException('Orçamento não encontrado para conversão.');
     }
 
     if (quote.order) {
-      throw new ConflictException('Este orcamento ja foi convertido em pedido.');
+      throw new ConflictException('Este orçamento já foi convertido em pedido.');
     }
 
     const number = await this.nextOrderNumber(tenantId);
@@ -110,7 +110,7 @@ export class OrdersService {
     });
 
     if (!order) {
-      throw new NotFoundException('Pedido nao encontrado.');
+      throw new NotFoundException('Pedido não encontrado.');
     }
 
     return order;
@@ -163,7 +163,7 @@ export class OrdersService {
     });
 
     if (!customer) {
-      throw new NotFoundException('Cliente nao encontrado para este pedido.');
+      throw new NotFoundException('Cliente não encontrado para este pedido.');
     }
   }
 

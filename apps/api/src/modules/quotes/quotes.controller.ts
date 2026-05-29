@@ -18,25 +18,25 @@ export class QuotesController {
   ) {}
 
   @Get()
-  @ApiOkResponse({ description: 'Lista orcamentos do tenant autenticado.' })
+  @ApiOkResponse({ description: 'Lista orçamentos do tenant autenticado.' })
   list(@Req() request: AuthenticatedRequest) {
     return this.quotesService.list(request.user.tenantId);
   }
 
   @Post()
-  @ApiCreatedResponse({ description: 'Orcamento criado.' })
+  @ApiCreatedResponse({ description: 'Orçamento criado.' })
   create(@Req() request: AuthenticatedRequest, @Body() input: CreateQuoteDto) {
     return this.quotesService.create(request.user.tenantId, input);
   }
 
   @Get(':id')
-  @ApiOkResponse({ description: 'Detalhe do orcamento.' })
+  @ApiOkResponse({ description: 'Detalhe do orçamento.' })
   getById(@Req() request: AuthenticatedRequest, @Param('id') id: string) {
     return this.quotesService.getById(request.user.tenantId, id);
   }
 
   @Get(':id/pdf')
-  @ApiOkResponse({ description: 'PDF do orcamento.' })
+  @ApiOkResponse({ description: 'PDF do orçamento.' })
   async getPdf(
     @Req() request: AuthenticatedRequest,
     @Param('id') id: string,
@@ -46,12 +46,12 @@ export class QuotesController {
     const pdf = await this.quotePdfService.generate(quote);
 
     response.setHeader('Content-Type', 'application/pdf');
-    response.setHeader('Content-Disposition', `inline; filename="orcamento-${quote.number}.pdf"`);
+    response.setHeader('Content-Disposition', `inline; filename="orçamento-${quote.number}.pdf"`);
     response.send(pdf);
   }
 
   @Patch(':id/status')
-  @ApiOkResponse({ description: 'Status do orcamento atualizado.' })
+  @ApiOkResponse({ description: 'Status do orçamento atualizado.' })
   updateStatus(
     @Req() request: AuthenticatedRequest,
     @Param('id') id: string,
@@ -70,19 +70,19 @@ export class PublicQuotesController {
   ) {}
 
   @Get(':token')
-  @ApiOkResponse({ description: 'Visualizacao publica do orcamento.' })
+  @ApiOkResponse({ description: 'Visualizacao publica do orçamento.' })
   getPublicByToken(@Param('token') token: string) {
     return this.quotesService.getPublicByToken(token);
   }
 
   @Get(':token/pdf')
-  @ApiOkResponse({ description: 'PDF publico do orcamento.' })
+  @ApiOkResponse({ description: 'PDF público do orçamento.' })
   async getPublicPdf(@Param('token') token: string, @Res() response: Response) {
     const quote = await this.quotesService.getPublicByToken(token);
     const pdf = await this.quotePdfService.generate(quote);
 
     response.setHeader('Content-Type', 'application/pdf');
-    response.setHeader('Content-Disposition', `inline; filename="orcamento-${quote.number}.pdf"`);
+    response.setHeader('Content-Disposition', `inline; filename="orçamento-${quote.number}.pdf"`);
     response.send(pdf);
   }
 }

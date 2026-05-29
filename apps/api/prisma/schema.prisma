@@ -83,34 +83,35 @@ enum MessageChannel {
 }
 
 model Tenant {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String   @unique
-  document  String?
-  phone     String?
-  logoUrl   String?
-  aiEnabled Boolean  @default(true)
-  aiMonthlyLimit Int  @default(100)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(cuid())
+  name           String
+  slug           String   @unique
+  document       String?
+  phone          String?
+  logoUrl        String?
+  aiEnabled      Boolean  @default(true)
+  aiMonthlyLimit Int      @default(100)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  customers       Customer[]
-  attendances     Attendance[]
-  memberships     Membership[]
-  productServices ProductService[]
-  quotes          Quote[]
-  orders          Order[]
-  payments        Payment[]
+  customers              Customer[]
+  attendances            Attendance[]
+  memberships            Membership[]
+  productServices        ProductService[]
+  quotes                 Quote[]
+  orders                 Order[]
+  payments               Payment[]
   paymentProviderConfigs PaymentProviderConfig[]
-  paymentWebhookEvents PaymentWebhookEvent[]
-  whatsappConfigs WhatsAppConfig[]
-  messages        Message[]
-  messageTemplates MessageTemplate[]
-  automationRules AutomationRule[]
-  automationLogs AutomationLog[]
-  aiUsageLogs AiUsageLog[]
-  subscription Subscription?
-  subscriptionCheckouts SubscriptionCheckout[]
+  paymentWebhookEvents   PaymentWebhookEvent[]
+  whatsappConfigs        WhatsAppConfig[]
+  messages               Message[]
+  messageTemplates       MessageTemplate[]
+  automationRules        AutomationRule[]
+  automationLogs         AutomationLog[]
+  aiUsageLogs            AiUsageLog[]
+  auditLogs              AuditLog[]
+  subscription           Subscription?
+  subscriptionCheckouts  SubscriptionCheckout[]
 }
 
 model User {
@@ -123,6 +124,7 @@ model User {
   updatedAt    DateTime   @updatedAt
 
   memberships Membership[]
+  auditLogs   AuditLog[]
 }
 
 model Membership {
@@ -164,19 +166,19 @@ model Customer {
 }
 
 model Attendance {
-  id         String           @id @default(cuid())
-  tenantId   String
-  customerId String
-  origin     AttendanceOrigin
-  status     AttendanceStatus @default(NEW)
-  summary    String?
-  internalNotes String?
+  id              String           @id @default(cuid())
+  tenantId        String
+  customerId      String
+  origin          AttendanceOrigin
+  status          AttendanceStatus @default(NEW)
+  summary         String?
+  internalNotes   String?
   responsibleName String?
-  createdAt  DateTime         @default(now())
-  updatedAt  DateTime         @updatedAt
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
-  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  customer Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer Customer  @relation(fields: [customerId], references: [id], onDelete: Restrict)
   quotes   Quote[]
   messages Message[]
 
@@ -218,11 +220,11 @@ model Quote {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
-  tenant   Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  customer Customer    @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer   Customer    @relation(fields: [customerId], references: [id], onDelete: Restrict)
   attendance Attendance? @relation(fields: [attendanceId], references: [id], onDelete: SetNull)
-  items    QuoteItem[]
-  order    Order?
+  items      QuoteItem[]
+  order      Order?
 
   @@unique([tenantId, number])
   @@index([tenantId])
@@ -287,8 +289,8 @@ model Payment {
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  tenant        Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  order         Order                 @relation(fields: [orderId], references: [id], onDelete: Cascade)
   webhookEvents PaymentWebhookEvent[]
 
   @@index([tenantId])
@@ -398,7 +400,7 @@ model AutomationRule {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   logs   AutomationLog[]
 
   @@index([tenantId])
@@ -419,7 +421,7 @@ model AutomationLog {
   errorMessage String?
   createdAt    DateTime  @default(now())
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   rule   AutomationRule? @relation(fields: [ruleId], references: [id], onDelete: SetNull)
 
   @@unique([tenantId, ruleId, targetType, targetId])
@@ -442,6 +444,25 @@ model AiUsageLog {
   @@index([tenantId, feature])
 }
 
+model AuditLog {
+  id          String   @id @default(cuid())
+  tenantId    String?
+  actorUserId String?
+  action      String
+  entityType  String
+  entityId    String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  actor  User?   @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, createdAt])
+  @@index([actorUserId])
+  @@index([entityType, entityId])
+  @@index([action])
+}
+
 model SubscriptionPlan {
   id             String   @id @default(cuid())
   code           String   @unique
@@ -454,33 +475,33 @@ model SubscriptionPlan {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  subscriptions Subscription[]
+  subscriptions         Subscription[]
   subscriptionCheckouts SubscriptionCheckout[]
 
   @@index([active])
 }
 
 model Subscription {
-  id        String   @id @default(cuid())
-  tenantId  String   @unique
-  planId    String
-  status    String   @default("TRIAL")
-  startedAt DateTime @default(now())
-  currentPeriodStart DateTime?
-  currentPeriodEnd DateTime?
-  renewsAt  DateTime?
-  pastDueAt DateTime?
-  suspendedAt DateTime?
-  canceledAt DateTime?
-  cancellationReason String?
-  cancelAtPeriodEnd Boolean @default(false)
-  paymentProvider String?
-  paymentMethod String?
+  id                     String    @id @default(cuid())
+  tenantId               String    @unique
+  planId                 String
+  status                 String    @default("TRIAL")
+  startedAt              DateTime  @default(now())
+  currentPeriodStart     DateTime?
+  currentPeriodEnd       DateTime?
+  renewsAt               DateTime?
+  pastDueAt              DateTime?
+  suspendedAt            DateTime?
+  canceledAt             DateTime?
+  cancellationReason     String?
+  cancelAtPeriodEnd      Boolean   @default(false)
+  paymentProvider        String?
+  paymentMethod          String?
   externalSubscriptionId String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   plan   SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Restrict)
 
   @@index([planId])
@@ -488,20 +509,20 @@ model Subscription {
 }
 
 model SubscriptionCheckout {
-  id        String   @id @default(cuid())
-  tenantId  String
-  planId    String
-  status    String   @default("PENDING")
-  provider  String   @default("LOCAL")
-  amount    Decimal  @default(0) @db.Decimal(12, 2)
-  publicToken String @unique
+  id          String    @id @default(cuid())
+  tenantId    String
+  planId      String
+  status      String    @default("PENDING")
+  provider    String    @default("LOCAL")
+  amount      Decimal   @default(0) @db.Decimal(12, 2)
+  publicToken String    @unique
   checkoutUrl String?
-  paidAt    DateTime?
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  paidAt      DateTime?
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   plan   SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Restrict)
 
   @@index([tenantId])

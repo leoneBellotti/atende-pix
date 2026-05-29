@@ -30,7 +30,7 @@ async function loadCustomers() {
   try {
     customers.value = await listCustomers(search.value);
   } catch {
-    errorMessage.value = 'Nao foi possivel carregar os clientes.';
+    errorMessage.value = 'Não foi possível carregar os clientes.';
   } finally {
     isLoading.value = false;
   }
@@ -51,7 +51,7 @@ async function submit() {
     resetForm();
     await loadCustomers();
   } catch {
-    errorMessage.value = 'Nao foi possivel salvar. Verifique duplicidade de telefone ou documento.';
+    errorMessage.value = 'Não foi possível salvar. Verifique duplicidade de telefone ou documento.';
   } finally {
     isSaving.value = false;
   }
@@ -72,7 +72,7 @@ function resetForm() {
       <div>
         <h1 class="text-2xl font-semibold text-ink">Clientes</h1>
         <p class="mt-1 text-sm text-[#667067]">
-          Cadastro rapido para transformar conversas em historico comercial.
+          Cadastro rápido para transformar conversas em histórico comercial.
         </p>
       </div>
       <form class="flex w-full gap-2 sm:max-w-md" @submit.prevent="loadCustomers">
@@ -131,7 +131,7 @@ function resetForm() {
           />
         </label>
         <label class="mt-4 block text-sm font-medium">
-          Observacoes
+          Observações
           <textarea
             v-model="form.notes"
             class="mt-2 min-h-20 w-full rounded-md border border-[#cfd7ce] px-3 py-2 text-sm outline-none focus:border-mint"
@@ -164,7 +164,7 @@ function resetForm() {
                 <th class="px-4 py-3 font-semibold">Telefone</th>
                 <th class="px-4 py-3 font-semibold">E-mail</th>
                 <th class="px-4 py-3 font-semibold">Documento</th>
-                <th class="px-4 py-3 font-semibold">Acoes</th>
+                <th class="px-4 py-3 font-semibold">Ações</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-[#edf0ea]">

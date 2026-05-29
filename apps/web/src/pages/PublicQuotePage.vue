@@ -22,7 +22,7 @@ async function loadQuote() {
   try {
     quote.value = await getPublicQuote(token.value);
   } catch {
-    errorMessage.value = 'Orcamento nao encontrado ou indisponivel.';
+    errorMessage.value = 'Orçamento não encontrado ou indisponível.';
   } finally {
     isLoading.value = false;
   }
@@ -56,7 +56,7 @@ function publicPdfUrl() {
         v-if="isLoading"
         class="rounded-md border border-[#dfe4da] bg-white p-6 text-sm text-[#667067]"
       >
-        Carregando orcamento...
+        Carregando orçamento...
       </div>
       <div
         v-else-if="errorMessage"
@@ -69,7 +69,7 @@ function publicPdfUrl() {
           <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p class="text-sm font-semibold text-[#11644f]">{{ quote.tenant.name }}</p>
-              <h1 class="mt-2 text-2xl font-semibold">Orcamento #{{ quote.number }}</h1>
+              <h1 class="mt-2 text-2xl font-semibold">Orçamento #{{ quote.number }}</h1>
               <p class="mt-1 text-sm text-[#667067]">
                 Validade: {{ formatDate(quote.validUntil) }}
               </p>

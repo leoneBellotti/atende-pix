@@ -2,7 +2,7 @@
 
 ## 0. Status de desenvolvimento
 
-Atualizado em: 2026-05-27
+Atualizado em: 2026-05-29
 
 ### Concluido
 
@@ -62,14 +62,20 @@ Atualizado em: 2026-05-27
 - Monitoramento de erros da API com filtro global, registro JSON Lines configuravel e contexto de rota/usuario quando disponivel.
 - Tela admin de erros em /admin/errors, lendo ERROR_LOG_PATH e visivel apenas para emails configurados em ADMIN_EMAILS.
 - Logs estruturados JSON na API com requestId, metodo, rota, status, duracao e contexto de usuario/empresa quando disponivel.
+- Rate limiting global por IP na API, com limites especificos para autenticacao e webhooks publicos.
+- Auditoria de acoes sensiveis em pagamentos, assinaturas e acoes admin, com consulta por empresa no admin interno.
+- Pipeline de CI/CD com validacao automatica, E2E e deploy manual por SSH.
+- Documentacao operacional com deploy, variaveis, backup, restore, logs, rollback e alertas basicos.
+- Healthcheck agendado para producao com webhook opcional de alerta.
+- Revisao final de producao com checklist, validacao automatica de ambiente e audit de dependencias de producao sem vulnerabilidades.
 
 ### Em andamento
 
-- Preparacao de rate limiting para Fase 7.
+- Validacao em ambiente real antes de clientes pagantes.
 
 ### Proximo
 
-- Rate limiting.
+- Executar deploy real, configurar secrets de producao e rodar checklist de go-live.
 
 ## 1. Visao do produto
 
@@ -999,12 +1005,14 @@ Entregas:
 - [x] Backups automaticos.
 - [x] Monitoramento de erros.
 - [x] Logs estruturados.
-- Rate limiting.
-- Auditoria de acoes sensiveis.
-- Testes end-to-end dos fluxos principais.
-- Testes de webhooks.
-- Pipeline de deploy.
-- Documentacao operacional.
+- [x] Rate limiting.
+- [x] Auditoria de acoes sensiveis.
+- [x] Testes end-to-end dos fluxos principais.
+- [x] Testes de webhooks.
+- [x] Pipeline de deploy.
+- [x] Documentacao operacional.
+- [x] Alertas basicos.
+- [x] Revisao final de producao.
 
 Criterios de pronto:
 

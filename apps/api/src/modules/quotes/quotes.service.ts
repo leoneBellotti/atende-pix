@@ -90,7 +90,7 @@ export class QuotesService {
     });
 
     if (!quote) {
-      throw new NotFoundException('Orcamento nao encontrado.');
+      throw new NotFoundException('Orçamento não encontrado.');
     }
 
     return quote;
@@ -122,7 +122,7 @@ export class QuotesService {
     });
 
     if (!quote) {
-      throw new NotFoundException('Orcamento publico nao encontrado.');
+      throw new NotFoundException('Orçamento público não encontrado.');
     }
 
     return quote;
@@ -170,7 +170,7 @@ export class QuotesService {
     });
 
     if (!customer) {
-      throw new NotFoundException('Cliente nao encontrado para este orcamento.');
+      throw new NotFoundException('Cliente não encontrado para este orçamento.');
     }
   }
 
@@ -183,7 +183,7 @@ export class QuotesService {
     });
 
     if (!attendance) {
-      throw new NotFoundException('Atendimento nao encontrado para este orcamento.');
+      throw new NotFoundException('Atendimento não encontrado para este orçamento.');
     }
   }
 

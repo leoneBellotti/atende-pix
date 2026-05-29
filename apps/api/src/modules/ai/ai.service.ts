@@ -47,7 +47,7 @@ export class AiService {
     });
 
     if (!messages.length) {
-      throw new NotFoundException('Conversa nao encontrada para resumo.');
+      throw new NotFoundException('Conversa não encontrada para resumo.');
     }
 
     const customerName =
@@ -65,9 +65,9 @@ export class AiService {
       provider: 'LOCAL',
       summary: [
         `Contato: ${customerName}.`,
-        `Historico com ${messages.length} mensagens: ${inboundMessages.length} recebidas e ${outboundMessages.length} enviadas.`,
-        lastInbound?.body ? `Ultima necessidade informada: ${lastInbound.body}` : null,
-        lastMessage?.body ? `Ultima mensagem: ${lastMessage.body}` : null
+        `Histórico com ${messages.length} mensagens: ${inboundMessages.length} recebidas e ${outboundMessages.length} enviadas.`,
+        lastInbound?.body ? `Última necessidade informada: ${lastInbound.body}` : null,
+        lastMessage?.body ? `Última mensagem: ${lastMessage.body}` : null
       ]
         .filter(Boolean)
         .join(' ')
@@ -101,7 +101,7 @@ export class AiService {
     });
 
     if (!messages.length) {
-      throw new NotFoundException('Conversa nao encontrada para sugestao.');
+      throw new NotFoundException('Conversa não encontrada para sugestão.');
     }
 
     const customerName =
@@ -111,7 +111,7 @@ export class AiService {
     const lastInbound = [...messages]
       .reverse()
       .find((message) => message.direction === 'INBOUND' && message.body);
-    const greeting = customerName ? `Ola, ${customerName}!` : 'Ola!';
+    const greeting = customerName ? `Olá, ${customerName}!` : 'Olá!';
 
     return {
       conversationId,
@@ -119,9 +119,9 @@ export class AiService {
       suggestion: [
         greeting,
         lastInbound?.body
-          ? 'Recebi sua mensagem e vou verificar os detalhes para te retornar com a melhor opcao.'
+          ? 'Recebi sua mensagem e vou verificar os detalhes para te retornar com a melhor opção.'
           : 'Vou verificar os detalhes e te retorno em seguida.',
-        'Se preferir, posso te enviar um orcamento ou link de pagamento por aqui.'
+        'Se preferir, posso te enviar um orçamento ou link de pagamento por aqui.'
       ].join(' ')
     };
   }
@@ -153,22 +153,22 @@ export class AiService {
     });
 
     if (!messages.length) {
-      throw new NotFoundException('Conversa nao encontrada para follow-up.');
+      throw new NotFoundException('Conversa não encontrada para follow-up.');
     }
 
     const customerName =
       messages.find((message) => message.customer?.name)?.customer?.name ??
       messages.find((message) => message.contactName)?.contactName ??
       '';
-    const greeting = customerName ? `Ola, ${customerName}!` : 'Ola!';
+    const greeting = customerName ? `Olá, ${customerName}!` : 'Olá!';
 
     return {
       conversationId,
       provider: 'LOCAL',
       suggestion: [
         greeting,
-        'Passando para saber se voce conseguiu avaliar minha ultima mensagem.',
-        'Ficou alguma duvida ou posso te ajudar com o proximo passo?'
+        'Passando para saber se você conseguiu avaliar minha Última mensagem.',
+        'Ficou alguma dúvida ou posso te ajudar com o próximo passo?'
       ].join(' ')
     };
   }

@@ -21,8 +21,8 @@ async function loadLogs() {
     const status = (error as { response?: { status?: number } }).response?.status;
     errorMessage.value =
       status === 403
-        ? 'Acesso administrativo restrito. Configure ADMIN_EMAILS para liberar este usuario.'
-        : 'Nao foi possivel carregar os erros monitorados.';
+        ? 'Acesso administrativo restrito. Configure ADMIN_EMAILS para liberar este usuário.'
+        : 'Não foi possível carregar os erros monitorados.';
   } finally {
     isLoading.value = false;
   }
@@ -93,7 +93,7 @@ function severityClass(statusCode?: number) {
               </div>
               <p class="mt-3 text-sm text-[#465047]">{{ log.message ?? 'Sem mensagem' }}</p>
               <p v-if="log.userId || log.tenantId" class="mt-2 text-xs text-[#667067]">
-                Usuario: {{ log.userId ?? 'n/a' }} - Empresa: {{ log.tenantId ?? 'n/a' }}
+                Usuário: {{ log.userId ?? 'n/a' }} - Empresa: {{ log.tenantId ?? 'n/a' }}
               </p>
             </div>
             <p class="shrink-0 text-xs text-[#667067]">{{ formatDate(log.timestamp) }}</p>

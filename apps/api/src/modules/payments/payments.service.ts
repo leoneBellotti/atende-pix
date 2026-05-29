@@ -1,12 +1,16 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { AuditService } from '../../common/audit/audit.service';
 import { createHmac, timingSafeEqual, randomUUID } from 'crypto';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { ManualConfirmPaymentDto } from './dto/manual-confirm-payment.dto';
 
 @Injectable()
 export class PaymentsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly auditService?: AuditService
+  ) {}
 
   list(tenantId: string) {
     return this.prisma.payment.findMany({
@@ -66,13 +70,18 @@ export class PaymentsService {
     });
 
     if (!payment) {
-      throw new NotFoundException('Pagamento nao encontrado.');
+      throw new NotFoundException('Pagamento não encontrado.');
     }
 
     return payment;
   }
 
-  async manualConfirm(tenantId: string, orderId: string, input: ManualConfirmPaymentDto) {
+  async manualConfirm(
+    tenantId: string,
+    actorUserId: string | null,
+    orderId: string,
+    input: ManualConfirmPaymentDto
+  ) {
     const order = await this.prisma.order.findFirst({
       where: {
         id: orderId,
@@ -81,7 +90,7 @@ export class PaymentsService {
     });
 
     if (!order) {
-      throw new NotFoundException('Pedido nao encontrado para pagamento.');
+      throw new NotFoundException('Pedido não encontrado para pagamento.');
     }
 
     const paidAt = input.paidAt ? new Date(input.paidAt) : new Date();
@@ -114,11 +123,27 @@ export class PaymentsService {
         }
       });
 
+      await this.auditService?.record(
+        {
+          tenantId,
+          actorUserId,
+          action: 'PAYMENT_MANUALLY_CONFIRMED',
+          entityType: 'Payment',
+          entityId: payment.id,
+          metadata: {
+            orderId: order.id,
+            amount: amount.toString(),
+            paidAt: paidAt.toISOString()
+          }
+        },
+        tx
+      );
+
       return payment;
     });
   }
 
-  async createPix(tenantId: string, orderId: string) {
+  async createPix(tenantId: string, actorUserId: string | null, orderId: string) {
     const order = await this.prisma.order.findFirst({
       where: {
         id: orderId,
@@ -130,11 +155,11 @@ export class PaymentsService {
     });
 
     if (!order) {
-      throw new NotFoundException('Pedido nao encontrado para gerar Pix.');
+      throw new NotFoundException('Pedido não encontrado para gerar Pix.');
     }
 
     if (order.status === 'PAID') {
-      throw new BadRequestException('Pedido ja esta pago.');
+      throw new BadRequestException('Pedido já está pago.');
     }
 
     const existingPayment = await this.prisma.payment.findFirst({
@@ -212,6 +237,23 @@ export class PaymentsService {
         }
       });
 
+      await this.auditService?.record(
+        {
+          tenantId,
+          actorUserId,
+          action: 'PIX_CHARGE_CREATED',
+          entityType: 'Payment',
+          entityId: payment.id,
+          metadata: {
+            orderId: order.id,
+            provider: 'MERCADO_PAGO',
+            providerPaymentId: payment.providerPaymentId,
+            amount: payment.amount.toString()
+          }
+        },
+        tx
+      );
+
       return payment;
     });
   }
@@ -270,7 +312,7 @@ export class PaymentsService {
         eventType,
         requestId: input.requestId,
         payload: input.body,
-        errorMessage: 'Pagamento local nao encontrado.'
+        errorMessage: 'Pagamento local não encontrado.'
       });
 
       return { received: true };
@@ -407,7 +449,7 @@ export class PaymentsService {
     };
 
     if (!response.ok || !data.id) {
-      throw new BadRequestException(data.message ?? 'Mercado Pago recusou a geracao do Pix.');
+      throw new BadRequestException(data.message ?? 'Mercado Pago recusou a geração do Pix.');
     }
 
     const transactionData = data.point_of_interaction?.transaction_data;
@@ -434,7 +476,7 @@ export class PaymentsService {
     };
 
     if (!response.ok || !data.status) {
-      throw new BadRequestException(data.message ?? 'Nao foi possivel consultar o pagamento.');
+      throw new BadRequestException(data.message ?? 'Não foi possível consultar o pagamento.');
     }
 
     return data;

@@ -1,0 +1,32 @@
+name: Production healthcheck
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  healthcheck:
+    name: Check production health
+    runs-on: ubuntu-latest
+    env:
+      HEALTHCHECK_URL: ${{ secrets.PRODUCTION_HEALTHCHECK_URL }}
+      ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+      HEALTHCHECK_TIMEOUT_MS: 10000
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Skip when URL is not configured
+        if: env.HEALTHCHECK_URL == ''
+        run: echo "PRODUCTION_HEALTHCHECK_URL nao configurada; healthcheck ignorado."
+
+      - name: Run healthcheck
+        if: env.HEALTHCHECK_URL != ''
+        run: npm run ops:healthcheck

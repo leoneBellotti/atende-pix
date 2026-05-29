@@ -6,7 +6,7 @@ export class SendWhatsAppMessageDto {
   @IsString()
   conversationId!: string;
 
-  @ApiProperty({ example: 'Ola! Posso te ajudar com esse orcamento.' })
+  @ApiProperty({ example: 'Olá! Posso te ajudar com esse orçamento.' })
   @IsString()
   @MinLength(1)
   body!: string;

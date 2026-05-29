@@ -3,15 +3,15 @@ import heroImage from '../assets/commercial-hero.png';
 
 const steps = [
   'Conversa organizada',
-  'Orcamento aprovado',
+  'Orçamento aprovado',
   'Pix confirmado',
   'Pedido acompanhado'
 ];
 
 const plans = [
-  { name: 'Basico', price: 'R$ 39', detail: '1 usuario e orcamentos essenciais' },
+  { name: 'Básico', price: 'R$ 39', detail: '1 usuário e orçamentos essenciais' },
   { name: 'Pro', price: 'R$ 79', detail: 'Pix automatico e dashboard completo' },
-  { name: 'Premium', price: 'R$ 149', detail: 'WhatsApp oficial, automacoes e IA' }
+  { name: 'Premium', price: 'R$ 149', detail: 'WhatsApp oficial, automações e IA' }
 ];
 </script>
 
@@ -38,7 +38,7 @@ const plans = [
             <p class="text-sm font-semibold uppercase text-[#9ad8c1]">SaaS para pequenos negocios</p>
             <h1 class="mt-4 text-4xl font-semibold leading-tight tracking-normal md:text-6xl">AtendePix</h1>
             <p class="mt-5 max-w-xl text-lg leading-8 text-white/86">
-              Atendimento, orcamento e Pix em um fluxo simples para negocios que vendem pelo WhatsApp.
+              Atendimento, orçamento e Pix em um fluxo simples para negocios que vendem pelo WhatsApp.
             </p>
             <div class="mt-8 flex flex-col gap-3 sm:flex-row">
               <RouterLink class="rounded-md bg-mint px-5 py-3 text-center text-sm font-semibold text-white hover:bg-[#176d58]" to="/register">
@@ -68,19 +68,19 @@ const plans = [
       </div>
       <div class="grid gap-4 sm:grid-cols-2">
         <div class="rounded-md border border-[#dfe4da] bg-white p-5">
-          <p class="text-lg font-semibold text-ink">Historico por cliente</p>
-          <p class="mt-2 text-sm leading-6 text-[#667067]">Atendimentos, orcamentos, pedidos e pagamentos em uma linha do tempo.</p>
+          <p class="text-lg font-semibold text-ink">Histórico por cliente</p>
+          <p class="mt-2 text-sm leading-6 text-[#667067]">Atendimentos, orçamentos, pedidos e pagamentos em uma linha do tempo.</p>
         </div>
         <div class="rounded-md border border-[#dfe4da] bg-white p-5">
           <p class="text-lg font-semibold text-ink">Pix com acompanhamento</p>
-          <p class="mt-2 text-sm leading-6 text-[#667067]">Cobranca, link publico e status financeiro no mesmo painel.</p>
+          <p class="mt-2 text-sm leading-6 text-[#667067]">Cobrança, link público e status financeiro no mesmo painel.</p>
         </div>
         <div class="rounded-md border border-[#dfe4da] bg-white p-5">
           <p class="text-lg font-semibold text-ink">WhatsApp no processo</p>
           <p class="mt-2 text-sm leading-6 text-[#667067]">Inbox, templates e respostas aprovadas para manter o atendimento andando.</p>
         </div>
         <div class="rounded-md border border-[#dfe4da] bg-white p-5">
-          <p class="text-lg font-semibold text-ink">Automacoes e IA</p>
+          <p class="text-lg font-semibold text-ink">Automações e IA</p>
           <p class="mt-2 text-sm leading-6 text-[#667067]">Follow-ups, lembretes e sugestoes editaveis sem envio automatico sem revisao.</p>
         </div>
       </div>
@@ -109,7 +109,7 @@ const plans = [
 
     <footer class="border-t border-[#dfe4da] bg-white">
       <div class="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-5 text-sm text-[#667067] md:flex-row md:items-center md:justify-between md:px-8">
-        <p>AtendePix - Atendimento, orcamento e Pix para pequenos negocios.</p>
+        <p>AtendePix - Atendimento, orçamento e Pix para pequenos negocios.</p>
         <nav class="flex gap-4 font-semibold text-[#11644f]">
           <RouterLink to="/terms">Termos</RouterLink>
           <RouterLink to="/privacy">Privacidade</RouterLink>

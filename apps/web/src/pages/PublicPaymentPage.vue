@@ -23,7 +23,7 @@ async function loadPayment() {
   try {
     payment.value = await getPublicPayment(token.value);
   } catch {
-    errorMessage.value = 'Pagamento nao encontrado ou indisponivel.';
+    errorMessage.value = 'Pagamento não encontrado ou indisponível.';
   } finally {
     isLoading.value = false;
   }
@@ -123,7 +123,7 @@ function statusLabel(status: PublicPayment['status']) {
               :src="`data:image/png;base64,${payment.qrCode}`"
             />
             <p v-else class="text-center text-sm text-[#667067]">
-              QR Code indisponivel. Use o link ou copia e cola.
+              QR Code indisponível. Use o link ou copia e cola.
             </p>
           </div>
         </section>

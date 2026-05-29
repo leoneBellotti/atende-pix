@@ -17,7 +17,7 @@ export type PaymentProviderConfig = {
   hasAccessToken: boolean;
   hasPublicKey: boolean;
   hasWebhookSecret: boolean;
-  updatedAt?: string;
+  updatedAt: string;
 };
 
 export type UpdatePaymentProviderConfigInput = {
@@ -36,7 +36,7 @@ export type WhatsAppConfig = {
   hasAccessToken: boolean;
   hasVerifyToken: boolean;
   hasAppSecret: boolean;
-  updatedAt?: string;
+  updatedAt: string;
 };
 
 export type UpdateWhatsAppConfigInput = {

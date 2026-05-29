@@ -55,7 +55,7 @@ export class QuotePdfService {
     doc.fontSize(10).fillColor('#667067').text(this.companyLine(quote));
 
     doc.moveDown(1.5);
-    doc.fontSize(18).fillColor('#17211b').text(`Orcamento #${quote.number}`);
+    doc.fontSize(18).fillColor('#17211b').text(`Orçamento #${quote.number}`);
     doc.fontSize(10).fillColor('#667067').text(`Status: ${quote.status}`);
 
     if (quote.validUntil) {
@@ -105,7 +105,7 @@ export class QuotePdfService {
   private companyLine(quote: PdfQuote) {
     return (
       [quote.tenant?.document, quote.tenant?.phone].filter(Boolean).join(' | ') ||
-      'Orcamento comercial'
+      'Orçamento comercial'
     );
   }
 

@@ -68,19 +68,19 @@ type WhatsAppWebhookBody = {
 
 const defaultMessageTemplates = [
   {
-    name: 'Confirmar orcamento',
+    name: 'Confirmar orçamento',
     category: 'UTILITY',
-    body: 'Ola! Seu orcamento esta pronto. Posso te enviar o link para conferir?'
+    body: 'Olá! Seu orçamento está pronto. Posso te enviar o link para conferir?'
   },
   {
     name: 'Pagamento pendente',
     category: 'UTILITY',
-    body: 'Ola! Identifiquei que o pagamento ainda esta pendente. Posso reenviar o Pix?'
+    body: 'Olá! Identifiquei que o pagamento ainda está pendente. Posso reenviar o Pix?'
   },
   {
     name: 'Pedido pronto',
     category: 'UTILITY',
-    body: 'Ola! Seu pedido esta pronto. Podemos combinar a retirada ou entrega?'
+    body: 'Olá! Seu pedido está pronto. Podemos combinar a retirada ou entrega?'
   }
 ];
 
@@ -184,7 +184,7 @@ export class WhatsAppService {
     });
 
     if (!customer) {
-      throw new NotFoundException('Cliente nao encontrado para vincular conversa.');
+      throw new NotFoundException('Cliente não encontrado para vincular conversa.');
     }
 
     const result = await this.prisma.message.updateMany({
@@ -203,7 +203,7 @@ export class WhatsAppService {
     });
 
     if (!result.count) {
-      throw new NotFoundException('Conversa nao encontrada.');
+      throw new NotFoundException('Conversa não encontrada.');
     }
 
     return {
@@ -252,13 +252,13 @@ export class WhatsAppService {
     });
 
     if (!conversationMessages.length) {
-      throw new NotFoundException('Conversa nao encontrada para envio.');
+      throw new NotFoundException('Conversa não encontrada para envio.');
     }
 
     const lastInboundMessage = conversationMessages.find((message) => message.direction === 'INBOUND');
 
     if (!lastInboundMessage?.createdAt || !this.isInsideServiceWindow(lastInboundMessage.createdAt)) {
-      throw new BadRequestException('A conversa esta fora da janela de atendimento do WhatsApp.');
+      throw new BadRequestException('A conversa está fora da janela de atendimento do WhatsApp.');
     }
 
     const lastMessage = conversationMessages[0];
@@ -271,7 +271,7 @@ export class WhatsAppService {
     const recipientPhone = this.normalizePhone(rawRecipientPhone);
 
     if (!recipientPhone) {
-      throw new BadRequestException('A conversa nao possui telefone valido para envio.');
+      throw new BadRequestException('A conversa não possui telefone válido para envio.');
     }
 
     const sentMessage = await this.sendCloudApiTextMessage({
@@ -324,7 +324,7 @@ export class WhatsAppService {
     });
 
     if (!config) {
-      throw new ForbiddenException('Token de verificacao invalido.');
+      throw new ForbiddenException('Token de verificação invalido.');
     }
 
     return input.challenge;
@@ -498,7 +498,7 @@ export class WhatsAppService {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          messaging_product: 'whatsapp',
+          mêssaging_product: 'whatsapp',
           recipient_type: 'individual',
           to: input.to,
           type: 'text',

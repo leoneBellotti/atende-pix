@@ -26,7 +26,7 @@ export class OrdersController {
   }
 
   @Post('from-quote/:quoteId')
-  @ApiCreatedResponse({ description: 'Pedido criado a partir de orcamento.' })
+  @ApiCreatedResponse({ description: 'Pedido criado a partir de orçamento.' })
   convertQuoteToOrder(@Req() request: AuthenticatedRequest, @Param('quoteId') quoteId: string) {
     return this.ordersService.convertQuoteToOrder(request.user.tenantId, quoteId);
   }

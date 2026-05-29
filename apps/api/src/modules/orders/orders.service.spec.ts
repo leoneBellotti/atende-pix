@@ -5,7 +5,7 @@ describe('OrdersService', () => {
     const service = new OrdersService({} as never);
 
     const total = service.calculateTotal([
-      { description: 'Servico', quantity: 2, unitPrice: 80, discount: 10 },
+      { description: 'Serviço', quantity: 2, unitPrice: 80, discount: 10 },
       { description: 'Peca', quantity: 1, unitPrice: 50 }
     ]);
 

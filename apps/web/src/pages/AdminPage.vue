@@ -31,8 +31,8 @@ async function loadAdmin() {
     const status = (error as { response?: { status?: number } }).response?.status;
     errorMessage.value =
       status === 403
-        ? 'Acesso administrativo restrito. Configure ADMIN_EMAILS para liberar este usuario.'
-        : 'Nao foi possivel carregar o painel admin.';
+        ? 'Acesso administrativo restrito. Configure ADMIN_EMAILS para liberar este usuário.'
+        : 'Não foi possível carregar o painel admin.';
   } finally {
     isLoading.value = false;
   }
@@ -57,7 +57,7 @@ async function runTenantAction(tenantId: string, action: 'past-due' | 'suspend' 
 
     await loadAdmin();
   } catch {
-    errorMessage.value = 'Nao foi possivel atualizar a assinatura da empresa.';
+    errorMessage.value = 'Não foi possível atualizar a assinatura da empresa.';
   } finally {
     actionTenantId.value = '';
   }
@@ -149,7 +149,7 @@ function canRegularize(tenant: AdminTenant) {
               <th class="px-4 py-3">Renovacao</th>
               <th class="px-4 py-3">Uso</th>
               <th class="px-4 py-3">Criada em</th>
-              <th class="px-4 py-3">Acoes</th>
+              <th class="px-4 py-3">Ações</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-[#edf0ea]">
@@ -170,8 +170,8 @@ function canRegularize(tenant: AdminTenant) {
               </td>
               <td class="px-4 py-3">{{ formatDate(tenant.renewsAt) }}</td>
               <td class="px-4 py-3 text-xs text-[#667067]">
-                {{ tenant.usage.users }} usuarios · {{ tenant.usage.customers }} clientes ·
-                {{ tenant.usage.quotes }} orcamentos · {{ tenant.usage.payments }} pagamentos
+                {{ tenant.usage.users }} usuários · {{ tenant.usage.customers }} clientes ·
+                {{ tenant.usage.quotes }} orçamentos · {{ tenant.usage.payments }} pagamentos
               </td>
               <td class="px-4 py-3">{{ formatDate(tenant.createdAt) }}</td>
               <td class="px-4 py-3">

@@ -49,7 +49,9 @@ describe('BillingService', () => {
         update: vi.fn().mockResolvedValue({})
       },
       subscriptionCheckout: {
-        update: vi.fn().mockResolvedValue({})
+        update: vi.fn().mockResolvedValue({}),
+        updateMany: vi.fn().mockResolvedValue({ count: 0 }),
+        create: vi.fn().mockResolvedValue(checkout)
       }
     };
     const prisma = {
@@ -75,7 +77,7 @@ describe('BillingService', () => {
     };
     const service = new BillingService(prisma as never);
 
-    await expect(service.selectPlan('tenant-1', 'pro')).resolves.toEqual({
+    await expect(service.selectPlan('tenant-1', 'user-1', 'pro')).resolves.toEqual({
       id: 'subscription-1',
       plan
     });
@@ -112,7 +114,7 @@ describe('BillingService', () => {
     const service = new BillingService(prisma as never);
 
     await expect(service.ensureQuoteLimit('tenant-1')).rejects.toThrow(
-      'Limite mensal de 20 orcamentos atingido para o plano Demo.'
+      'Limite mensal de 20 orçamentos atingido para o plano Demo.'
     );
   });
 
@@ -163,21 +165,32 @@ describe('BillingService', () => {
           status: 'ACTIVE',
           currentPeriodEnd: new Date(Date.now() + 60_000),
           plan: {
+            code: 'pro',
             name: 'Pro'
           }
-        }),
-        update: vi.fn().mockResolvedValue({
-          id: 'subscription-1',
-          status: 'CANCELING',
-          cancellationReason: 'Pausando por enquanto'
         })
       }
     };
+    const tx = {
+      subscription: {
+        update: vi.fn().mockResolvedValue({
+          id: 'subscription-1',
+          status: 'CANCELING',
+          currentPeriodEnd: new Date(Date.now() + 60_000),
+          cancellationReason: 'Pausando por enquanto',
+          plan: {
+            code: 'pro',
+            name: 'Pro'
+          }
+        })
+      }
+    };
+    prisma.$transaction = vi.fn((callback) => callback(tx));
     const service = new BillingService(prisma as never);
 
-    await service.cancelSubscription('tenant-1', 'Pausando por enquanto');
+    await service.cancelSubscription('tenant-1', 'user-1', 'Pausando por enquanto');
 
-    expect(prisma.subscription.update).toHaveBeenCalledWith({
+    expect(tx.subscription.update).toHaveBeenCalledWith({
       where: { tenantId: 'tenant-1' },
       data: {
         status: 'CANCELING',

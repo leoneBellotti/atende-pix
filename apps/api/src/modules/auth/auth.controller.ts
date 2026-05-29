@@ -10,7 +10,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  @ApiCreatedResponse({ description: 'Empresa e usuario criados com sucesso.' })
+  @ApiCreatedResponse({ description: 'Empresa e usuário criados com sucesso.' })
   register(@Body() input: RegisterDto) {
     return this.authService.register(input);
   }

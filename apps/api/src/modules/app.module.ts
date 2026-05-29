@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { AuditModule } from '../common/audit/audit.module';
 import { LoggingModule } from '../common/logging/logging.module';
 import { MonitoringModule } from '../common/monitoring/monitoring.module';
 import { PrismaModule } from '../common/prisma/prisma.module';
+import { RateLimitingModule } from '../common/rate-limiting/rate-limiting.module';
 import { AdminModule } from './admin/admin.module';
 import { AiModule } from './ai/ai.module';
 import { AttendancesModule } from './attendances/attendances.module';
@@ -25,8 +27,10 @@ import { WhatsAppModule } from './whatsapp/whatsapp.module';
       isGlobal: true,
       envFilePath: ['.env', '../../.env']
     }),
+    AuditModule,
     LoggingModule,
     MonitoringModule,
+    RateLimitingModule,
     PrismaModule,
     AdminModule,
     AiModule,

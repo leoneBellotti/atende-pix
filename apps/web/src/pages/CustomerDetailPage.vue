@@ -71,7 +71,7 @@ const timeline = computed<TimelineItem[]>(() => {
   const quotes = customer.value.quotes.map((quote) => ({
     id: `quote-${quote.id}`,
     date: quote.createdAt,
-    title: `Orcamento #${quote.number}`,
+    title: `Orçamento #${quote.number}`,
     description: quoteStatusLabels[quote.status],
     amount: quote.total
   }));
@@ -111,7 +111,7 @@ async function loadCustomer() {
   try {
     customer.value = await getCustomer(String(route.params.id));
   } catch {
-    errorMessage.value = 'Nao foi possivel carregar o cliente.';
+    errorMessage.value = 'Não foi possível carregar o cliente.';
   } finally {
     isLoading.value = false;
   }
@@ -143,7 +143,7 @@ function formatDate(value: string) {
           {{ customer?.name ?? 'Cliente' }}
         </h1>
         <p class="mt-1 text-sm text-[#667067]">
-          Historico comercial, contatos e movimentacao do cliente.
+          Histórico comercial, contatos e movimentação do cliente.
         </p>
       </div>
     </div>
@@ -188,7 +188,7 @@ function formatDate(value: string) {
               <dd class="mt-1 text-[#465047]">{{ customer.document || '-' }}</dd>
             </div>
             <div>
-              <dt class="font-semibold text-[#667067]">Observacoes</dt>
+              <dt class="font-semibold text-[#667067]">Observações</dt>
               <dd class="mt-1 whitespace-pre-line text-[#465047]">{{ customer.notes || '-' }}</dd>
             </div>
             <div>

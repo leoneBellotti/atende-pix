@@ -16,7 +16,7 @@ export class SettingsService {
     });
 
     if (!tenant) {
-      throw new NotFoundException('Empresa nao encontrada.');
+      throw new NotFoundException('Empresa não encontrada.');
     }
 
     return tenant;

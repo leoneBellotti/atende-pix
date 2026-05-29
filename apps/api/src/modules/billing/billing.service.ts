@@ -1,5 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { AuditService } from '../../common/audit/audit.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 
 export const defaultPlans = [
@@ -13,7 +15,7 @@ export const defaultPlans = [
   },
   {
     code: 'basic',
-    name: 'Basico',
+    name: 'Básico',
     monthlyPrice: 39,
     quoteLimit: 100,
     userLimit: 1,
@@ -42,7 +44,10 @@ const pastDueGraceDays = 7;
 
 @Injectable()
 export class BillingService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly auditService?: AuditService
+  ) {}
 
   async listPlans() {
     await this.ensureDefaultPlans();
@@ -87,12 +92,12 @@ export class BillingService {
     };
   }
 
-  async selectPlan(tenantId: string, planCode: string) {
-    const checkout = await this.startCheckout(tenantId, planCode);
-    return this.confirmCheckout(tenantId, checkout.id);
+  async selectPlan(tenantId: string, actorUserId: string | null, planCode: string) {
+    const checkout = await this.startCheckout(tenantId, actorUserId, planCode);
+    return this.confirmCheckout(tenantId, actorUserId, checkout.id);
   }
 
-  async startCheckout(tenantId: string, planCode: string) {
+  async startCheckout(tenantId: string, actorUserId: string | null, planCode: string) {
     await this.ensureDefaultPlans();
 
     const plan = await this.prisma.subscriptionPlan.findUnique({
@@ -100,45 +105,66 @@ export class BillingService {
     });
 
     if (!plan?.active) {
-      throw new NotFoundException('Plano nao encontrado.');
+      throw new NotFoundException('Plano não encontrado.');
     }
 
     await this.ensureCurrentUsageFitsPlan(tenantId, plan);
 
     const activeSubscription = await this.getCurrentSubscription(tenantId);
     if (activeSubscription?.plan.code === plan.code && activeSubscription.status === 'ACTIVE') {
-      throw new ForbiddenException('Este plano ja esta ativo.');
+      throw new ForbiddenException('Este plano já está ativo.');
     }
-
-    await this.prisma.subscriptionCheckout.updateMany({
-      where: {
-        tenantId,
-        status: 'PENDING'
-      },
-      data: {
-        status: 'CANCELED'
-      }
-    });
 
     const expiresAt = this.addHours(new Date(), 24);
     const publicToken = this.createPublicToken();
 
-    return this.prisma.subscriptionCheckout.create({
-      data: {
-        tenantId,
-        planId: plan.id,
-        amount: plan.monthlyPrice,
-        publicToken,
-        checkoutUrl: `/billing/checkout/${publicToken}`,
-        expiresAt
-      },
-      include: {
-        plan: true
-      }
+    return this.prisma.$transaction(async (tx) => {
+      await tx.subscriptionCheckout.updateMany({
+        where: {
+          tenantId,
+          status: 'PENDING'
+        },
+        data: {
+          status: 'CANCELED'
+        }
+      });
+
+      const checkout = await tx.subscriptionCheckout.create({
+        data: {
+          tenantId,
+          planId: plan.id,
+          amount: plan.monthlyPrice,
+          publicToken,
+          checkoutUrl: `/billing/checkout/${publicToken}`,
+          expiresAt
+        },
+        include: {
+          plan: true
+        }
+      });
+
+      await this.auditService?.record(
+        {
+          tenantId,
+          actorUserId,
+          action: 'SUBSCRIPTION_CHECKOUT_STARTED',
+          entityType: 'SubscriptionCheckout',
+          entityId: checkout.id,
+          metadata: {
+            planCode: plan.code,
+            planName: plan.name,
+            amount: plan.monthlyPrice.toString(),
+            expiresAt: expiresAt.toISOString()
+          }
+        },
+        tx
+      );
+
+      return checkout;
     });
   }
 
-  async confirmCheckout(tenantId: string, checkoutId: string) {
+  async confirmCheckout(tenantId: string, actorUserId: string | null, checkoutId: string) {
     const checkout = await this.prisma.subscriptionCheckout.findFirst({
       where: {
         id: checkoutId,
@@ -150,11 +176,11 @@ export class BillingService {
     });
 
     if (!checkout) {
-      throw new NotFoundException('Checkout de assinatura nao encontrado.');
+      throw new NotFoundException('Checkout de assinatura não encontrado.');
     }
 
     if (checkout.status !== 'PENDING') {
-      throw new ForbiddenException('Checkout de assinatura ja processado.');
+      throw new ForbiddenException('Checkout de assinatura já processado.');
     }
 
     if (checkout.expiresAt < new Date()) {
@@ -226,11 +252,29 @@ export class BillingService {
         }
       });
 
+      await this.auditService?.record(
+        {
+          tenantId,
+          actorUserId,
+          action: 'SUBSCRIPTION_CHECKOUT_CONFIRMED',
+          entityType: 'Subscription',
+          entityId: subscription.id,
+          metadata: {
+            checkoutId: checkout.id,
+            planCode: checkout.plan.code,
+            planName: checkout.plan.name,
+            amount: checkout.amount.toString(),
+            renewsAt: renewsAt.toISOString()
+          }
+        },
+        tx
+      );
+
       return subscription;
     });
   }
 
-  async cancelSubscription(tenantId: string, reason?: string) {
+  async cancelSubscription(tenantId: string, actorUserId: string | null, reason?: string) {
     const subscription = await this.ensureSubscription(tenantId);
 
     if (subscription.status === 'CANCELED') {
@@ -238,43 +282,85 @@ export class BillingService {
     }
 
     if (subscription.status === 'TRIAL' || subscription.status === 'TRIAL_EXPIRED') {
-      throw new ForbiddenException('Trial nao exige cancelamento. Basta nao assinar um plano pago.');
+      throw new ForbiddenException(
+        'Trial não exige cancelamento. Basta não assinar um plano pago.'
+      );
     }
 
-    return this.prisma.subscription.update({
-      where: { tenantId },
-      data: {
-        status: 'CANCELING',
-        cancelAtPeriodEnd: true,
-        canceledAt: new Date(),
-        cancellationReason: reason?.trim() || null
-      },
-      include: {
-        plan: true
-      }
+    return this.prisma.$transaction(async (tx) => {
+      const updated = await tx.subscription.update({
+        where: { tenantId },
+        data: {
+          status: 'CANCELING',
+          cancelAtPeriodEnd: true,
+          canceledAt: new Date(),
+          cancellationReason: reason?.trim() || null
+        },
+        include: {
+          plan: true
+        }
+      });
+
+      await this.auditService?.record(
+        {
+          tenantId,
+          actorUserId,
+          action: 'SUBSCRIPTION_CANCELLATION_SCHEDULED',
+          entityType: 'Subscription',
+          entityId: updated.id,
+          metadata: {
+            planCode: updated.plan.code,
+            planName: updated.plan.name,
+            currentPeriodEnd: updated.currentPeriodEnd?.toISOString() ?? null,
+            reasonProvided: !!reason?.trim()
+          } as Prisma.InputJsonValue
+        },
+        tx
+      );
+
+      return updated;
     });
   }
 
-  async reactivateSubscription(tenantId: string) {
+  async reactivateSubscription(tenantId: string, actorUserId: string | null) {
     const subscription = await this.ensureSubscription(tenantId);
 
     if (subscription.status === 'TRIAL' || subscription.status === 'TRIAL_EXPIRED') {
       return subscription;
     }
 
-    return this.prisma.subscription.update({
-      where: { tenantId },
-      data: {
-        status: 'ACTIVE',
-        pastDueAt: null,
-        suspendedAt: null,
-        cancelAtPeriodEnd: false,
-        canceledAt: null,
-        cancellationReason: null
-      },
-      include: {
-        plan: true
-      }
+    return this.prisma.$transaction(async (tx) => {
+      const updated = await tx.subscription.update({
+        where: { tenantId },
+        data: {
+          status: 'ACTIVE',
+          pastDueAt: null,
+          suspendedAt: null,
+          cancelAtPeriodEnd: false,
+          canceledAt: null,
+          cancellationReason: null
+        },
+        include: {
+          plan: true
+        }
+      });
+
+      await this.auditService?.record(
+        {
+          tenantId,
+          actorUserId,
+          action: 'SUBSCRIPTION_REACTIVATED',
+          entityType: 'Subscription',
+          entityId: updated.id,
+          metadata: {
+            planCode: updated.plan.code,
+            planName: updated.plan.name
+          }
+        },
+        tx
+      );
+
+      return updated;
     });
   }
 
@@ -292,7 +378,7 @@ export class BillingService {
 
     if (used >= limit) {
       throw new ForbiddenException(
-        `Limite mensal de ${limit} orcamentos atingido para o plano ${subscription.plan.name}.`
+        `Limite mensal de ${limit} orçamentos atingido para o plano ${subscription.plan.name}.`
       );
     }
   }
@@ -310,7 +396,7 @@ export class BillingService {
     });
 
     if (!demoPlan) {
-      throw new NotFoundException('Plano demo nao encontrado.');
+      throw new NotFoundException('Plano demo não encontrado.');
     }
 
     return this.prisma.$transaction(async (tx) => {
@@ -352,20 +438,20 @@ export class BillingService {
 
     if (plan.quoteLimit !== null && quoteUsage > plan.quoteLimit) {
       throw new ForbiddenException(
-        `Uso atual de ${quoteUsage} orcamentos no mes excede o limite do plano ${plan.name}.`
+        `Uso atual de ${quoteUsage} orçamentos no mês excede o limite do plano ${plan.name}.`
       );
     }
 
     if (plan.userLimit !== null && userUsage > plan.userLimit) {
       throw new ForbiddenException(
-        `Uso atual de ${userUsage} usuarios excede o limite do plano ${plan.name}.`
+        `Uso atual de ${userUsage} usuários excede o limite do plano ${plan.name}.`
       );
     }
   }
 
-  private async normalizeSubscriptionState<T extends { status: string; currentPeriodEnd: Date | null; tenantId: string }>(
-    subscription: T
-  ) {
+  private async normalizeSubscriptionState<
+    T extends { status: string; currentPeriodEnd: Date | null; tenantId: string }
+  >(subscription: T) {
     if (subscription.status === 'TRIAL' && this.isPast(subscription.currentPeriodEnd)) {
       return this.prisma.subscription.update({
         where: { tenantId: subscription.tenantId },
@@ -431,11 +517,15 @@ export class BillingService {
     }
 
     if (subscription.status === 'CANCELED') {
-      throw new ForbiddenException('Assinatura cancelada. Reative ou escolha um plano para continuar.');
+      throw new ForbiddenException(
+        'Assinatura cancelada. Reative ou escolha um plano para continuar.'
+      );
     }
 
     if (subscription.status === 'SUSPENDED') {
-      throw new ForbiddenException('Assinatura suspensa por inadimplencia. Regularize o plano para continuar.');
+      throw new ForbiddenException(
+        'Assinatura suspensa por inadimplencia. Regularize o plano para continuar.'
+      );
     }
   }
 

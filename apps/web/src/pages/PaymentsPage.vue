@@ -58,7 +58,7 @@ async function loadPayments() {
     payments.value = paymentsData;
     webhookEvents.value = webhookEventsData;
   } catch {
-    errorMessage.value = 'Nao foi possivel carregar os pagamentos.';
+    errorMessage.value = 'Não foi possível carregar os pagamentos.';
   } finally {
     isLoading.value = false;
   }
@@ -154,7 +154,7 @@ async function copyPix(payment: PaymentRecord) {
         class="flex flex-col gap-3 border-b border-[#edf0ea] px-4 py-3 lg:flex-row lg:items-center lg:justify-between"
       >
         <div>
-          <h2 class="text-base font-semibold">Historico de pagamentos</h2>
+          <h2 class="text-base font-semibold">Histórico de pagamentos</h2>
           <p class="mt-1 text-xs text-[#667067]">{{ filteredPayments.length }} encontrados</p>
         </div>
         <div class="flex flex-col gap-2 sm:flex-row">
@@ -229,7 +229,7 @@ async function copyPix(payment: PaymentRecord) {
                 :href="publicPaymentUrl(payment)"
                 target="_blank"
               >
-                Link publico
+                Link público
               </a>
             </div>
           </div>
@@ -253,7 +253,7 @@ async function copyPix(payment: PaymentRecord) {
                 {{ event.eventType || 'payment' }} - {{ event.status }}
               </p>
               <p class="mt-1 text-xs text-[#667067]">
-                {{ event.payment?.order.customer.name || 'Pagamento nao vinculado' }}
+                {{ event.payment?.order.customer.name || 'Pagamento não vinculado' }}
               </p>
               <p v-if="event.errorMessage" class="mt-1 text-xs text-coral">
                 {{ event.errorMessage }}

@@ -40,9 +40,9 @@ const statusTrackColors: Record<OrderStatus, string> = {
 
 const metrics = computed(() => [
   {
-    label: 'Vendido no mes',
+    label: 'Vendido no mês',
     value: formatCurrency(summary.value?.revenueThisMonth ?? 0),
-    hint: 'Pedidos pagos no mes atual'
+    hint: 'Pedidos pagos no mês atual'
   },
   {
     label: 'A receber',
@@ -50,7 +50,7 @@ const metrics = computed(() => [
     hint: `${summary.value?.pendingOrders ?? 0} pedidos pendentes`
   },
   {
-    label: 'Orcamentos enviados',
+    label: 'Orçamentos enviados',
     value: String(summary.value?.sentQuotes ?? 0),
     hint: `${summary.value?.quoteConversionRate ?? 0}% convertidos`
   },
@@ -64,7 +64,7 @@ const metrics = computed(() => [
 const pendingActions = computed(() => [
   `${summary.value?.openAttendances ?? 0} atendimentos precisam de acompanhamento`,
   `${summary.value?.pendingOrders ?? 0} pedidos aguardam pagamento`,
-  `${summary.value?.quoteConversionRate ?? 0}% dos orcamentos enviados viraram pedido`
+  `${summary.value?.quoteConversionRate ?? 0}% dos orçamentos enviados viraram pedido`
 ]);
 
 onMounted(() => {
@@ -80,7 +80,7 @@ async function loadSummary() {
   try {
     summary.value = await getDashboardSummary();
   } catch {
-    errorMessage.value = 'Nao foi possivel carregar o dashboard.';
+    errorMessage.value = 'Não foi possível carregar o dashboard.';
   } finally {
     isLoading.value = false;
   }
@@ -108,7 +108,7 @@ function statusLabel(status: OrderStatus) {
     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <h1 class="text-2xl font-semibold tracking-normal text-ink">Dashboard</h1>
-        <p class="mt-1 text-sm text-[#667067]">Vendas, pendencias e proximas acoes de hoje.</p>
+        <p class="mt-1 text-sm text-[#667067]">Vendas, pendências e próximas ações de hoje.</p>
       </div>
       <div class="flex rounded-md border border-[#dfe4da] bg-white p-1 text-sm">
         <button class="rounded bg-[#dcebe3] px-3 py-1.5 font-medium text-[#11644f]" type="button">

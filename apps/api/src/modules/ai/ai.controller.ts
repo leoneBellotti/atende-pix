@@ -24,19 +24,19 @@ export class AiController {
   }
 
   @Post('conversations/:id/reply-suggestion')
-  @ApiOkResponse({ description: 'Gera sugestao editavel de resposta.' })
+  @ApiOkResponse({ description: 'Gera sugestão editável de resposta.' })
   suggestReply(@Req() request: AuthenticatedRequest, @Param('id') id: string) {
     return this.aiService.suggestReply(request.user.tenantId, id);
   }
 
   @Post('conversations/:id/follow-up-suggestion')
-  @ApiOkResponse({ description: 'Gera sugestao editavel de follow-up.' })
+  @ApiOkResponse({ description: 'Gera sugestão editável de follow-up.' })
   suggestFollowUp(@Req() request: AuthenticatedRequest, @Param('id') id: string) {
     return this.aiService.suggestFollowUp(request.user.tenantId, id);
   }
 
   @Post('quote-items')
-  @ApiOkResponse({ description: 'Gera itens de orcamento a partir de texto livre.' })
+  @ApiOkResponse({ description: 'Gera itens de orçamento a partir de texto livre.' })
   generateQuoteItems(@Req() request: AuthenticatedRequest, @Body() input: GenerateQuoteItemsDto) {
     return this.aiService.generateQuoteItemsFromText(request.user.tenantId, input.text);
   }

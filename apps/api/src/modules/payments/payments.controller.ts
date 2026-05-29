@@ -30,13 +30,18 @@ export class PaymentsController {
     @Param('orderId') orderId: string,
     @Body() input: ManualConfirmPaymentDto
   ) {
-    return this.paymentsService.manualConfirm(request.user.tenantId, orderId, input);
+    return this.paymentsService.manualConfirm(
+      request.user.tenantId,
+      request.user.userId,
+      orderId,
+      input
+    );
   }
 
   @Post('orders/:orderId/payments/pix')
-  @ApiCreatedResponse({ description: 'Cobranca Pix gerada.' })
+  @ApiCreatedResponse({ description: 'Cobrança Pix gerada.' })
   createPix(@Req() request: AuthenticatedRequest, @Param('orderId') orderId: string) {
-    return this.paymentsService.createPix(request.user.tenantId, orderId);
+    return this.paymentsService.createPix(request.user.tenantId, request.user.userId, orderId);
   }
 }
 

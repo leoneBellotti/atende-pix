@@ -72,7 +72,7 @@ export class AttendancesService {
     });
 
     if (!attendance) {
-      throw new NotFoundException('Atendimento nao encontrado.');
+      throw new NotFoundException('Atendimento não encontrado.');
     }
 
     return attendance;
@@ -118,7 +118,7 @@ export class AttendancesService {
     });
 
     if (!customer) {
-      throw new NotFoundException('Cliente nao encontrado para este atendimento.');
+      throw new NotFoundException('Cliente não encontrado para este atendimento.');
     }
   }
 }

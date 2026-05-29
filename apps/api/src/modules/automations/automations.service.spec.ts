@@ -49,7 +49,7 @@ describe('AutomationsService', () => {
           {
             id: 'rule-1',
             delayHours: 2,
-            messageBody: 'Ola {{customerName}}, orcamento #{{quoteNumber}} vence em breve.'
+            messageBody: 'Olá {{customerName}}, orçamento #{{quoteNumber}} vence em breve.'
           }
         ])
       },
@@ -90,7 +90,7 @@ describe('AutomationsService', () => {
           targetType: 'QUOTE',
           targetId: 'quote-1',
           status: 'SCHEDULED',
-          message: 'Ola Ana, orcamento #10 vence em breve.'
+          message: 'Olá Ana, orçamento #10 vence em breve.'
         })
       })
     );
@@ -103,7 +103,7 @@ describe('AutomationsService', () => {
           {
             id: 'rule-1',
             delayHours: 2,
-            messageBody: 'Ola {{customerName}}.'
+            messageBody: 'Olá {{customerName}}.'
           }
         ])
       },
@@ -144,7 +144,7 @@ describe('AutomationsService', () => {
           {
             id: 'rule-1',
             delayHours: 1,
-            messageBody: 'Ola {{customerName}}, pagamento do pedido #{{orderNumber}} esta pendente.'
+            messageBody: 'Olá {{customerName}}, pagamento do pedido #{{orderNumber}} está pendente.'
           }
         ])
       },
@@ -185,7 +185,7 @@ describe('AutomationsService', () => {
         create: expect.objectContaining({
           targetType: 'PAYMENT',
           targetId: 'payment-1',
-          message: 'Ola Bruno, pagamento do pedido #20 esta pendente.'
+          message: 'Olá Bruno, pagamento do pedido #20 está pendente.'
         })
       })
     );
@@ -198,7 +198,7 @@ describe('AutomationsService', () => {
           {
             id: 'rule-1',
             delayHours: 1,
-            messageBody: 'Ola {{customerName}}, pedido #{{orderNumber}} esta pronto.'
+            messageBody: 'Olá {{customerName}}, pedido #{{orderNumber}} está pronto.'
           }
         ])
       },
@@ -237,7 +237,7 @@ describe('AutomationsService', () => {
         create: expect.objectContaining({
           targetType: 'ORDER',
           targetId: 'order-1',
-          message: 'Ola Carla, pedido #30 esta pronto.'
+          message: 'Olá Carla, pedido #30 está pronto.'
         })
       })
     );
@@ -291,7 +291,7 @@ describe('AutomationsService', () => {
       data: expect.objectContaining({
         status: 'FAILED',
         executedAt: expect.any(Date),
-        errorMessage: 'Mensagem da automacao ausente.'
+        errorMessage: 'Mensagem da automação ausente.'
       })
     });
   });

@@ -13,19 +13,19 @@ export class AutomationsController {
   constructor(private readonly automationsService: AutomationsService) {}
 
   @Get()
-  @ApiOkResponse({ description: 'Lista regras de automacao do tenant autenticado.' })
+  @ApiOkResponse({ description: 'Lista regras de automação do tenant autenticado.' })
   listRules(@Req() request: AuthenticatedRequest) {
     return this.automationsService.listRules(request.user.tenantId);
   }
 
   @Post()
-  @ApiCreatedResponse({ description: 'Regra de automacao criada.' })
+  @ApiCreatedResponse({ description: 'Regra de automação criada.' })
   createRule(@Req() request: AuthenticatedRequest, @Body() input: CreateAutomationRuleDto) {
     return this.automationsService.createRule(request.user.tenantId, input);
   }
 
   @Patch(':id')
-  @ApiOkResponse({ description: 'Regra de automacao atualizada.' })
+  @ApiOkResponse({ description: 'Regra de automação atualizada.' })
   updateRule(
     @Req() request: AuthenticatedRequest,
     @Param('id') id: string,
@@ -43,13 +43,13 @@ export class AutomationJobsController {
   constructor(private readonly automationsService: AutomationsService) {}
 
   @Get('logs')
-  @ApiOkResponse({ description: 'Lista logs de automacao do tenant autenticado.' })
+  @ApiOkResponse({ description: 'Lista logs de automação do tenant autenticado.' })
   listLogs(@Req() request: AuthenticatedRequest) {
     return this.automationsService.listLogs(request.user.tenantId);
   }
 
   @Post('process/quote-expiring')
-  @ApiOkResponse({ description: 'Agenda lembretes para orcamentos perto do vencimento.' })
+  @ApiOkResponse({ description: 'Agenda lembretes para orçamentos perto do vencimento.' })
   processExpiringQuotes(@Req() request: AuthenticatedRequest) {
     return this.automationsService.scheduleExpiringQuoteReminders(request.user.tenantId);
   }

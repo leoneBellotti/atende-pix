@@ -160,7 +160,7 @@ describe('WhatsAppService', () => {
     await expect(
       service.sendTextMessage('tenant-1', {
         conversationId: 'customer-1',
-        body: 'Ola, tudo certo?'
+        body: 'Olá, tudo certo?'
       })
     ).resolves.toEqual({ id: 'message-outbound-1' });
 
@@ -181,7 +181,7 @@ describe('WhatsAppService', () => {
           direction: 'OUTBOUND',
           externalMessageId: 'wamid.outbound-1',
           toPhone: '5511999990000',
-          body: 'Ola, tudo certo?'
+          body: 'Olá, tudo certo?'
         })
       })
     );
@@ -214,7 +214,7 @@ describe('WhatsAppService', () => {
     await expect(
       service.sendTextMessage('tenant-1', {
         conversationId: '5511999990000',
-        body: 'Ola'
+        body: 'Olá'
       })
     ).rejects.toThrow('janela de atendimento');
   });
@@ -300,7 +300,7 @@ describe('WhatsAppService', () => {
                         timestamp: '1780000000',
                         type: 'text',
                         text: {
-                          body: 'Ola, quero um orcamento.'
+                          body: 'Olá, quero um orçamento.'
                         }
                       }
                     ]
@@ -326,7 +326,7 @@ describe('WhatsAppService', () => {
           customerId: 'customer-1',
           direction: 'INBOUND',
           fromPhone: '5511988887777',
-          body: 'Ola, quero um orcamento.'
+          body: 'Olá, quero um orçamento.'
         })
       })
     );

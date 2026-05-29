@@ -21,15 +21,15 @@ const isProcessingPayments = ref(false);
 const isProcessingOrders = ref(false);
 
 const form = reactive({
-  name: 'Follow-up de orcamento',
+  name: 'Follow-up de orçamento',
   trigger: 'QUOTE_SENT' as AutomationTrigger,
   delayHours: 24,
-  messageBody: 'Ola! Passando para saber se ficou alguma duvida sobre o orcamento.'
+  messageBody: 'Olá! Passando para saber se ficou alguma dúvida sobre o orçamento.'
 });
 
 const triggerOptions: Array<{ value: AutomationTrigger; label: string }> = [
-  { value: 'QUOTE_SENT', label: 'Orcamento enviado' },
-  { value: 'QUOTE_EXPIRING', label: 'Orcamento vencendo' },
+  { value: 'QUOTE_SENT', label: 'Orçamento enviado' },
+  { value: 'QUOTE_EXPIRING', label: 'Orçamento vencendo' },
   { value: 'PAYMENT_PENDING', label: 'Pagamento pendente' },
   { value: 'ORDER_READY', label: 'Pedido pronto' }
 ];
@@ -47,7 +47,7 @@ async function loadRules() {
     rules.value = rulesData;
     logs.value = logsData;
   } catch {
-    errorMessage.value = 'Nao foi possivel carregar as automacoes.';
+    errorMessage.value = 'Não foi possível carregar as automações.';
   } finally {
     isLoading.value = false;
   }
@@ -66,7 +66,7 @@ async function submitRule() {
     });
     await loadRules();
   } catch {
-    errorMessage.value = 'Nao foi possivel criar a regra.';
+    errorMessage.value = 'Não foi possível criar a regra.';
   } finally {
     isSaving.value = false;
   }
@@ -79,7 +79,7 @@ async function toggleRule(rule: AutomationRule) {
     await updateAutomationRule(rule.id, { active: !rule.active });
     await loadRules();
   } catch {
-    errorMessage.value = 'Nao foi possivel atualizar a regra.';
+    errorMessage.value = 'Não foi possível atualizar a regra.';
   }
 }
 
@@ -91,7 +91,7 @@ async function processExpiringQuotes() {
     await processExpiringQuoteReminders();
     await loadRules();
   } catch {
-    errorMessage.value = 'Nao foi possivel processar os lembretes de orcamento.';
+    errorMessage.value = 'Não foi possível processar os lembretes de orçamento.';
   } finally {
     isProcessing.value = false;
   }
@@ -105,7 +105,7 @@ async function processPendingPayments() {
     await processPendingPaymentReminders();
     await loadRules();
   } catch {
-    errorMessage.value = 'Nao foi possivel processar os lembretes de pagamento.';
+    errorMessage.value = 'Não foi possível processar os lembretes de pagamento.';
   } finally {
     isProcessingPayments.value = false;
   }
@@ -119,7 +119,7 @@ async function processReadyOrders() {
     await processReadyOrderMessages();
     await loadRules();
   } catch {
-    errorMessage.value = 'Nao foi possivel processar as mensagens de pedido pronto.';
+    errorMessage.value = 'Não foi possível processar as mensagens de pedido pronto.';
   } finally {
     isProcessingOrders.value = false;
   }
@@ -144,7 +144,7 @@ function formatDate(value?: string | null) {
 <template>
   <section class="space-y-5">
     <div>
-      <h1 class="text-2xl font-semibold text-ink">Automacoes</h1>
+      <h1 class="text-2xl font-semibold text-ink">Automações</h1>
       <p class="mt-1 text-sm text-[#667067]">
         Configure follow-ups simples para reduzir tarefas repetitivas.
       </p>
@@ -156,7 +156,7 @@ function formatDate(value?: string | null) {
         :disabled="isProcessing"
         @click="processExpiringQuotes"
       >
-        Processar orcamentos vencendo
+        Processar orçamentos vencendo
       </button>
       <button
         class="rounded-md border border-[#cfd7ce] bg-white px-4 py-2 text-sm font-semibold text-[#465047] hover:bg-[#edf3ee] disabled:cursor-not-allowed disabled:opacity-60"
@@ -240,7 +240,7 @@ function formatDate(value?: string | null) {
           <p class="mt-1 text-xs text-[#667067]">{{ rules.length }} regras</p>
         </div>
         <div v-if="isLoading" class="px-4 py-8 text-sm text-[#667067]">
-          Carregando automacoes...
+          Carregando automações...
         </div>
         <div v-else-if="!rules.length" class="px-4 py-8 text-sm text-[#667067]">
           Nenhuma regra criada ainda.
@@ -273,7 +273,7 @@ function formatDate(value?: string | null) {
 
     <section class="overflow-hidden rounded-md border border-[#dfe4da] bg-white">
       <div class="border-b border-[#edf0ea] px-4 py-3">
-        <h2 class="text-base font-semibold">Logs de automacao</h2>
+        <h2 class="text-base font-semibold">Logs de automação</h2>
         <p class="mt-1 text-xs text-[#667067]">{{ logs.length }} eventos recentes</p>
       </div>
       <div v-if="!logs.length" class="px-4 py-8 text-sm text-[#667067]">

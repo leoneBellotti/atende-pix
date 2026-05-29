@@ -36,7 +36,7 @@ export class AuthService {
       const result = await this.prisma.$transaction(async (tx) => {
         const demoPlanDefaults = defaultPlans.find((plan) => plan.code === 'demo');
         if (!demoPlanDefaults) {
-          throw new Error('Plano demo nao configurado.');
+          throw new Error('Plano demo não configurado.');
         }
 
         const demoPlan = await tx.subscriptionPlan.upsert({
@@ -90,7 +90,7 @@ export class AuthService {
       return this.toAuthResponse(result.user, result.tenant);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-        throw new ConflictException('E-mail ou empresa ja cadastrado.');
+        throw new ConflictException('E-mail ou empresa já cadastrado.');
       }
 
       throw error;
@@ -116,7 +116,7 @@ export class AuthService {
 
     const membership = user.memberships[0];
     if (!membership) {
-      throw new UnauthorizedException('Usuario sem empresa vinculada.');
+      throw new UnauthorizedException('Usuário sem empresa vinculada.');
     }
 
     return this.toAuthResponse(user, membership.tenant);
