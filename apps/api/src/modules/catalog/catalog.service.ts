@@ -44,7 +44,11 @@ export class CatalogService {
         type: input.type,
         name: input.name,
         description: input.description,
-        price: new Prisma.Decimal(input.price)
+        price: new Prisma.Decimal(input.price),
+        trackStock: input.trackStock ?? false,
+        stockQuantity: new Prisma.Decimal(input.stockQuantity ?? 0),
+        lowStockThreshold:
+          input.lowStockThreshold === undefined ? undefined : new Prisma.Decimal(input.lowStockThreshold)
       }
     });
   }
@@ -75,7 +79,11 @@ export class CatalogService {
       where: { id },
       data: {
         ...input,
-        price: input.price === undefined ? undefined : new Prisma.Decimal(input.price)
+        price: input.price === undefined ? undefined : new Prisma.Decimal(input.price),
+        stockQuantity:
+          input.stockQuantity === undefined ? undefined : new Prisma.Decimal(input.stockQuantity),
+        lowStockThreshold:
+          input.lowStockThreshold === undefined ? undefined : new Prisma.Decimal(input.lowStockThreshold)
       }
     });
   }

@@ -73,6 +73,13 @@ enum PaymentStatus {
   FAILED
 }
 
+enum AppointmentStatus {
+  SCHEDULED
+  DONE
+  CANCELED
+  NO_SHOW
+}
+
 enum MessageDirection {
   INBOUND
   OUTBOUND
@@ -98,8 +105,11 @@ model Tenant {
   attendances            Attendance[]
   memberships            Membership[]
   productServices        ProductService[]
+  locations              Location[]
+  appointments           Appointment[]
   quotes                 Quote[]
   orders                 Order[]
+  salesCommissions       SalesCommission[]
   payments               Payment[]
   paymentProviderConfigs PaymentProviderConfig[]
   paymentWebhookEvents   PaymentWebhookEvent[]
@@ -159,6 +169,7 @@ model Customer {
   quotes      Quote[]
   orders      Order[]
   messages    Message[]
+  appointments Appointment[]
 
   @@index([tenantId])
   @@index([tenantId, phone])
@@ -196,6 +207,9 @@ model ProductService {
   description String?
   price       Decimal            @db.Decimal(12, 2)
   active      Boolean            @default(true)
+  trackStock  Boolean            @default(false)
+  stockQuantity Decimal          @default(0) @db.Decimal(12, 2)
+  lowStockThreshold Decimal?     @db.Decimal(12, 2)
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
 
@@ -203,6 +217,54 @@ model ProductService {
 
   @@index([tenantId])
   @@index([tenantId, active])
+  @@index([tenantId, trackStock])
+}
+
+model Location {
+  id        String   @id @default(cuid())
+  tenantId  String
+  name      String
+  phone     String?
+  address   String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+  orders       Order[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([tenantId, active])
+}
+
+model Appointment {
+  id              String            @id @default(cuid())
+  tenantId        String
+  customerId      String
+  locationId      String?
+  orderId         String?
+  status          AppointmentStatus @default(SCHEDULED)
+  title           String
+  notes           String?
+  responsibleName String?
+  startsAt        DateTime
+  endsAt          DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer Customer  @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  location Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  order    Order?    @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([customerId])
+  @@index([locationId])
+  @@index([orderId])
+  @@index([tenantId, startsAt])
+  @@index([tenantId, status])
 }
 
 model Quote {
@@ -236,6 +298,7 @@ model Order {
   tenantId   String
   customerId String
   quoteId    String?     @unique
+  locationId String?
   number     Int
   status     OrderStatus @default(OPEN)
   total      Decimal     @default(0) @db.Decimal(12, 2)
@@ -246,14 +309,38 @@ model Order {
 
   tenant   Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   customer Customer    @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  location Location?   @relation(fields: [locationId], references: [id], onDelete: SetNull)
   quote    Quote?      @relation(fields: [quoteId], references: [id], onDelete: SetNull)
   items    OrderItem[]
   payments Payment[]
+  appointments Appointment[]
+  salesCommissions SalesCommission[]
 
   @@unique([tenantId, number])
   @@index([tenantId])
   @@index([customerId])
+  @@index([locationId])
   @@index([tenantId, status])
+}
+
+model SalesCommission {
+  id              String   @id @default(cuid())
+  tenantId        String
+  orderId         String
+  salespersonName String
+  rate            Decimal  @default(0) @db.Decimal(5, 2)
+  amount          Decimal  @default(0) @db.Decimal(12, 2)
+  paid            Boolean  @default(false)
+  paidAt          DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([orderId])
+  @@index([tenantId, paid])
 }
 
 model OrderItem {

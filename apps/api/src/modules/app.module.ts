@@ -7,14 +7,18 @@ import { PrismaModule } from '../common/prisma/prisma.module';
 import { RateLimitingModule } from '../common/rate-limiting/rate-limiting.module';
 import { AdminModule } from './admin/admin.module';
 import { AiModule } from './ai/ai.module';
+import { AppointmentsModule } from './appointments/appointments.module';
 import { AttendancesModule } from './attendances/attendances.module';
 import { AutomationsModule } from './automations/automations.module';
 import { BillingModule } from './billing/billing.module';
 import { AuthModule } from './auth/auth.module';
 import { CatalogModule } from './catalog/catalog.module';
+import { CommissionsModule } from './commissions/commissions.module';
 import { CustomersModule } from './customers/customers.module';
+import { CustomerPortalModule } from './customer-portal/customer-portal.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { HealthModule } from './health/health.module';
+import { LocationsModule } from './locations/locations.module';
 import { OrdersModule } from './orders/orders.module';
 import { PaymentsModule } from './payments/payments.module';
 import { QuotesModule } from './quotes/quotes.module';
@@ -34,14 +38,18 @@ import { WhatsAppModule } from './whatsapp/whatsapp.module';
     PrismaModule,
     AdminModule,
     AiModule,
+    AppointmentsModule,
     AttendancesModule,
     AutomationsModule,
     BillingModule,
     AuthModule,
     CatalogModule,
+    CommissionsModule,
     CustomersModule,
+    CustomerPortalModule,
     DashboardModule,
     HealthModule,
+    LocationsModule,
     OrdersModule,
     PaymentsModule,
     QuotesModule,

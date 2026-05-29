@@ -31,3 +31,8 @@ export async function setCatalogItemActive(id: string, active: boolean) {
   const { data } = await apiClient.patch<CatalogItem>(`/catalog/items/${id}`, { active });
   return data;
 }
+
+export async function updateCatalogItem(id: string, input: Partial<CreateCatalogItemInput> & { active?: boolean }) {
+  const { data } = await apiClient.patch<CatalogItem>(`/catalog/items/${id}`, input);
+  return data;
+}

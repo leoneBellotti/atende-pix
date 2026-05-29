@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ProductServiceType } from '@prisma/client';
-import { IsEnum, IsNumber, IsOptional, IsString, Min, MinLength } from 'class-validator';
+import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString, Min, MinLength } from 'class-validator';
 
 export class CreateCatalogItemDto {
   @ApiProperty({ enum: ProductServiceType, example: ProductServiceType.SERVICE })
@@ -21,4 +21,21 @@ export class CreateCatalogItemDto {
   @IsNumber()
   @Min(0)
   price!: number;
+
+  @ApiProperty({ example: false, required: false })
+  @IsOptional()
+  @IsBoolean()
+  trackStock?: boolean;
+
+  @ApiProperty({ example: 10, required: false })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  stockQuantity?: number;
+
+  @ApiProperty({ example: 2, required: false })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  lowStockThreshold?: number;
 }

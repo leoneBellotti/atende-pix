@@ -1,0 +1,49 @@
+{
+  "name": "AtendePix",
+  "short_name": "AtendePix",
+  "description": "Atendimento, orcamento e Pix em um fluxo simples para pequenos negocios.",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f7f8f5",
+  "theme_color": "#11644f",
+  "categories": ["business", "productivity", "finance"],
+  "icons": [
+    {
+      "src": "/icons/atendepix.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Novo orcamento",
+      "short_name": "Orcamento",
+      "description": "Abrir o formulario de novo orcamento.",
+      "url": "/quotes?new=1",
+      "icons": [
+        {
+          "src": "/icons/atendepix.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Inbox",
+      "short_name": "Inbox",
+      "description": "Abrir conversas recebidas.",
+      "url": "/inbox",
+      "icons": [
+        {
+          "src": "/icons/atendepix.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ]
+}

@@ -72,10 +72,14 @@ Atualizado em: 2026-05-29
 ### Em andamento
 
 - Validacao em ambiente real antes de clientes pagantes.
+- Preparacao de deploy real, secrets de producao, dominio HTTPS e banco/Redis de producao.
+- Planejamento do piloto com 1 a 3 negocios reais.
 
 ### Proximo
 
 - Executar deploy real, configurar secrets de producao e rodar checklist de go-live.
+- Validar webhooks Mercado Pago e WhatsApp em ambiente real/sandbox publico.
+- Rodar piloto assistido, coletar atritos do fluxo e priorizar refinamentos antes de escalar vendas.
 
 ## 1. Visao do produto
 
@@ -1211,13 +1215,13 @@ Mitigacao:
 
 ## 18. Backlog futuro
 
-- App mobile leve.
-- PWA offline parcial.
-- Agenda de servicos.
-- Controle de estoque.
-- Multiunidade.
-- Comissoes de vendedores.
-- Portal do cliente.
+- [x] Base de app mobile leve com manifest instalavel, icone e atalhos iniciais.
+- [x] PWA offline parcial com service worker, cache do app shell e pagina offline.
+- [x] Agenda de servicos com agendamentos por cliente, unidade, responsavel e status.
+- [x] Controle de estoque simples para produtos do catalogo, com saldo e alerta minimo.
+- [x] Multiunidade com cadastro de unidades e vinculo inicial em agenda/pedidos.
+- [x] Comissoes de vendedores por pedido, com percentual, valor calculado e baixa de pagamento.
+- [x] Portal do cliente para consulta publica por telefone/documento de orcamentos, pedidos, pagamentos e agenda.
 - Assinatura recorrente para clientes finais.
 - Boleto.
 - NFC-e ou integracao fiscal, se o nicho exigir.
@@ -1225,7 +1229,66 @@ Mitigacao:
 - White label para consultores.
 - API publica para integradores.
 
-## 19. Definicao de sistema finalizado funcional
+## 19. Refinamentos priorizados
+
+Esta lista concentra melhorias importantes depois do produto estar funcional. A ordem abaixo prioriza o que reduz atrito para clientes reais e aumenta confianca operacional.
+
+### 19.1 Obrigatorios antes de vender para mais clientes
+
+- Onboarding inicial guiado para configurar empresa, logo, contato, Mercado Pago, WhatsApp e primeiro item do catalogo.
+- Checklist interno de configuracao mostrando pendencias para gerar primeiro orcamento e primeira cobranca Pix.
+- Recuperacao de senha por e-mail.
+- Convite de usuarios por empresa.
+- Perfis e permissoes praticos: dono, gerente, atendente e financeiro.
+- Ajuste fino de permissoes para pagamento manual, configuracoes, plano e area admin.
+- Revisao completa de textos, acentuacao e mensagens de erro em documentos, telas publicas, painel e e-mails futuros.
+- Seed/demo com dados ficticios por nicho para apresentacao comercial.
+- Teste manual documentado do fluxo real: cadastro -> cliente -> catalogo -> orcamento -> pedido -> Pix -> webhook -> dashboard.
+
+### 19.2 Produto e experiencia
+
+- Criar orcamento diretamente a partir de uma conversa do inbox, levando cliente e contexto ja preenchidos.
+- Melhorar estados vazios com acao principal clara em clientes, catalogo, inbox, orcamentos, pedidos e pagamentos.
+- Adicionar busca e filtros mais completos em orcamentos, pedidos, pagamentos e relatorios.
+- Tela de detalhe do orcamento com status, historico, link publico, PDF, conversao e pagamentos relacionados.
+- Tela de detalhe do pedido com linha do tempo, checklist simples, pagamento e proximas acoes.
+- Campos comerciais extras no orcamento: condicoes de pagamento, observacoes visiveis, prazo de entrega e validade padrao.
+- Modelos de texto por nicho para mensagens, observacoes comerciais e follow-ups.
+- Parametros visuais por empresa para documentos: cor principal, rodape, logo e dados comerciais.
+- Exportacao CSV de clientes e orcamentos, alem das exportacoes financeiras atuais.
+- Relatorio mensal em PDF simples para o dono do negocio.
+
+### 19.3 Operacao e confiabilidade
+
+- Validar restore de backup em ambiente temporario com rotina agendada.
+- Coletar logs estruturados na plataforma de hospedagem escolhida.
+- Configurar alerta externo para healthcheck e falhas recorrentes.
+- Criar procedimento de reprocessamento manual de webhooks de pagamento.
+- Criar painel simples de eventos de webhook Mercado Pago e WhatsApp por empresa.
+- Melhorar mensagens de bloqueio por plano/trial/inadimplencia com proxima acao clara.
+- Adicionar auditoria para login, alteracoes de configuracao, usuarios e permissoes.
+- Revisar LGPD: exportacao de dados, exclusao/anonimizacao e registro de consentimentos quando necessario.
+
+### 19.4 Comercial e go-to-market
+
+- Preparar roteiro de demo de 3 minutos por nicho.
+- Criar landing publica final com oferta, planos, prints reais e chamada para implantacao.
+- Criar material de onboarding para cliente: checklist de setup e guia rapido.
+- Definir pacote de implantacao inicial e escopo do que entra no setup.
+- Validar precificacao com 3 negocios antes de automatizar checkout real do SaaS.
+- Medir funil basico: cadastro, primeiro cliente, primeiro orcamento, primeiro Pix, pagamento confirmado.
+
+### 19.5 Backlog tecnico posterior
+
+- Trocar checkout local de assinatura por provedor real para mensalidade do SaaS.
+- Suporte a upload de arquivos/anexos em clientes, pedidos e atendimentos.
+- Armazenamento S3 compativel para PDFs, logos e anexos.
+- Recuperacao de senha e e-mails transacionais com provedor dedicado.
+- API publica para integradores com tokens por tenant.
+- Feature flags por empresa/plano.
+- Melhor cobertura visual/E2E para fluxos web criticos alem do E2E de API.
+
+## 20. Definicao de sistema finalizado funcional
 
 O sistema sera considerado funcional e pronto para clientes pagantes quando:
 
@@ -1244,25 +1307,27 @@ O sistema sera considerado funcional e pronto para clientes pagantes quando:
 13. Fluxo principal tem testes automatizados.
 14. Dono do SaaS consegue controlar planos e empresas.
 15. Documentacao local e operacional existe.
+16. Ambiente de producao tem HTTPS, backups, healthcheck, logs e alertas basicos.
+17. Piloto com dados reais controlados foi executado sem falhas bloqueantes.
 
-## 20. Proxima decisao
+## 21. Proxima decisao
 
-A proxima etapa depois deste roadmap sera criar a fundacao do repositorio:
+A proxima decisao nao e mais tecnica de fundacao; o produto ja tem o fluxo principal e a base de producao. A decisao agora e escolher o caminho de validacao:
 
-1. `README.md`
-2. `docker-compose.yml`
-3. `apps/api`
-4. `apps/web`
-5. `.env.example`
-6. schema inicial do Prisma
-7. primeira tela de dashboard
+1. Subir ambiente de producao com dominio, HTTPS, Postgres, Redis e secrets reais.
+2. Rodar `ENV_FILE=.env.production npm run ops:production-check`.
+3. Aplicar migrations com `npm run db:deploy`.
+4. Validar o checklist de go-live em `docs/PRODUCTION_CHECKLIST.md`.
+5. Convidar 1 a 3 negocios para piloto assistido.
+6. Registrar atritos encontrados no piloto.
+7. Executar os refinamentos obrigatorios antes de vender para mais clientes.
 
 Ordem sugerida:
 
-1. Montar estrutura tecnica.
-2. Subir banco local.
-3. Criar API healthcheck.
-4. Criar web app.
-5. Implementar login e layout.
-6. Implementar clientes e catalogo.
-7. Implementar orcamentos.
+1. Deploy real.
+2. Checklist tecnico de producao.
+3. Teste de integracoes externas.
+4. Piloto assistido.
+5. Refinamentos obrigatorios.
+6. Oferta comercial inicial.
+7. Primeiros clientes pagantes.

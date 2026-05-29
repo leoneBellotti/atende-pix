@@ -5,12 +5,16 @@ import AttendancesPage from '../pages/AttendancesPage.vue';
 import AutomationsPage from '../pages/AutomationsPage.vue';
 import BillingPage from '../pages/BillingPage.vue';
 import CatalogPage from '../pages/CatalogPage.vue';
+import CommissionsPage from '../pages/CommissionsPage.vue';
 import CommercialPage from '../pages/CommercialPage.vue';
+import CustomerPortalPage from '../pages/CustomerPortalPage.vue';
 import CustomersPage from '../pages/CustomersPage.vue';
 import CustomerDetailPage from '../pages/CustomerDetailPage.vue';
 import DashboardPage from '../pages/DashboardPage.vue';
 import InboxPage from '../pages/InboxPage.vue';
+import InventoryPage from '../pages/InventoryPage.vue';
 import LoginPage from '../pages/LoginPage.vue';
+import LocationsPage from '../pages/LocationsPage.vue';
 import OrdersPage from '../pages/OrdersPage.vue';
 import PaymentsPage from '../pages/PaymentsPage.vue';
 import PrivacyPage from '../pages/PrivacyPage.vue';
@@ -19,6 +23,7 @@ import PublicPaymentPage from '../pages/PublicPaymentPage.vue';
 import QuotesPage from '../pages/QuotesPage.vue';
 import RegisterPage from '../pages/RegisterPage.vue';
 import ReportsPage from '../pages/ReportsPage.vue';
+import SchedulePage from '../pages/SchedulePage.vue';
 import SettingsPage from '../pages/SettingsPage.vue';
 import TermsPage from '../pages/TermsPage.vue';
 import { useSessionStore } from '../stores/session.store';
@@ -31,6 +36,7 @@ export const router = createRouter({
     { path: '/privacy', component: PrivacyPage },
     { path: '/login', component: LoginPage },
     { path: '/register', component: RegisterPage },
+    { path: '/portal', component: CustomerPortalPage },
     { path: '/public/quotes/:token', component: PublicQuotePage },
     { path: '/public/payments/:token', component: PublicPaymentPage },
     { path: '/', component: DashboardPage, meta: { requiresAuth: true } },
@@ -67,6 +73,26 @@ export const router = createRouter({
     {
       path: '/payments',
       component: PaymentsPage,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/schedule',
+      component: SchedulePage,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/inventory',
+      component: InventoryPage,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/locations',
+      component: LocationsPage,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/commissions',
+      component: CommissionsPage,
       meta: { requiresAuth: true }
     },
     {
